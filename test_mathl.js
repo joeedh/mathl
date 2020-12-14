@@ -1,16 +1,29 @@
-let test = `float val;
+import {ArrayType, VarType} from './core/types.js';
+
+let test = `
 in vec3 point;
 in vec3 normal;
 
-out vec2 value;
+out float value;
 
 uniform float factor;
 uniform float size;
 uniform vec3 uColor;
 
-void main(int a, float b) {
-  value = vec2(fract(1.0 - point[0]*point[1]*size + 0.5), fract(point[1]*size + 0.4));
-  point.x = point.wzy;
+float tent(float f) {
+  f = 1.0 - abs(fract(f))*2.0;
+  return f;
+}
+
+void main() {
+  float f;
+
+  float dx = tent(point.x*10.0);
+  float dy = tent(point[1]*10.0);
+
+  f = tent(dx+dy) + 2.0 + 4.23 / 3.23;
+
+  value = f;
 }
 `
 
@@ -20,6 +33,8 @@ import * as mathl from './core/mathl.js'
 import * as util from './util/util.js';
 import {formatLines} from './core/state.js';
 import {parser} from './parser/parser.js';
+import {dfAst} from './transform/derivative.js';
+import {ASTNode} from './core/ast.js';
 
 //console.log(""+mathl.parse(test));
 
@@ -29,7 +44,7 @@ if (1) {
 //console.log("\n\n"+ret);
 
 //console.log(""+ret.ast);
-  let code = mathl.genJS(ret).trim();
+  let code = mathl.genCode(ret, "js").trim();
 
   fs.writeFileSync("test_out.js", code);
 
@@ -41,14 +56,15 @@ if (1) {
 
   var program
 
-  console.log(formatLines(code, 0, -100, -100, 1000), "yay");
+  let vtype = new ArrayType(new VarType("float"), 3, "vec3");
+  let pvar = ASTNode.VarRef("point", vtype, 0);
+  console.log(""+pvar)
 
-//eval(code);
-  //console.log("" + ret.ast);
+  pvar = ASTNode.VarRef("value", new VarType("float"))
 
-
-//mathl.parse(test);
-
+  //console.log(formatLines(code, 0, -100, -100, 1000), "yay");
+  dfAst(ret, pvar);
+  //console.log(""+ret.ast)
 }
 
 

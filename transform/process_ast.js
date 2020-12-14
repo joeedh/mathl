@@ -1,4 +1,4 @@
-import {ASTNode, traverse, visit, scopeWalk, walk} from './ast.js';
+import {ASTNode, traverse, visit, scopeWalk, walk} from '../core/ast.js';
 
 function exit() {
   process.exit(0);
@@ -139,7 +139,7 @@ export function transformSwizzleSimple(ast, ctx) {
   })
 }
 
-import {parse} from './parser.js';
+import {parse} from '../core/parser.js';
 
 export function transformSwizzleComplex(ast, ctx) {
   scopeWalk(ast, ctx, {
@@ -200,7 +200,6 @@ export function transformSwizzleComplex(ast, ctx) {
 export function transformAst(ast, ctx) {
   console.log("Processing AST tree. . .");
 
-  //return
-  //transformSwizzleSimple(ast, ctx);
-  //transformSwizzleComplex(ast, ctx);
+  transformSwizzleSimple(ast, ctx);
+  transformSwizzleComplex(ast, ctx);
 }

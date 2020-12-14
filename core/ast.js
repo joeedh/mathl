@@ -1,7 +1,7 @@
 import * as util from '../util/util.js';
 import cconst from '../core/const.js';
 import * as state from './state.js';
-import {VarType} from './types.js';
+import {ArrayType, VarType} from './types.js';
 
 function exit() {
   process.exit(-1);
@@ -17,6 +17,35 @@ export class ASTNode extends Array {
     this.line = state.state.line;
     this.lexpos = state.state.lexpos;
     this.col = state.state.col;
+  }
+
+  static equalsVarRef(n, vref) {
+    let ok = false;
+
+    if (vref[0].value instanceof ArrayType && n.type === "ArrayLookup") {
+      ok = n[0].value === vref.value;
+      ok = ok && n[1].value === vref[1].value;
+    } else if (n.type === "Ident" && !(vref[0].value instanceof ArrayType)) {
+      ok = vref.value === n.value;
+    }
+
+    return ok;
+  }
+
+  static VarRef(name, type, idx) {
+    let n = new ASTNode("VarRef");
+    n.value = name;
+
+    n.push(type);
+
+    if (type instanceof ArrayType) {
+      let n2 = new ASTNode("IntConstant");
+      n2.value = idx;
+
+      n.push(n2);
+    }
+
+    return n;
   }
 
   static isAssign(node) {
@@ -187,8 +216,10 @@ export function visit(root, nodetype, handler) {
   rec(root);
 }
 
-export function traverse(root, state, handlers) {
-  let visitset = new WeakSet();
+export function traverse(root, state, handlers, log=false) {
+  let visitset = new Set();
+
+  handlers._visitset = visitset;
 
   let rec = (n, state, depth=0) => {
     if (visitset.has(n)) {
@@ -200,6 +231,8 @@ export function traverse(root, state, handlers) {
     let visit = (state, nb) => {
       //do children in this case
       if (visitset.has(nb)) {
+        visitset.delete(nb);
+
         for (let n2 of nb) {
           rec(n2, state, depth+1);
         }
@@ -210,10 +243,20 @@ export function traverse(root, state, handlers) {
 
     let key = n.type;
 
+    if (log) {
+      let tab = util.indent(depth, " ");
+      let line = util.termColor(tab + key, "red")
+      console.log(util.termPrint(line));
+    }
+
     if (key in handlers) {
+      visitset.add(n);
       handlers[key](n, state, visit);
+      visitset.delete(n);
     } else if ("Default" in handlers) {
+      visitset.add(n);
       handlers.Default(n, state, visit);
+      visitset.delete(n);
     } else {
       visit(state, n);
     }

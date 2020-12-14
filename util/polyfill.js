@@ -1,5 +1,4 @@
-import fs from 'fs';
-
+/*
 if (typeof window === "undefined" && typeof self === "undefined") {
   let localStorageFile = "localStorage.json";
 
@@ -31,6 +30,7 @@ if (typeof window === "undefined" && typeof self === "undefined") {
 
   })
 }
+*/
 
 if (typeof window !== "undefined" && typeof globalThis === "undefined") {
   window.globalThis = window;

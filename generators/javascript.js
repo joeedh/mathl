@@ -5,7 +5,6 @@ import {strong, indent, stronglog, log, termColor, termPrint} from '../util/util
 
 export let jslib = `
   let fract = function(f) { return f - Math.floor(f);};
-  let tent = function(f) { return 1.0 - Math.abs(Math.fract(f)-0.5)*2.0;};
   let abs = Math.abs, sin = Math.sin, cos = Math.cos, log = Math.log, pow = Math.pow;
   let acos = Math.acos, asin = Math.asin, atan = Math.atan, atan2 = Math.atan2;
   let sqrt = Math.sqrt, exp = Math.exp, min = Math.min, max = Math.max, floor = Math.floor;
@@ -155,8 +154,47 @@ ${setter}
         out("]");
       } else if (n.type === "VarDecl") {
         let ok = n.value in ctx.inputs || n.value in ctx.outputs || n.value in ctx.uniforms;
+
+        let inFunc = false;
+
+        let p = n.parent;
+        while (p !== undefined) {
+          if (p.type === "Function") {
+            inFunc = true;
+            break;
+          }
+          p = p.parent;
+        }
+
+        if (ok && inFunc) {
+          let n2;
+
+          n2 = n.value in ctx.inputs ? ctx.inputs[n.value] : undefined;
+          n2 = n.value in ctx.outputs ? ctx.outputs[n.value] : undefined;
+          n2 = n.value in ctx.uniforms ? ctx.uniforms[n.value] : undefined;
+
+          if (n2 === ctx.getScope(n.value)) {
+            ok = false;
+          }
+        }
+
         if (!ok) {
-          out(`let ${n.value};`);
+          out(`let ${n.value}`);
+          if (n.length > 1 && n[1].length > 0) {
+            out(" = ");
+            rec(n[1]);
+          }
+
+          out(";");
+        }
+      } else if (n.type === "Return") {
+        out("return")
+        if (n.length > 0) {
+          out(" ");
+          for (let n2 of n) {
+            rec(n2);
+          }
+          out(";");
         }
       } else if (n.type === "BinOp" || n.type === "Assign") {
         let paren = false;
@@ -206,7 +244,7 @@ ${setter}
       } else if (n.type === "IntConstant") {
         out(""+n.value);
       } else if (n.type === "Function") {
-        out(indent(tlvl)   + `function ${n.value}(`);
+        out(`\n  function ${n.value}(`);
         let i = 0;
 
         for (let c of n[1]) {
@@ -217,7 +255,7 @@ ${setter}
           i++;
         }
         out(") {\n");
-
+        
         tlvl++;
 
         rec(n[2]);

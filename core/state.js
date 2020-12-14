@@ -76,6 +76,12 @@ export class ParseState {
     this.source = source;
     this.filename = filename;
 
+    this.builtinFuncs = new Set([
+      "cos", "sin", "fract", "abs", "floor", "vec3", "vec2", "vec4", "mat4", "float", "int",
+      "sqrt", "log", "pow", "exp", "acos", "asin", "tan", "atan", "atan2", "normalize",
+      "dot", "cross", "reflect", "step", "smoothstep"
+    ]);
+
     //this.flag = 0;
   }
 
@@ -97,6 +103,21 @@ export class ParseState {
     p.source = this.source;
 
     return p;
+  }
+
+  resetScopeStack() {
+    this.scopestack.length = 0;
+    this.localScope = {};
+    this.scope = {};
+
+    let lists = [this.inputs, this.outputs, this.uniforms];
+    for (let list of lists) {
+      for (let k in list) {
+        this.setScope(k, list[k]);
+      }
+    }
+
+    return this;
   }
 
   reset() {
@@ -158,6 +179,39 @@ export class ParseState {
   setScope(k, v) {
     this.localScope[k] = v;
     this.scope[k] = v;
+  }
+
+  resolveType(t) {
+    if (!(t instanceof  VarType)) {
+      if (typeof t === "object" && t.type === "VarType") {
+        t = t.value;
+      }
+
+      if (typeof t === "object" && t.type === "Ident") {
+        t = t.value;
+      }
+    }
+
+    if (typeof t === "object" && t instanceof VarType) {
+      let basename = t.getBaseName();
+
+      if (!(basename in this.types)) {
+        this.error(arguments[0], "Unknown type " + basename);
+      }
+
+      let b = this.types[basename];
+      if (b instanceof ArrayType && !(VarType instanceof ArrayType)) {
+        return b;
+      }
+      return t;
+    } else if (typeof t === "object" && t.type === "VarRef") {
+      let vref = t;
+      if (vref[0] instanceof ArrayType) {
+        return this.resolveType(vref[0].type);
+      } else {
+        return this.resolveType(vref[0]);
+      }
+    }
   }
 
   getScope(k) {

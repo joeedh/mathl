@@ -4,7 +4,7 @@ import {ASTNode} from './ast.js';
 import {ParseState} from './state.js';
 import {strong, stronglog, log, termColor, termPrint} from '../util/util.js';
 import '../generators/all.js';
-import {transformAst} from './process_ast.js';
+import {transformAst} from '../transform/process_ast.js';
 import {initParser, getParser} from '../parser/parser.js';
 
 let indent = util.indent;
@@ -88,6 +88,8 @@ export function parse(src, filename) {
 
     ret = state.state;
     ret.ast = ast;
+
+    transformAst(ret.ast, ret);
     //parser.printTokens(src);
 
     state.popParseState();
@@ -103,8 +105,6 @@ export function parse(src, filename) {
 export function genCode(ctx, type, args={}) {
   let cls = CodeGenerator.getGenerator(type);
   let gen = new cls(ctx, args);
-
-  transformAst(ctx.ast, ctx);
 
   return gen.genCode();
 }

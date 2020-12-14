@@ -17,8 +17,22 @@ uniform float factor;
 uniform float size;
 uniform vec3 uColor;
 
-void main(int a, float b) {
-  value = vec2(fract(1.0 - point[0]*point[1]*size + 0.5), fract(point[1]*size + 0.5));
+float tent(float f) {
+  f = 1.0 - abs(fract(f)-0.5)*2.0;
+  f = f*f*(3.0 - 2.0 *f);
+
+  return f;
+}
+
+void main() {
+  float f;
+
+  float dx = tent(point.x*10.0);
+  float dy = tent(point[1]*10.0);
+
+  f = tent((dx+dy)*0.75); //fract(1.0 - point[0]*point[1]*size + 0.5);
+
+  value = vec2(f, fract(point[1]*size + 0.5));
 }
 `;
 
@@ -45,23 +59,46 @@ function draw() {
   let out = [0];
   let p = [0, 0, 0], n = [0, 0, 0];
   let uColor = [0.2, 0.7, 0.4, 1.0];
+  let f1, f2;
+
+  function sample(x, y) {
+    p[0] = x;
+    p[1] = y;
+
+    func.call(out, p, n);
+    f1 = out[0][0];
+    f2 = out[0][1];
+  }
 
   for (let i=0; i<idata.length; i += 4) {
     let i2 = i>>2;
     let ix = i2 % dimen, iy = ~~(i2 / dimen);
     let x = ix / dimen, y = iy / dimen;
 
-    p[0] = x;
-    p[1] = y;
+    sample(x, y);
 
-    func.call(out, p, n);
-    let f = out[0][0];
-    let f2 = out[0][1];
+    let f = f1;
+
+    let df = 0.00001;
+    sample(x+df, y);
+
+    let dx = (f1 - f) / df;
+
+    sample(x, y+df);
+
+    let dy = (f1 - f) / df;
+
+    let r1 = Math.abs(dx)*0.005;
+    let g1 = Math.abs(dy)*0.005;
+
+    //r1 = g1 = f;
+
 
     //f = Math.fract(1.0 - p[0]*p[1] + 0.5);
 
-    idata[i] = idata[i+1] = ~~(f*255);
-    idata[i+2] = ~~(f2*255);
+    idata[i] = r1*255;
+    idata[i+1] = g1*255;
+    idata[i+2] = 0.0;
     idata[i+3] = 255;
   }
 

@@ -273,6 +273,54 @@ let precedence = [
   ["left", "COMMA"]
 ]
 
+let opmap = {
+  TIMES : "*",
+  DIV : "/",
+  MOD : "%",
+  PLUS : "+",
+  MINUS : "-",
+  GTHAN : ">",
+  LTHAN : "<",
+  GEQUALS : ">=",
+  LEQUALTS : "<=",
+  NEQUALS : "!=",
+  EQUALS : "==",
+  ASSIGN : "=",
+  MUL_ASSIGN : "*=",
+  DIV_ASSIGN : "/=",
+  PLUS_ASSIGN : "+=",
+  MOD_ASSIGN :  "%=",
+  OR_ASSIGN : "|=",
+  AND_ASSIGN : "&=",
+  LEFT_ASSIGN : "<<=",
+  RIGHT_ASSIGN : ">>=",
+  XOR_ASSIGN : "^=",
+  MINUS_ASSIGN : "-=",
+  XOR : "^",
+  BITOR : "|",
+  LAND : "&&",
+  LOR : "||",
+  LXOR : "^^",
+  BITAND : "&",
+  BITINV : "~",
+  LSHIFT : "<<",
+  RSHIFT : ">>",
+  INC : "++",
+  DEC : "--",
+  DOT : "."
+};
+
+export const Precedence = {};
+let pi =0;
+for (let row of precedence) {
+  for (let key of row.slice(1, row.length)) {
+    Precedence[opmap[key]] = {
+      prec : pi,
+      assoc : row[0]
+    }
+  }
+  pi++;
+}
 
 function indent(n, chr="  ") {
   let s = "";
@@ -772,13 +820,17 @@ let parsedef = [
       if (p.length === 2) {
         p[0] = p[1];
       } else {
+        let type;
+
         if (typeof p[1] === "string") {
-          p[0] = new Node("TypeSpecifier");
-          p[0].value = p[1];
+          type = new Node("VarType");
+          type.value = new VarType(p[1]);
         } else {
-          p[0] = p[1];
+          type = p[1];
         }
-        p[0].arraytype = p[2];
+
+        p[0] = p[2];
+        p[0].type = p[1].value;
       }
     }
   },
@@ -937,7 +989,7 @@ let parsedef = [
  
     `,
     func : (p) => {
-      p[0] = p[1];
+      p[0] = new VarType(p[1]);
     }
   },
   {
@@ -1040,7 +1092,15 @@ let parsedef = [
 
     `,
     func : (p) => {
-      if (p.length === 3) {
+      if (p.length === 3 && p[1].type === "InitDeclaratorList") {
+        p[1].type = "StatementList";
+
+        let type = p[1][0][0];
+        for (let n of p[1]) {
+          n[0].value = type.value;
+          n[0].qualifier = type.qualifier;
+        }
+
         p[0] = p[1];
       } else if (p.length === 5 && p[1] === "precision") {
         let n = new Node("Precision");
@@ -1078,6 +1138,11 @@ let parsedef = [
       } else if (n.length === 4) {
         p[0] = new Node("VarDecl");
         p[0].value = p[2];
+
+        /*if (p[1] instanceof Node && p[1].type === "Ident") {
+          p[1].type = "VarType"
+          p[1].value = new VarType(p[1].value);
+        }*/
 
         p[0].add(p[1]);
 
@@ -1137,22 +1202,22 @@ let parsedef = [
     }
   },
   {
-    grammar : `function_declarator: function_header
+    grammar : `function_declarator : function_header
                                    | function_header_with_parameters`,
     func : (p) => {
       p[0] = p[1];
     }
   },
   {
-    grammar : `function_header_with_parameters: function_header parameter_declaration
+    grammar : `function_header_with_parameters : function_header parameter_declaration
                                                | function_header_with_parameters COMMA parameter_declaration`,
     func : (p) => {
       p[0] = p[1];
 
       if (p.length === 3) {
-        p[0][0].push(p[2]);
+        p[0][1].push(p[2]);
       } else {
-        p[0][0].push(p[3]);
+        p[0][1].push(p[3]);
       }
     }
   },
@@ -1213,7 +1278,9 @@ let parsedef = [
 `,
     func : (p) => {
       if (p.length === 2) {
-        p[0] = p[1];
+        p[0] = new Node("InitDeclaratorList"); //parent production will turn this into a StatementList
+        p[0].push(p[1]);
+
         /*
         p[0] = new Node("ExprList");
 
@@ -1223,21 +1290,25 @@ let parsedef = [
         p[0].push(n);//*/
       } else if (p.length === 4) {
         let n = new Node("VarDecl")
+        n.push(new Node("VarType")); //will be initialized later
         n.value = p[3];
 
         p[0] = p[1];
         p[0].push(n);
       } else if (p.length === 5) {
         p[0] = p[1];
+
         let n = new Node("VarDecl");
+        n.push(p[4]);
 
         n.value = p[3];
-        n.arraytype = p[4];
+        //n.arraytype = p[4];
 
         p[0].push(n);
       } else if (p.length === 6) {
         p[0] = p[1];
         let n = new Node("VarDecl");
+        n.push(new Node("VarType"));//will be initialized later
 
         n.value = p[3];
         n.push(p[5]);
@@ -1246,9 +1317,10 @@ let parsedef = [
       } else if (p.length === 7) {
         p[0] = p[1];
         let n = new Node("VarDecl");
+        n.push(p[4]);
 
         n.value = p[3];
-        n.arraytype = p[4];
+        //n.arraytype = p[4];
         n.push(p[5])
 
         p[0].push(n);
@@ -1273,7 +1345,18 @@ let parsedef = [
       } else {
         p[0] = new Node("VarDecl");
         p[0].value = p[2];
-        p[0].push(p[1]);
+
+        let type = p[1];
+        if (typeof type === "string") {
+          let n = new Node("VarType");
+          n.value = new VarType(type);
+          type = n;
+        } else if (typeof type instanceof Node && type.type === "Ident") {
+          type.type = "VarType";
+          type.value = new VarType(type.value);
+        }
+
+        p[0].push(type);
 
         if (p.length > 3 && p[3] !== "=") {
           p[0].arraytype = p[3];
@@ -1709,16 +1792,16 @@ let parsedef = [
                              | DISCARD SEMI /~ Fragment shader only ~/
                              `,
     func : (p) => {
-      if (p[0] === "continue") {
+      if (p[1] === "continue") {
         p[0] = new Node("Continue");
-      } else if (p[0] === "break") {
+      } else if (p[1] === "break") {
         p[0] = new Node("Break");
-      } else if (p[0] === "return") {
+      } else if (p[1] === "return") {
         p[0] = new Node("Return");
         if (p.length > 3) {
           p[0].push(p[2]);
         }
-      } else if (p[0] === "discard") {
+      } else if (p[1] === "discard") {
         p[0] = new Node("Discard");
       }
     }
@@ -1747,7 +1830,7 @@ let parsedef = [
 `,
     func : (p) => {
       if (p.length === 2) {
-        p[0] = new Node("StatementList");
+        p[0] = new Node("Program");
         if (p[1]) {
           p[0].push(p[1]);
         }
