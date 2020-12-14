@@ -188,10 +188,10 @@ let statestack = [];
 
 export let state = new ParseState();
 
-export function pushParseState(source=state.source, filename=state.filename) {
+export function pushParseState(source=state.source, filename=state.filename, parser) {
   statestack.push(state);
 
-  state = new ParseState(source, filename);
+  state = new ParseState(source, filename, parser);
 
   return state;
 }

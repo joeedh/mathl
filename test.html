@@ -1,1 +1,109 @@
+<!doctype html>
+<html>
+<head>
+  <title>Test</title>
+  <script type="module">
+"use strict";
 
+import * as mathl from './core/mathl.js'
+
+let test = `float val;
+in vec3 point;
+in vec3 normal;
+
+out vec2 value;
+
+uniform float factor;
+uniform float size;
+uniform vec3 uColor;
+
+void main(int a, float b) {
+  value = vec2(fract(1.0 - point[0]*point[1]*size + 0.5), fract(point[1]*size + 0.5));
+}
+`;
+
+
+window._appstate = {};
+
+let DIMEN = 256;
+let time = 0.0;
+
+let _stop = false;
+window.stop = () => {
+  _stop = true;
+}
+function draw() {
+  let canvas = _appstate.canvas, g = _appstate.g;
+
+  canvas.width = window.innerWidth-55;
+  canvas.height = window.innerHeight-55;
+
+  let dimen = DIMEN;
+  let image = new ImageData(dimen, dimen);
+  let idata = image.data;
+
+  let out = [0];
+  let p = [0, 0, 0], n = [0, 0, 0];
+  let uColor = [0.2, 0.7, 0.4, 1.0];
+
+  for (let i=0; i<idata.length; i += 4) {
+    let i2 = i>>2;
+    let ix = i2 % dimen, iy = ~~(i2 / dimen);
+    let x = ix / dimen, y = iy / dimen;
+
+    p[0] = x;
+    p[1] = y;
+
+    func.call(out, p, n);
+    let f = out[0][0];
+    let f2 = out[0][1];
+
+    //f = Math.fract(1.0 - p[0]*p[1] + 0.5);
+
+    idata[i] = idata[i+1] = ~~(f*255);
+    idata[i+2] = ~~(f2*255);
+    idata[i+3] = 255;
+  }
+
+  func.size = (Math.cos(time*0.01)*0.5 + 0.5)*10;
+
+  time++;
+  g.putImageData(image, 0, 0);
+  console.log("draw");
+
+  if (!_stop) {
+    window.redraw_all();
+  }
+}
+
+window.init = function init() {
+  _appstate.canvas = document.createElement("canvas")
+  document.body.appendChild(_appstate.canvas);
+  _appstate.g = _appstate.canvas.getContext("2d");
+
+  let animreq;
+  let _draw = () => {
+    animreq = undefined;
+    draw();
+  }
+
+  window.redraw_all = () => {
+    if (animreq !== undefined) {
+      return;
+    }
+    animreq = requestAnimationFrame(_draw);
+  }
+
+  console.log("init!");
+  mathl.silence();
+  window.func = mathl.compileJS(test);
+  mathl.unsilence();
+
+  window.redraw_all();
+}
+  </script>
+</head>
+<body onload="init()">
+
+</body>
+</html>

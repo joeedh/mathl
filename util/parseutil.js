@@ -47,6 +47,7 @@ export class lexer {
     this.lineno = 0;
     this.errfunc = errfunc;
     this.tokints = {}
+    this.prev = undefined;
 
     for (var i=0; i<tokdef.length; i++) {
       this.tokints[tokdef[i].name] = i;
@@ -111,6 +112,8 @@ export class lexer {
     while (this.statestack.length > 1) {
       this.pop_state();
     }
+
+    this.prev = undefined;
 
     this.lexdata = str;
     this.lexpos = 0;
@@ -216,6 +219,8 @@ export class lexer {
         return this.next(ignore_peek);
       }
     }
+
+    this.prev = tok;
 
     return tok;
   }

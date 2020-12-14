@@ -30,14 +30,35 @@ export let jslib = `
     }
   }
   
+  let vec2cache = new cachering(() => [0, 0], 2048);
+  function vec2(a, b) {
+    let ret = vec2cache.next();
+    
+    ret[0] = a;
+    ret[1] = b;
+    
+    return ret;
+  }
+
   let vec3cache = new cachering(() => [0, 0, 0], 2048);
-  
   function vec3(a, b, c) {
     let ret = vec3cache.next();
     
     ret[0] = a;
     ret[1] = b;
     ret[2] = c;
+    
+    return ret;
+  }
+
+  let vec4cache = new cachering(() => [0, 0, 0, 0], 2048);
+  function vec4(a, b, c, d) {
+    let ret = vec4cache.next();
+    
+    ret[0] = a;
+    ret[1] = b;
+    ret[2] = c;
+    ret[3] = d;
     
     return ret;
   }
@@ -126,19 +147,22 @@ ${setter}
 
     let tlvl = 1;
 
-    console.log(""+ctx.ast);
-
     function rec(n) {
       if (n.type === "ArrayLookup") {
         rec(n[0]);
         out("[");
         rec(n[1]);
         out("]");
-      } else if (n.type === "BinOp") {
+      } else if (n.type === "VarDecl") {
+        let ok = n.value in ctx.inputs || n.value in ctx.outputs || n.value in ctx.uniforms;
+        if (!ok) {
+          out(`let ${n.value};`);
+        }
+      } else if (n.type === "BinOp" || n.type === "Assign") {
         let paren = false;
 
         if (n.parent && n.parent.type === "BinOp") {
-          paren = n.parent.prec < n.prec;
+          paren = n.parent.prec > n.prec;
         }
 
         if (paren) {
@@ -177,8 +201,10 @@ ${setter}
           rec(n2);
           i++;
         }
-      } else if (n.type === "Number") {
-        out(n.value);
+      } else if (n.type === "FloatConstant") {
+        out(n.value.toFixed(7));
+      } else if (n.type === "IntConstant") {
+        out(""+n.value);
       } else if (n.type === "Function") {
         out(indent(tlvl)   + `function ${n.value}(`);
         let i = 0;
@@ -193,6 +219,7 @@ ${setter}
         out(") {\n");
 
         tlvl++;
+
         rec(n[2]);
         tlvl--;
 
@@ -200,8 +227,14 @@ ${setter}
       } else if (n.type === "StatementList") {
         for (let c of n) {
           out(indent(tlvl));
+
+          let slen = outs.length;
+
           rec(c)
-          out(";\n");
+
+          if (outs.length > slen) {
+            out(";\n");
+          }
         }
       } else {
         for (let n2 of n) {

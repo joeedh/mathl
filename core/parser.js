@@ -87,7 +87,7 @@ export let lexer = new parseutil.lexer(tokens, (t) => {
   return true;
 });
 
-let parser = new parseutil.parser(lexer);
+let _parser = new parseutil.parser(lexer);
 
 
 let binops = new Set([
@@ -143,10 +143,30 @@ export function printobj(obj) {
   return s;
 }
 
-export function parse_intern(s, ctx=state.state, start="Run") {
+
+import {getParser} from '../parser/parser.js';
+
+export function parse_intern(src, ctx=state.state) {
+  let ret;
+
+  let parser = getParser();
+
+  state.state.parser = parser;
+  parser.lexer.line_lexstart = 0;
+  state.state.lexer = parser.lexer;
+
+  let ast = parser.parse(src);
+
+  ret = state.state;
+  ret.ast = ast;
+  //parser.printTokens(src);
+  return ret;
+}
+
+export function parse_intern_old(s, ctx=state.state, start="Run") {
   let p = parser.copy();
 
-  ctx.parser = p;
+  ctx._parser = p;
   ctx.lexer = p.lexer;
   ctx.lexer.line_lexstart = 0;
 
@@ -225,7 +245,7 @@ export function parse_intern(s, ctx=state.state, start="Run") {
     }
 
     while (t && t.type === "RPAREN") {
-      t = p.next();
+      //t = p.next();
     }
 
     if (t === undefined) {
@@ -350,7 +370,7 @@ export function parse_intern(s, ctx=state.state, start="Run") {
 
     if (b && b.type === "RPAREN") {
       let ret = Value();
-      p.next();
+      //p.next();
       logend("bin_next1b");
       return ret;
     }
@@ -521,7 +541,7 @@ export function parse_intern(s, ctx=state.state, start="Run") {
 
       if (binops.has(t.value)) {
         ret = BinOp(ret);
-      } else if (t.value === ",") {
+      } else if (t.type === "COMMA") {
         let n = new ASTNode();
         n.type = "ExprList";
 
@@ -538,6 +558,12 @@ export function parse_intern(s, ctx=state.state, start="Run") {
         }
 
         tablvl--;
+
+        t = p.peeknext();
+        if (t.type === "RPAREN") {
+        //  p.next();
+        }
+
         logend("Start1");
         return n;
       } else if (t.type === "RPAREN") {
@@ -919,9 +945,35 @@ export function parse(src, startNode, args) {
 
   console.log(src2);
 
+  src2 = `
+  void __TAG__() {
+    ${src2}
+  }
+  `;
+
   state.pushParseState(src2,"internal");
   let ret = parse_intern(src2, undefined).ast;
   state.popParseState();
+
+  let found = false;
+
+  let findtag = (n) => {
+    if (found) {
+      return;
+    }
+
+    if (n.type === "Function" && n.value === "__TAG__") {
+      ret = n[2];
+      found = true;
+      return;
+    }
+
+    for (let n2 of n) {
+      findtag(n2);
+    }
+  }
+
+  findtag(ret);
 
   util.unsilence();
 

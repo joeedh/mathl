@@ -1,3 +1,37 @@
+import fs from 'fs';
+
+if (typeof window === "undefined" && typeof self === "undefined") {
+  let localStorageFile = "localStorage.json";
+
+  function readLS() {
+    if (!fs.existsSync(localStorageFile)) {
+      fs.writeFileSync(localStorageFile, "{}")
+    }
+    let buf = fs.readFileSync(localStorageFile, "utf8");
+    return JSON.parse(buf);
+  }
+
+  globalThis.localStorage = new Proxy({}, {
+    get(rec, prop) {
+      let json = readLS();
+
+      return json[prop];
+    }, set(target, prop, val) {
+      if (typeof val !== "string") {
+        val = JSON.stringify(val);
+      }
+
+      let json = readLS();
+      json[prop] = val;
+      json = JSON.stringify(json);
+      fs.writeFileSync(localStorageFile, json);
+
+      return true;
+    }
+
+  })
+}
+
 if (typeof window !== "undefined" && typeof globalThis === "undefined") {
   window.globalThis = window;
 } else if (typeof globalThis === undefined && typeof global !== "undefined") {

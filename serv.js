@@ -4,11 +4,10 @@ import fs from 'fs';
 import http from 'http';
 import path from 'path';
 
-const PORT = 5007;
+const PORT = 3005;
 const HOST = "localhost"
 
-const INDEX = "index.html"
-const SAVEPATH = "data/zelda_mm.json"
+const INDEX = "test.html"
 const basedir = process.cwd();
 
 export const exports = {};

@@ -33,3 +33,25 @@ export class ArrayType extends VarType {
     return `ArrayType(${this.type}, ${this.size}, ${this.alias})`;
   }
 }
+
+
+export class DynamicArrayType extends ArrayType {
+  constructor(type, alias="") {
+    super();
+
+    this.alias = alias;
+    this.type = type;
+  }
+
+  getTypeName() {
+    if (this.alias.length > 0) {
+      return this.alias;
+    }
+
+    return `${this.type.getTypeName()}[]`;
+
+  }
+  toString() {
+    return `ArrayType(${this.type}, ${this.alias})`;
+  }
+}

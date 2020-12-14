@@ -5,6 +5,7 @@ import {ParseState} from './state.js';
 import {strong, stronglog, log, termColor, termPrint} from '../util/util.js';
 import '../generators/all.js';
 import {transformAst} from './process_ast.js';
+import {initParser, getParser} from '../parser/parser.js';
 
 let indent = util.indent;
 
@@ -37,12 +38,58 @@ import {CodeGenerator} from '../generators/generator_base.js';
 import {parse_intern} from './parser.js';
 import * as state from './state.js';
 
+import {traverse, walk} from './ast.js';
+
+export function findSlots(ctx, ast) {
+  walk(ast, {
+    VarDecl(n) {
+      if (n.length === 0) {
+        return;
+      }
+
+      let type = n[0];
+      type = type.qualifier;
+
+      if (type) {
+        type = type.value;
+      }
+
+      if (type === "uniform") {
+        ctx.uniforms[n.value] = n;
+      } else if (type === "in") {
+        ctx.inputs[n.value] = n;
+      } else if (type === "out") {
+        ctx.outputs[n.value] = n;
+      }
+    }
+
+  });
+
+  console.log(ctx.uniforms, ctx.inputs, ctx.outputs);
+  //process.exit()
+}
+
 export function parse(src, filename) {
   let ret;
 
   try {
     state.pushParseState(src, filename);
-    ret = parse_intern(src, state.state);
+    //ret = parse_intern(src, state.state);
+
+    let parser = getParser();
+
+    state.state.parser = parser;
+    parser.lexer.line_lexstart = 0;
+    state.state.lexer = parser.lexer;
+
+    let ast = parser.parse(src);
+
+    findSlots(state.state, ast);
+
+    ret = state.state;
+    ret.ast = ast;
+    //parser.printTokens(src);
+
     state.popParseState();
   } catch (error) {
     state.popParseState();
@@ -65,3 +112,16 @@ export function genCode(ctx, type, args={}) {
 export function genJS(ctx, args={}) {
   return genCode(ctx,'js', args);
 }
+
+export {silence, unsilence} from '../util/util.js';
+
+export function compileJS(code, filename) {
+  let ctx = parse(code, filename);
+  let code2 = genJS(ctx);
+
+  var program;
+
+  eval(code2);
+  return program();
+}
+

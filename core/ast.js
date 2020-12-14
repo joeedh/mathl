@@ -1,6 +1,7 @@
 import * as util from '../util/util.js';
 import cconst from '../core/const.js';
 import * as state from './state.js';
+import {VarType} from './types.js';
 
 function exit() {
   process.exit(-1);
@@ -19,6 +20,8 @@ export class ASTNode extends Array {
   }
 
   static isAssign(node) {
+    return node.type === "Assign";
+    /*
     if (node.type !== "BinOp") {
       return false;
     }
@@ -33,6 +36,7 @@ export class ASTNode extends Array {
     ok = ok || op === "&=";
 
     return ok;
+    //*/
   }
 
   copyPosTo(b) {
@@ -58,6 +62,26 @@ export class ASTNode extends Array {
   }
 
   push(n) {
+    if (n === undefined) {
+      throw new Error("ASTNode.push got undefined");
+    }
+
+    if (typeof n === "number") {
+      let isint = Math.abs(n - Math.floor(n)) < 0.00000001;
+
+      let n2 = new ASTNode(isint ? "IntConstant" : "FloatConstant");
+      n2.value = n;
+      n = n2;
+    } else if (typeof n === "string") {
+      let n2 = new ASTNode("Ident");
+      n2.value = n;
+      n = n2;
+    } else if (n instanceof VarType) {
+      let n2 = new ASTNode("VarType");
+      n2.value = n;
+      n = n2;
+    }
+
     n.parent = this;
     return super.push(n);
   }

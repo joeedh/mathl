@@ -107,11 +107,7 @@ export let swizzlemap2 = makeSwizzles2();
 
 export function transformSwizzleSimple(ast, ctx) {
   scopeWalk(ast, ctx, {
-    BinOp(node, ctx) {
-      if (node.op !== ".") {
-        return;
-      }
-
+    BasicMemberLookup(node, ctx) {
       let type = ctx.getScope("this");
       let member = node[1].value;
 
@@ -123,7 +119,7 @@ export function transformSwizzleSimple(ast, ctx) {
         return; //not a simple swizzle
       }
 
-      let idx = new ASTNode("Number");
+      let idx = new ASTNode("IntConstant");
       node.copyPosTo(idx);
 
       idx.value = swizzlemap[member];
@@ -137,7 +133,6 @@ export function transformSwizzleSimple(ast, ctx) {
       let p = node.parent;
       node.parent.replace(node, n2);
 
-      console.log(""+p);
       //console.log(""+node");
       //console.log(node);
     }
@@ -148,11 +143,7 @@ import {parse} from './parser.js';
 
 export function transformSwizzleComplex(ast, ctx) {
   scopeWalk(ast, ctx, {
-    BinOp(node, ctx) {
-      if (node.op !== ".") {
-        return;
-      }
-
+    BasicMemberLookup(node, ctx) {
       let type = ctx.getScope("this");
       let member = node[1].value;
 
@@ -180,11 +171,7 @@ export function transformSwizzleComplex(ast, ctx) {
   });
 
   scopeWalk(ast, ctx, {
-    BinOp(node, ctx) {
-      if (node.op !== ".") {
-        return;
-      }
-
+    BasicMemberLookup(node, ctx) {
       let type = ctx.getScope("this");
       let member = node[1].value;
 
@@ -213,6 +200,7 @@ export function transformSwizzleComplex(ast, ctx) {
 export function transformAst(ast, ctx) {
   console.log("Processing AST tree. . .");
 
-  transformSwizzleSimple(ast, ctx);
-  transformSwizzleComplex(ast, ctx);
+  //return
+  //transformSwizzleSimple(ast, ctx);
+  //transformSwizzleComplex(ast, ctx);
 }
