@@ -13,6 +13,8 @@ function exit() {
   process.exit();
 }
 
+export {preprocess} from '../parser/preprocessor.js';
+import {preprocess} from '../parser/preprocessor.js';
 
 let count = (str, match) => {
   let c = 0;
@@ -65,15 +67,16 @@ export function findSlots(ctx, ast) {
 
   });
 
-  console.log(ctx.uniforms, ctx.inputs, ctx.outputs);
-  //process.exit()
+  //console.log(ctx.uniforms, ctx.inputs, ctx.outputs);
 }
 
 export function parse(src, filename) {
   let ret;
 
   try {
-    state.pushParseState(src, filename);
+    let src2 = preprocess(src);
+
+    state.pushParseState(src, filename, undefined, src2);
     //ret = parse_intern(src, state.state);
 
     let parser = getParser();
@@ -82,7 +85,7 @@ export function parse(src, filename) {
     parser.lexer.line_lexstart = 0;
     state.state.lexer = parser.lexer;
 
-    let ast = parser.parse(src);
+    let ast = parser.parse(src2);
 
     findSlots(state.state, ast);
 

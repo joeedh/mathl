@@ -148,6 +148,7 @@ export class Parser {
     this.pdata = pdata;
     this.lexer = lexer;
     this.hash = hash;
+    this.onerror = undefined;
   }
 
   save(zipTool=LZString.compressToBase64) {
@@ -335,8 +336,6 @@ export class Parser {
     let this2 = this;
 
     function doerror(p) {
-      console.log(pdata);
-
       if (this2.onerror) {
         this2.onerror(p);
       }
@@ -379,7 +378,9 @@ export class Parser {
       }
       message += "^\n";
 
-      console.warn(message, p);
+      console.warn(message);
+      process.exit();
+
       throw new Error(message);
     }
 
@@ -408,7 +409,6 @@ export class Parser {
             err_la[0].push(labels[act_tab[sstack[0]][i]]);
 
           PCB.errorLabels = err_la;
-          console.log(vstack);
           doerror(PCB);
         }
 
@@ -496,7 +496,6 @@ export class Parser {
     }
 
     let ret = rval;
-    console.log("RET", ret);
     globalThis.noderet = ret;
 
     return ret;

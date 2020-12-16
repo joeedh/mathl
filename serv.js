@@ -7,7 +7,7 @@ import path from 'path';
 const PORT = 3005;
 const HOST = "localhost"
 
-const INDEX = "test.html"
+const INDEX = "index.html"
 const basedir = process.cwd();
 
 export const exports = {};

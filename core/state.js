@@ -57,9 +57,11 @@ export function formatLines(s, line=0, lexpos=-1, col, count=5) {
 //};
 
 export class ParseState {
-  constructor(source, filename="(anonymous)") {
+  constructor(source, filename="(anonymous)", parser, preprocessed="") {
     this.parser = undefined;
     this.lexer = undefined;
+
+    this.preprocessed = preprocessed;
 
     this.scope = {};
     this.localScope = {};
@@ -86,7 +88,7 @@ export class ParseState {
   }
 
   copy() {
-    let p = new ParseState(this.source, this.filename);
+    let p = new ParseState(this.source, this.filename, undefined, this.preprocessed);
 
     p.parser = this.parser ? this.parser.copy() : undefined;
     p.lexer = this.parser ? this.parser.lexer : undefined;
@@ -242,10 +244,10 @@ let statestack = [];
 
 export let state = new ParseState();
 
-export function pushParseState(source=state.source, filename=state.filename, parser) {
+export function pushParseState(source=state.source, filename=state.filename, parser, preprocessed) {
   statestack.push(state);
 
-  state = new ParseState(source, filename, parser);
+  state = new ParseState(source, filename, parser, preprocessed);
 
   return state;
 }

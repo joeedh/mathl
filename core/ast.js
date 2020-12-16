@@ -7,9 +7,13 @@ function exit() {
   process.exit(-1);
 }
 
+let idgen = 0;
+
 export class ASTNode extends Array {
   constructor(type) {
     super();
+
+    this.id = idgen++;
 
     this.type = type;
     this.parent = undefined;
@@ -72,6 +76,7 @@ export class ASTNode extends Array {
     b.line = this.line;
     b.col = this.col;
     b.lexpos = this.lexpos;
+    b.value = this.value;
   }
 
   copy() {
@@ -125,7 +130,10 @@ export class ASTNode extends Array {
     if (b.parent) {
       b.parent.remove(b);
     }
-    a.parent = undefined;
+
+    if (a.parent === this) {
+      a.parent = undefined;
+    }
 
     this[idx] = b;
     b.parent = this;
@@ -146,7 +154,10 @@ export class ASTNode extends Array {
       i++;
     }
 
-    n.parent = undefined;
+    if (n.parent === this) {
+      n.parent = undefined;
+    }
+
     this.length--;
 
     return this;
@@ -169,6 +180,10 @@ export class ASTNode extends Array {
     this[starti] = n;
 
     return this;
+  }
+
+  lineStr() {
+    return `${this.type}:${this.id} ${this.value}`;
   }
 
   toString(t = 0) {

@@ -161,8 +161,12 @@ export function transformSwizzleComplex(ast, ctx) {
         let code = swizzlemap2.codeget[member];
 
         let n2 = parse(code, "Call",[node[0]]);
-        //console.log(""+code)
+        //console.log(""+code, ""+n2)
         //process.exit();
+
+        if (n2.type !== "Call") {
+          throw new Error("internal parse error");
+        }
 
         let p = node.parent
         node.parent.replace(node, n2);
@@ -195,6 +199,14 @@ export function transformSwizzleComplex(ast, ctx) {
       }
     }
   })
+}
+
+export function transformOps(ast, ctx) {
+  scopeWalk(ast, ctx, {
+    BinOp(node, ctx) {
+      
+    }
+  });
 }
 
 export function transformAst(ast, ctx) {

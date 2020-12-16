@@ -196,11 +196,39 @@ ${setter}
           }
           out(";");
         }
+      } else if (n.type === "Trinary") {
+        rec(n[0]);
+        out(" ? ");
+        rec(n[1]);
+        out(" : ");
+        rec(n[2]);
+      } else if (n.type === "If") {
+        out("if (");
+        rec(n[0]);
+        out(") {\n");
+        rec(n[1][0]);
+        out(indent(tlvl) + "}");
+
+        if (n[1].length > 1) {
+          out(" else {\n");
+          if (n[1][1].type === "If") {
+            tlvl++;
+            out(indent(tlvl));
+          }
+          rec(n[1][1]);
+          if (n[1][1].type === "If") {
+            tlvl--;
+          }
+          out(indent(tlvl) + "}\n");
+        } else {
+          out("\n");
+        }
+
       } else if (n.type === "BinOp" || n.type === "Assign") {
         let paren = false;
 
         if (n.parent && n.parent.type === "BinOp") {
-          paren = n.parent.prec > n.prec;
+          paren = n.parent.prec < n.prec;
         }
 
         if (paren) {
@@ -225,7 +253,11 @@ ${setter}
           out(n.value);
         }
       } else if (n.type === "Call") {
-        rec(n[0]);
+        if (n[0].type === "VarType") {
+          out(n[0].value.getTypeName());
+        } else {
+          rec(n[0]);
+        }
         out("(");
         rec(n[1])
         out(")");

@@ -27,13 +27,53 @@ export class InternalCodeGen {
       Ident(node, state, visit) {
         out += node.value;
       },
+      IntConstant(node, state, visit) {
+        out += node.value;
+      },
+      FloatConstant(node, state, visit) {
+        out += node.value;
+      },
       ArrayLookup(node, state, visit) {
         visit(state, node[0]);
         out += "["
         visit(state, node[1])
         out += "]"
       },
+      Trinary(node, state, visit) {
+        visit(state, node[0]);
+        out += " ? ";
+        visit(state, node[1]);
+        out += " : ";
+        visit(state, node[2]);
+      },
+      PreInc(node, state, visit) {
+        out += "++";
+        visit(state, node[0]);
+      },
+      PostInc(node, state, visit) {
+        visit(state, node[0]);
+        out += "++";
+      },
+      PreDec(node, state, visit) {
+        out += "--";
+        visit(state, node[0]);
+      },
+      PostDec(node, state, visit) {
+        visit(state, node[0]);
+        out += "--";
+      },
+      UnaryOp(node, state, visit) {
+        out += node.op
+        visit(state, node[0]);
+      },
       BinOp(node, state, visit) {
+        let paren = node.op !== ".";
+        paren = paren && node.parent && node.parent.type === "BinOp" && node.parent.prec < node.prec;
+
+        if (paren) {
+          out += "(";
+        }
+
         visit(state, node[0])
 
         if (node.op !== ".") {
@@ -43,6 +83,10 @@ export class InternalCodeGen {
         }
 
         visit(state, node[1]);
+
+        if (paren) {
+          out += ")";
+        }
       },
       Function(node, state, visit) {
         out += state.indent;
@@ -67,8 +111,20 @@ export class InternalCodeGen {
 
         out += state.indent + "}\n";
       },
+      Return(node, state, visit) {
+        out += "return";
+
+        for (let n of node) {
+          out += " ";
+          visit(state, n);
+        }
+      },
       Call(node, state, visit) {
-        visit(state, node[0])
+        if (node[0].type === "VarType") {
+          out += node[0].value.getTypeName();
+        } else {
+          visit(state, node[0])
+        }
 
         out += "("
         for (let i=0; i<node[1].length; i++) {

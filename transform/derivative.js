@@ -1,25 +1,8 @@
 import {ASTNode, traverse, visit, scopeWalk, walk} from '../core/ast.js';
-import {sym, call, avar, binop, Sym, VarSym, ArrayVarSym} from './sym.js';
+import {sym, call, avar, binop, Sym, VarSym, ArrayVarSym, ValueSym} from './sym.js';
 import {ArrayType, VarType} from '../core/types.js';
 import {Precedence} from '../parser/parser.js';
 import * as util from '../util/util.js';
-
-let negate = (f) => binop(f, -1, "*");
-
-export const builtin_dvs = {
-  cos : (x) => negate(call("sin", [x])),
-  sin : (x) => call("cos", [x]),
-  floor : (x) => 1.0,
-  step : (x) => 0.0,
-  tent : (x) => {
-    let f = binop(call("fract", [x]), 0.5, ">=");
-
-    f = binop(f, 2.0, "*");
-    f = binop(f, 1.0, "-");
-
-    return f;
-  }
-};
 
 let tag_idgen = 0;
 let dolog = 1;
@@ -172,6 +155,10 @@ export class Differentiator {
           return n;
         }
 
+        if (n.idx instanceof ValueSym) {
+          n.idx = n.idx.value;
+        }
+
         if (n instanceof ArrayVarSym) {
           return state.scope[name][n.idx];
         } else {
@@ -259,6 +246,8 @@ export class Differentiator {
         if (typeof b !== "object") {
           b = sym(b);
         }
+
+        symMap.set(n, b);
 
         state.scope[a.value] = b;
 
@@ -441,7 +430,26 @@ export class Differentiator {
     log("Traversing");
     traverse(this.ast, _state, handlers, dolog);
 
-    //console.log(symMap)
+    let lines = [];
+
+    for (let [node, sym] of symMap) {
+      lines.push(node.lineStr());
+    }
+
+    lines.sort();
+    lines.reverse()
+
+    console.log(lines.join("\n"));
+    console.log("\n" + this.finalNode.lineStr());
+
+    let final = this.finalNode;
+    if (symMap.has(final)) {
+      let tree = symMap.get(final);
+      console.log(""+tree);
+      console.log("final");
+    }
+
+    this.symMap = symMap;
     process.exit()
   }
 

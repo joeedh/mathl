@@ -217,7 +217,7 @@ tk("LEFT_ASSIGN", /\<\<\=/),
 
 ];
 
-class GLSLLexer extends lexer {
+export class GLSLLexer extends lexer {
   constructor() {
     super(tokendef, (t) => {
       console.log("Token error");
@@ -227,6 +227,8 @@ class GLSLLexer extends lexer {
     this.scope = {};
     this.structs = {};
     this.scopestack = [];
+
+    this.linemap = [];
   }
 
   pushScope() {
@@ -240,6 +242,17 @@ class GLSLLexer extends lexer {
 
   input(data) {
     super.input(data);
+
+    this.linemap = new Array(data.length);
+
+    let li = 0;
+    for (let i=0; i<data.length; i++) {
+      this.linemap[i] = li;
+
+      if (data[i] === "\n") {
+        li++;
+      }
+    }
 
     this.scope = {};
     this.structs = {};
@@ -1505,7 +1518,6 @@ let parsedef = [
         p[0] = p[1];
       } else if (p.length === 5) {
         p[0] = new Node("SubroutineQualifier");
-        console.log(p);
         p[0].push(p[3]);
       } else {
         p[0] = p[1];
