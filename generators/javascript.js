@@ -19,48 +19,35 @@ export let jslib = `
     }
     
     this.cur = 0;
-    
-    this.next = function() {
+  }
+  
+  cachering.prototype = Object.create(Object.prototype);
+  cachering.prototype.next = function() {
       let ret = this.list[this.cur];
       
       this.cur = (this.cur + 1) % this.length;
-      
       return ret;
-    }
-  }
+  };
+  cachering.prototype.push = function() {
+    return this[this.cur++];
+  };
+  cachering.prototype.pop = function() {
+    return [this.cur--];
+  };
   
   let vec2cache = new cachering(() => [0, 0], 2048);
-  function vec2(a, b) {
-    let ret = vec2cache.next();
-    
-    ret[0] = a;
-    ret[1] = b;
-    
-    return ret;
-  }
-
+  
   let vec3cache = new cachering(() => [0, 0, 0], 2048);
-  function vec3(a, b, c) {
-    let ret = vec3cache.next();
-    
-    ret[0] = a;
-    ret[1] = b;
-    ret[2] = c;
-    
-    return ret;
-  }
-
   let vec4cache = new cachering(() => [0, 0, 0, 0], 2048);
-  function vec4(a, b, c, d) {
-    let ret = vec4cache.next();
+  let mat3cache = new cachering(() => [[0,0,0], [0,0,0], [0,0,0]], 2048);
+  let mat4cache = new cachering(() => [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]], 2048);
+
+  let vec2stack = new cachering(() => [0, 0], 128);
+  let vec3stack = new cachering(() => [0, 0, 0], 128);
+  let vec4stack = new cachering(() => [0, 0, 0, 0], 128);
+  let mat3stack = new cachering(() => [[0,0,0], [0,0,0], [0,0,0]], 128);
+  let mat4stack = new cachering(() => [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]], 128);
     
-    ret[0] = a;
-    ret[1] = b;
-    ret[2] = c;
-    ret[3] = d;
-    
-    return ret;
-  }
 `
 
 export class JSGenerator extends CodeGenerator {
@@ -146,6 +133,66 @@ ${setter}
 
     let tlvl = 1;
 
+    let usestack = false;
+
+    let state = {
+      stack     : [],
+      stackcur  : 0,
+      stackscope: {},
+      scope     : {},
+      pushNode  : undefined,
+      copy() {
+        let ret = Object.assign({}, this);
+
+        ret.scope = Object.assign({}, this.scope);
+        ret.stackscope = Object.assign({}, this.stackscope);
+
+        ret.copy = this.copy;
+
+        return ret;
+      },
+      vardecl(name, type) {
+        this.stackscope[name] = type;
+        this.stack.push(name);
+        return this.stackcur++;
+      },
+      leave() {
+        if (usestack) {
+          for (let k in this.stackscope) {
+            let type = this.stackscope[k];
+            out(indent(tlvl) + `    ${type}stack_cur--;\n`);
+            this.stack.pop();
+            this.stackcur--;
+          }
+        }
+
+        this.stackscope = {}
+        return this;
+      }
+    };
+
+    let statestack = [];
+
+    function push(pushNode) {
+      let s = state.copy();
+      statestack.push(state);
+
+      state = s;
+      state.pushNode = pushNode;
+
+      return s;
+    }
+
+    function pop(pushNode) {
+      if (state.pushNode === pushNode) {
+        let s = state;
+
+        state.leave();
+        state = statestack.pop();
+        return s;
+      }
+    }
+
     function rec(n) {
       if (n.type === "ArrayLookup") {
         rec(n[0]);
@@ -183,18 +230,63 @@ ${setter}
           if (n.length > 1 && n[1].length > 0) {
             out(" = ");
             rec(n[1]);
+          } else {
+            let type = ctx.resolveType(n[0].value);
+            type = type.getTypeNameSafe();
+
+            if (type === "vec2" || type === "vec3" || type === "vec4" || type === "mat4" || type === "mat3") {
+              out(" = ");
+
+              if (usestack) {
+                let i = state.vardecl(n.value, type);
+                out(`${type}stack[${type}stack_cur++];\n`);
+              } else {
+                out(`${type}cache.next();`);
+              }
+            }
           }
 
           out(";");
         }
       } else if (n.type === "Return") {
-        out("return")
+        let i1, i2, off, type, p, tname;
+        let tab = indent(tlvl+2);
+
+        if (usestack) {
+          out("{\n");
+          i1 = state.stackcur;
+          pop(state.pushNode);
+
+          i2 = state.stackcur;
+          off = i2 - i1;
+
+          let p = n;
+          while (p) {
+            if (p.ntype) {
+              type = p.ntype;
+              break;
+            }
+            p = p.parent;
+          }
+
+          type = type ?? ctx.getReturnType();
+          tname = type.getTypeNameSafe();
+
+          out(`${tab}${tname}stack[${tname}stack_cur]`);
+          out(`.load(${tname}stack[${tname}stack_cur + (${off})]);\n`);
+          out(`${tab}${tname}stack_cur++;\n`);
+        }
+
+        out(tab + "return")
         if (n.length > 0) {
           out(" ");
           for (let n2 of n) {
             rec(n2);
           }
           out(";");
+        }
+        if (usestack) {
+          out("\n" + indent(tlvl) + "}\n");
         }
       } else if (n.type === "Trinary") {
         out("((");
@@ -278,7 +370,13 @@ ${setter}
       } else if (n.type === "IntConstant") {
         out(""+n.value);
       } else if (n.type === "Function") {
-        out(`\n  function ${n.value}(`);
+        let fname = n.polyKey ?? n.value;
+
+        if (n.value === "main") {
+          fname = "main";
+        }
+
+        out(`\n  function ${fname}(`);
         let i = 0;
 
         for (let c of n[1]) {
@@ -292,11 +390,20 @@ ${setter}
         
         tlvl++;
 
+        push(n);
         rec(n[2]);
+        pop(n);
+
         tlvl--;
 
         out(indent(tlvl) + "}\n");
       } else if (n.type === "StatementList") {
+        let noScope = n.noScope;
+
+        if (!noScope) {
+          push(n);
+        }
+
         for (let c of n) {
           out(indent(tlvl));
 
@@ -304,9 +411,17 @@ ${setter}
 
           rec(c)
 
-          if (outs.length > slen) {
-            out(";\n");
+          outs = outs.trim();
+
+          if (!outs.endsWith(";") && !outs.endsWith("}")) {
+            out(";");
           }
+          out("\n");
+
+        }
+
+        if (!noScope) {
+          pop(n);
         }
       } else {
         for (let n2 of n) {
@@ -370,7 +485,6 @@ ${argset}
 
     outs += `    outputCount: ${totoutput}\n`;
     outs += '  }\n';
-
     outs += '}\n';
     return outs;
   }

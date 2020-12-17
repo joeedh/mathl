@@ -10,5 +10,7 @@ import('./util/jscc.js').then((jscc) => {
 export const parsetable = "${data}";
 `;
 
+  console.log((data.length/1024).toFixed(2) + "kb");
+
   fs.writeFileSync("parser/parsetab.js", data);
 });

@@ -1108,6 +1108,7 @@ let parsedef = [
     func : (p) => {
       if (p.length === 3 && p[1].type === "InitDeclaratorList") {
         p[1].type = "StatementList";
+        p[1].noScope = true;
 
         let type = p[1][0][0];
         for (let n of p[1]) {
@@ -1171,6 +1172,7 @@ let parsedef = [
         p.lexer.scope[p[0].value] = n;
 
         p[0] = new Node("StatementList");
+        p[0].noScope = true;
         p[0].push(n);
 
         for (let c of p[3]) {
@@ -1294,6 +1296,7 @@ let parsedef = [
       if (p.length === 2) {
         p[0] = new Node("InitDeclaratorList"); //parent production will turn this into a StatementList
         p[0].push(p[1]);
+        p[0].noScope = true;
 
         /*
         p[0] = new Node("ExprList");
@@ -1833,7 +1836,6 @@ let parsedef = [
       p[0] = p[1];
 
       p.lexer.popScope();
-
       p[0].push(p[2]);
     }
   },

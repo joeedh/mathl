@@ -50,10 +50,20 @@ export function findSlots(ctx, ast) {
       }
 
       let type = n[0];
-      type = type.qualifier;
 
       if (type) {
         type = type.value;
+      }
+      if (type) {
+        type = type.qualifier;
+      }
+
+      if (type && typeof type !== "string" && type.type === "TypeQualifier") {
+        type = type.value;
+      }
+
+      if (type && typeof type === "string") {
+        type = type.trim();
       }
 
       if (type === "uniform") {
@@ -70,8 +80,12 @@ export function findSlots(ctx, ast) {
   //console.log(ctx.uniforms, ctx.inputs, ctx.outputs);
 }
 
+import {libraryCode} from './state.js';
+
 export function parse(src, filename) {
   let ret;
+
+  src = libraryCode + "\n" + src;
 
   try {
     let src2 = preprocess(src);
@@ -92,7 +106,17 @@ export function parse(src, filename) {
     ret = state.state;
     ret.ast = ast;
 
-    transformAst(ret.ast, ret);
+    if (0) {
+      //XXX
+      state.state.throwError = true;
+      try {
+        transformAst(ret.ast, ret);
+      } catch (error) {
+        console.error("parse error");
+      }
+    } else {
+      transformAst(ret.ast, ret);
+    }
     //parser.printTokens(src);
 
     state.popParseState();

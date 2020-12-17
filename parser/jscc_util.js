@@ -1,7 +1,8 @@
 import * as util from '../util/util.js';
 
-import '../util/nstructjs.js';
+//import '../util/nstructjs.js';
 import {parsetable} from './parsetab.js';
+import {ASTNode} from '../core/ast.js';
 
 import LZString from '../util/lzstring.js';
 
@@ -9,7 +10,7 @@ const ProdSaveFlags = {
   RHS_SINGLE : 1,
   LHS_SINGLE : 2
 };
-
+/*
 export class Production {
   constructor(prod) {
     this.flag = 0;
@@ -58,6 +59,24 @@ mathl.StrIntKey {
 `;
 nstructjs.register(StrIntKey);
 
+export class PopTab extends Array {
+  constructor(a, b) {
+    super();
+
+    this.length = 2;
+
+    this[0] = a;
+    this[1] = b;
+  }
+}
+PopTab.STRUCT = `
+mathl.PopTab {
+  0 : short;
+  1 : byte;
+}
+`
+nstructjs.register(PopTab);
+
 export class PackData {
   constructor(parser) {
     this.pop_tab = [];
@@ -93,7 +112,7 @@ export class PackData {
     this.error_symbol = parser?.pdata.error_symbol;
     this.whitespace_token = parser?.pdata.whitespace_token;
     this.eof_symbol = parser?.pdata.eof_symbol;
-    this.defact_tab = parser?.pdata.defact_tab;
+      this.defact_tab = parser?.pdata.defact_tab;
     this.hash = parser?.hash;
   }
 
@@ -113,19 +132,20 @@ export class PackData {
     for (let item of this.labelmap) {
       labelmap[item.key] = item.value;
     }
+
     this.labelmap = labelmap;
 
-    let ptab = this.pop_tab;
-    this.pop_tab = [];
+    //let ptab = this.pop_tab;
+    //this.pop_tab = [];
 
-    for (let i=0; i<ptab.length; i += 2) {
-      this.pop_tab.push([ptab[i], ptab[i+1]]);
-    }
+    //for (let i=0; i<ptab.length; i += 2) {
+    //  this.pop_tab.push([ptab[i], ptab[i+1]]);
+    //}
   }
 }
 PackData.STRUCT = `
 mathl.PackData {
-  pop_tab           : array(short);
+  pop_tab           : array(mathl.PopTab);
   act_tab           : array(array(short));
   goto_tab          : array(array(short));
   labelmap          : array(mathl.StrIntKey);
@@ -140,6 +160,7 @@ mathl.PackData {
 `
 nstructjs.register(PackData);
 nstructjs.validateStructs();
+*/
 
 const debug = 0;
 
@@ -153,24 +174,52 @@ export class Parser {
 
   save(zipTool=LZString.compressToBase64) {
     let data = zipTool(JSON.stringify(this));
+
     //console.log((data.length/1024/1024).toFixed(2) + "mb");
     return data;
     /*
     let packdata = new PackData(this);
     let data = [];
     nstructjs.writeObject(data, packdata);
+    console.log(data.length/1024);
 
     if (zipTool) {
       let s = '';
-      for (let i=0; i<data.length; i++) {
-        s += String.fromCharCode(data[i]);
-      }
 
-      data = zipTool(s);
+      let off = 0;
+      let wid = ~~(Math.random()*data.length*Math.sqrt(11));
+      console.log("wid", wid);
+      for (let i=0; i<data.length; i += 2) {
+        let i2 = i;
+
+        i2 += wid;
+        i2 = i2 % data.length;
+
+        let a = data[i2]
+        let b = data[i2+1] ?? 0;
+
+        s += String.fromCharCode(a | (b<<8));
+      }
+      data = s;
+
+      //data = JSON.stringify(this);
+
+      fs.writeFileSync("parsetable.json", JSON.stringify(this));
+      data = LZString.compressToBase64(data);
+
+      //data = LZString.compress(data);
+
+      console.log(data.length/1024);
+
+      data = LZString.decompress(data);
+      data = '1';
+
+      //data = btoa(data);
+      //data = zipTool(data);
     }
 
     return data;
-    */
+    //*/
   }
 
   load(data, actions, unzipTool=LZString.decompressFromBase64) {
@@ -247,6 +296,10 @@ export class Parser {
   }
 
   parse(buf, onerror) {
+    if (buf.trim().length === 0) {
+      let ret = new ASTNode("Program");
+      return ret;
+    }
     this.lexer.input(buf);
 
     this.onerror = onerror;

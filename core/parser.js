@@ -146,6 +146,46 @@ export function printobj(obj) {
 
 import {getParser} from '../parser/parser.js';
 
+/*
+export function setSlots(ctx, ast) {
+  let bad = new Set([
+    "StatementList", "Function", "StructDecl"
+  ]);
+
+  let rec = (n) => {
+    if (n.type === "VarDecl") {
+      console.log(""+n);
+      process.exit()
+    }
+
+    for (let n2 of n) {
+      //if (!bad.has(n2.type)) {
+        rec(n2);
+      //}
+    }
+  }
+
+  console.log("setSlots");
+  console.log(ast.type);
+  process.exit()
+  let n = ast;
+  if (n.type === "Program") {
+    for (let n2 of n) {
+      if (n2.type === "StatementList") {
+        for (let n3 of n2) {
+          rec(n3);
+        }
+      } else {
+        rec(ast);
+      }
+    }
+  } else if (n.type === "StatementList") {
+    for (let n2 of n) {
+      rec(n2);
+    }
+  }
+}*/
+
 export function parse_intern(src, ctx=state.state) {
   let ret;
 
@@ -156,6 +196,10 @@ export function parse_intern(src, ctx=state.state) {
   state.state.lexer = parser.lexer;
 
   let ast = parser.parse(src);
+
+  if (ast) {
+    //setSlots(state, ast);
+  }
 
   ret = state.state;
   ret.ast = ast;

@@ -23,6 +23,30 @@ export class ASTNode extends Array {
     this.col = state.state.col;
   }
 
+  /*
+
+  get ntype() {
+    return this._ntype;
+  }
+
+  set ntype(v) {
+    if (this[0] && this.type === "Call") {
+      let name = this[0]
+      if (name.type === "VarType") {
+        name = name.value.getTypeNameSafe();
+      } else {
+        name = name.value;
+      }
+
+      if (name.search("sqrt") >= 0) {
+        console.log("\n\n\n");
+        console.trace(util.termColor(`${this.line}: Set ${name}'s type to ${v}`, "red"));
+      }
+    }
+    this._ntype = v;
+  }
+   */
+
   set(idx, n) {
     this.length = Math.max(this.length, idx+1);
 
@@ -95,8 +119,23 @@ export class ASTNode extends Array {
     b.lexpos = this.lexpos;
   }
 
+  prepend(n) {
+    this.length++;
+
+    for (let i=this.length-1; i>0; i--) {
+      this[i] = this[i-1];
+    }
+
+    this[0] = n;
+    return this;
+  }
+
   copy() {
     let n = new ASTNode(this.type);
+
+    n.noScope = this.noScope;
+    n.qualifier = this.qualifier;
+    n.polyKey = this.polyKey;
 
     n.line = this.line;
     n.lexpos = this.lexpos;
@@ -185,9 +224,9 @@ export class ASTNode extends Array {
       n.parent.remove(n);
     }
 
-    let i = this.length - 1;
     this.length++;
 
+    let i = this.length - 1;
     while (i > starti) {
       this[i] = this[i - 1];
       i--;

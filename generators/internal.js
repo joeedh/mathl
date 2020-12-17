@@ -33,6 +33,31 @@ export class InternalCodeGen {
       FloatConstant(node, state, visit) {
         out += node.value;
       },
+      VarDecl(node, state, visit) {
+        let type = node[0];
+        let tname = "<error>";
+
+        if (type && type.value) {
+          tname = type.value.getTypeNameSafe();
+        }
+
+        if (type) {
+          let t = type.value;
+          let qual;
+          if (t.qualifier) {
+            qual = t.qualifier;
+          }
+
+          if (typeof qual === "object") {
+            qual = qual.value;
+          }
+
+          if (qual) {
+            tname = qual + " " + tname;
+          }
+        }
+        out += tname + " " + node.value;
+      },
       ArrayLookup(node, state, visit) {
         visit(state, node[0]);
         out += "["
@@ -68,6 +93,11 @@ export class InternalCodeGen {
         out += node.op
         visit(state, node[0]);
       },
+      Assign(node, state, visit) {
+        visit(state, node[0]);
+        out += " " + node.op + " ";
+        visit(state, node[1]);
+      },
       BinOp(node, state, visit) {
         let paren = node.op !== ".";
         paren = paren && node.parent && node.parent.type === "BinOp" && node.parent.prec < node.prec;
@@ -100,6 +130,7 @@ export class InternalCodeGen {
           if (i > 0) {
             out += ", ";
           }
+
           visit(state, args[i]);
         }
 
@@ -137,6 +168,15 @@ export class InternalCodeGen {
         }
 
         out += ")";
+      },
+      ExprList(node, state, visit) {
+        for (let i=0; i<node.length; i++ ){
+          if (i > 0) {
+            out += ", ";
+          }
+
+          visit(state, node[i]);
+        }
       },
       StatementList(node, state, visit) {
         let indent = state.indent;

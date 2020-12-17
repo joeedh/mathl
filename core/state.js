@@ -2,6 +2,16 @@ import {termPrint, termColor} from '../util/util.js';
 import {VarType, ArrayType} from './types.js';
 import {PUTLParseError} from '../util/parseutil.js';
 
+
+export const opnames = {
+  "*" : "mul",
+  "**" : "pow",
+  "/" : "div",
+  "-" : "sub",
+  "+" : "add",
+  "%" : "mod"
+};
+
 function exit(msg) {
   if (typeof process !== "undefined" && process.exit) {
     process.exit(-1);
@@ -61,6 +71,10 @@ export class ParseState {
     this.parser = undefined;
     this.lexer = undefined;
 
+    this.throwError = false;
+
+    this.temp_idgen = 0;
+
     this.preprocessed = preprocessed;
 
     this.poly_namemap = {};
@@ -90,6 +104,48 @@ export class ParseState {
     ]);
 
     //this.flag = 0;
+  }
+
+  newTempId() {
+    return `$tmp${this.temp_idgen++}`;
+  }
+
+  placeVarDecl(n, type, name=this.newTempId()) {
+    let ASTNode = n.constructor;
+
+    let v = new ASTNode("VarDecl");
+    v.value = name;
+
+    type = this.resolveType(type);
+
+    if (!type) {
+      this.error(n, "Unknown type " + arguments[1]);
+    }
+
+    let tn = new ASTNode("VarType");
+    tn.value = type;
+
+    v.push(tn);
+
+    if (n.type === "StatementList") {
+      n.prepend(n);
+      return v;
+    }
+
+    let p = n;
+    let lastp = p;
+
+    while (p) {
+      if (p.type === "StatementList") {
+        p.insert(p.indexOf(lastp), v);
+        return v;
+      }
+
+      lastp = p;
+      p = p.parent;
+    }
+
+    this.error(n, "Failed to place variable declaration");
   }
 
   addPolyFunc(name, rtype, args, type2) {
@@ -198,7 +254,8 @@ export class ParseState {
       }
     }
 
-    let key = `_${name}_${rtype.getTypeNameSafe()}_`;
+    let key = `_$_${name}_${rtype.getTypeNameSafe()}_`;
+    let nonfloat = rtype.getTypeNameSafe() !== "float";
 
     for (let i=0; i<args.length; i++) {
       if (typeof args[i] === "string") {
@@ -209,9 +266,16 @@ export class ParseState {
         }
       }
 
-      key += args[i].getTypeNameSafe();
+      let tname = args[i].getTypeNameSafe();
+
+      nonfloat = nonfloat || tname !== "float";
+
+      key += tname;
     }
 
+    if (!nonfloat && !this.hasType(name)) {
+      return name;
+    }
     return key;
   }
 
@@ -319,7 +383,7 @@ export class ParseState {
         let key2 = this.buildPolyKey(key, key, args, key);
         this.addPolyFunc(key, key, args, key);
 
-        constructors[key2] = keys[i];
+        constructors[key2] = [keys[i], args];
       }
     }
 
@@ -333,17 +397,32 @@ export class ParseState {
       this.addPolyFunc("cross", "", ["", ""], key);
     }
 
+    this.addPolyFunc("atan2", "float", ["float", "float"], "float");
+
+    for (let i=0; i<2; i++) {
+      let key = i ? "mat4" : "mat3";
+      this.addPolyFunc("invert", "", [""], key);
+      this.addPolyFunc("transpose", "", [""], key);
+    }
+
     for (let key of keys) {
       if (key === "") {
         continue;
       }
 
+      this.addPolyFunc("exp", "", [""], key);
+      this.addPolyFunc("abs", "", [""], key);
       this.addPolyFunc("min", "", ["", ""], key);
       this.addPolyFunc("max", "", ["", ""], key);
       this.addPolyFunc("fract", "", [""], key);
-      this.addPolyFunc("step", "", [""], key);
-      this.addPolyFunc("cos", "", [""], key);
+      this.addPolyFunc("step", "", ["", ""], key);
+      this.addPolyFunc("pow", "", ["", ""], key);
       this.addPolyFunc("sin", "", [""], key);
+      this.addPolyFunc("cos", "", [""], key);
+      this.addPolyFunc("asin", "", [""], key);
+      this.addPolyFunc("acos", "", [""], key);
+      this.addPolyFunc("atan", "", [""], key);
+      this.addPolyFunc("tan", "", [""], key);
       this.addPolyFunc("floor", "", [""], key);
       this.addPolyFunc("ceil", "", [""], key);
       this.addPolyFunc("mod", "", [""], key);
@@ -379,7 +458,11 @@ export class ParseState {
       console.warn(formatLines(this.source, node.line, node.lexpos, node.col, 5));
     }
 
-    exit(-1);
+    if (this.throwError) {
+      throw new Error("Error: " + msg);
+    } else {
+      exit(-1);
+    }
   }
 
   getType(name) {
@@ -415,18 +498,20 @@ export class ParseState {
     }
 
     if (typeof t === "object" && t instanceof VarType) {
-      let basename = t.getBaseName();
-
-      if (!(basename in this.types)) {
-        this.error(arguments[0], "Unknown type " + basename);
+      let name = t.getTypeName();
+      if (!(name in this.types)) {
+        this.error(arguments[0], "Unknown type " + name);
       }
 
-      let b = this.types[basename];
-      if (b instanceof ArrayType && !(VarType instanceof ArrayType)) {
-        return b;
+      let t2 = this.types[name];
+      if (t2 instanceof ArrayType && !(t instanceof ArrayType)) {
+        return t2;
       }
+
       return t;
-    } else if (typeof t === "object" && t.type === "VarRef") {
+    }
+
+    if (typeof t === "object" && t.type === "VarRef") {
       let vref = t;
       if (vref[0] instanceof ArrayType) {
         return this.resolveType(vref[0].type);
@@ -500,3 +585,236 @@ export function pushParseState(source=state.source, filename=state.filename, par
 export function popParseState() {
   state = statestack.pop();
 }
+
+export function genLibraryCode() {
+  let s = '';
+
+  let names = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"];
+
+  let builtins = {
+    cos : 1,
+    sin : 1,
+    sqrt : 1,
+    exp : 1,
+    log : 1,
+    floor : 1,
+    ceil : 1,
+    abs : 1,
+    min : 2,
+    max : 2,
+    acos : 1,
+    asin : 1,
+    atan : 1,
+    fract : 1,
+  };
+  let ctx = new ParseState();
+
+  let keys = ["float", "vec2", "vec3", "vec4"];
+  let sizemap = {
+    float : 1,
+    vec2 : 2,
+    vec3 : 3,
+    vec4 : 4
+  };
+
+  function genMathFunc(name, args, type) {
+    let size = sizemap[type];
+
+    let ntype = ctx.resolveType(type);
+    args = [].concat(args);
+
+    for (let i=0; i<args.length; i++) {
+      if (args[i] === "") {
+        args[i] = ntype;
+      } else {
+        args[i] = ctx.resolveType(args[i]);
+      }
+    }
+
+    let key = ctx.buildPolyKey(name, ntype, args, ntype);
+    s += `${ntype.getTypeNameSafe()} ${key}(`;
+
+    let tname = ntype.getTypeNameSafe();
+
+    let i = 0;
+    for (let arg of args) {
+      if (i > 0) {
+        s += ", "
+      }
+
+      s += `${arg.getTypeNameSafe()} ${names[i]}`;
+      i++;
+    }
+    s += ') {\n';
+
+    s += `  ${tname} r;\n`;
+
+    for (let j=0; j<size; j++) {
+      s += `  r[${j}] = `
+
+      let s2 = `${name}(`;
+      for (let i = 0; i < args.length; i++) {
+        if (i > 0) {
+          s2 += ", ";
+        }
+        s2 += names[i];
+        if (ctx.typesEqual(args[i], ntype)) {
+          s2 += `[${j}]`;
+        }
+      }
+      s2 += `);\n`
+
+      s += s2;
+    }
+
+    s += `  return r;\n`;
+    s += '}\n';
+  }
+
+  for (let k in builtins) {
+    let v = builtins[k];
+    let args;
+
+    if (typeof v === "number") {
+      args = [];
+      for( let i=0; i<v; i++) {
+        args.push("");
+      }
+    } else {
+      args = v;
+    }
+
+    for (let key of keys) {
+      if (key === "float") {
+        continue;
+      }
+      genMathFunc(k, args, key);
+    }
+  }
+
+  for (let key of keys) {
+    if (key === "float") {
+      continue;
+    }
+
+    genMathFunc("pow", ["", ""], key);
+    genMathFunc("pow", ["float", ""], key);
+    genMathFunc("pow", ["", "float"], key);
+    genMathFunc("step", ["", ""], key);
+    genMathFunc("step", ["float", ""], key);
+    genMathFunc("step", ["", "float"], key);
+  }
+
+  for (let key of keys) {
+    if (key === "float") {
+      continue;
+    }
+
+    for (let op in opnames) {
+      let name = opnames[op];
+      if (op === "**" || op === "%"){
+        continue;
+      }
+
+      s += `${key} _$_$_${name}_${key}_${key}(${key} a, ${key} b) {\n`
+      s += `  ${key} r;\n`;
+
+      let size = sizemap[key];
+
+      for (let i=0; i<size; i++) {
+        s += `  r[${i}] = a[${i}] ${op} b[${i}];\n`;
+      }
+      s += `\n  return r;\n`;
+      s += `}\n`
+    }
+    
+    for (let op in opnames) {
+      let name = opnames[op];
+      if (op === "**" || op === "%"){
+        continue;
+      }
+
+      for (let step=0; step<2; step++) {
+        if (step) {
+          s += `${key} _$_$_${name}_float_${key}(float a, ${key} b) {\n`;
+        } else {
+          s += `${key} _$_$_${name}_${key}_float(${key} a, float b) {\n`;
+        }
+        s += `  ${key} r;\n`;
+        for (let i = 0; i < sizemap[key]; i++) {
+          if (step) {
+            s += `  r[${i}] = a ${op} b[${i}];\n`;
+          } else {
+            s += `  r[${i}] = a[${i}] ${op} b;\n`;
+          }
+        }
+        s += `  return r;\n`;
+        s += "}\n";
+      }
+    }
+  }
+
+  for (let k in ctx.constructors) {
+    let [type, args] = ctx.constructors[k];
+    args = args.map(f => f.getTypeNameSafe());
+
+    s += `${type} ${k}(`;
+
+    for (let i=0; i<args.length; i++) {
+      if (i > 0) {
+        s += ", ";
+      }
+
+      s += `${args[i]} ${names[i]}`;
+    }
+
+    s += `) {\n  ${type} r;\n`;
+
+    let i = 0;
+    let size = sizemap[type];
+    let ai = 0;
+    let aj = 0;
+    let arg = args[ai];
+
+    for (let i=0; i<size; i++) {
+      if (arg === "float") {
+        s += `  r[${i}] = ${names[ai]};\n`;
+        aj++;
+      } else {
+        s += `  r[${i}] = ${names[ai]}[${aj++}];\n`;
+      }
+
+      if (aj >= sizemap[arg]) {
+        ai++;
+        aj = 0;
+        arg = args[ai];
+      }
+    }
+
+    s += "  return r;\n"
+    s += "}\n";
+  }
+
+  s += `
+    
+vec4 _$_$_mul_mat4_vec4(mat4 m, vec4 v) {
+  vec4 r;
+  
+  r[0] = m[0][0]*v[0] + m[1][0]*v[1] + m[2][0]*v[2] + m[3][0]*v[3];
+  r[1] = m[0][1]*v[0] + m[1][1]*v[1] + m[2][1]*v[2] + m[3][1]*v[3];
+  r[2] = m[0][2]*v[0] + m[1][2]*v[1] + m[2][2]*v[2] + m[3][2]*v[3];
+  r[3] = m[0][3]*v[0] + m[1][3]*v[1] + m[2][3]*v[2] + m[3][3]*v[3];
+  
+  return r;
+}
+
+`;
+
+  //console.log(ctx.
+  //console.log(s, s.length);
+  //process.exit();
+  return s;
+}
+
+export const libraryCode = genLibraryCode();
+

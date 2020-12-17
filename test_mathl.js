@@ -1,6 +1,15 @@
 import {ArrayType, VarType} from './core/types.js';
 
 let test = `
+in vec3 point;
+in vec3 normal;
+
+out vec2 value;
+
+uniform float factor;
+uniform float size;
+uniform vec3 uColor;
+
 // Cellular noise ("Worley noise") in 3D in GLSL.
 // Copyright (c) Stefan Gustavson 2011-04-19. All rights reserved.
 // This code is released under the conditions of the MIT license.
@@ -183,23 +192,76 @@ vec2 cellular(vec3 P) {
   d11.yz = min(d11.yz,d12.xy); // nor in d12.yz
   d11.y = min(d11.y,d12.z); // Only two more to go
   d11.y = min(d11.y,d11.z); // Done! (Phew!)
-  
-  
-  vec3 dx31 = (Pfx + jitter)*ox31;
-  
+
+
+  dx31 = (Pfx + jitter)*ox31;
+
   return sqrt(d11.xy); // F1, F2
 #endif
 }
+
+float tent(float f) {
+  f = 1.0 - abs(fract(f)-0.5)*2.0;
+  f = f*f*(3.0 - 2.0 *f);
+
+  return f;
+}
+
+void main() {
+  float f;
+
+  float dx = tent(point.x*10.0);
+  float dy = tent(point[1]*10.0);
+
+  f = tent((dx+dy)*0.75); //fract(1.0 - point[0]*point[1]*size + 0.5);
+
+  //value = vec2(f, fract(point[1]*size + 0.5));
+  value = cellular(vec3(point[0], point[1], 0.25));
+}
 `
 
+let test2 = `
+in vec3 point;
+in vec3 normal;
+
+out vec2 value;
+
+uniform float factor;
+uniform float size;
+uniform vec3 uColor;
+
+float tent(float f) {
+  f = 1.0 - abs(fract(f)-0.5)*2.0;
+  f = f*f*(3.0 - 2.0 *f);
+
+  return f;
+}
+
+void main() {
+  float f;
+
+  float dx = tent(point.x*10.0);
+  float dy = tent(point[1]*10.0);
+
+  f = tent((dx+dy)*0.75); //fract(1.0 - point[0]*point[1]*size + 0.5);
+  
+  point.yx = vec2(point.xy);
+  value = vec2(f, fract(point[1]*size + 0.5));
+}
+
+`;
+
+//test = test2;
 import fs from 'fs';
 
 import * as mathl from './core/mathl.js'
 import * as util from './util/util.js';
-import {formatLines} from './core/state.js';
+import {formatLines, libraryCode} from './core/state.js';
 import {parser} from './parser/parser.js';
 import {dfAst} from './transform/derivative.js';
 import {ASTNode} from './core/ast.js';
+
+import {internalCodeGen, InternalCodeGen} from './generators/internal.js';
 
 //console.log(""+mathl.parse(test));
 
@@ -216,23 +278,14 @@ if (1) {
 //console.log(""+ret.ast);
   let code = mathl.genCode(ret, "js").trim();
 
+  let igen = new InternalCodeGen(ret);
+
   fs.writeFileSync("out_test.js", code);
+  fs.writeFileSync("out_test.glsl", igen.genCode(ret.ast));
 
-  let arr = [];
-  for (let i = 0; i < code.length; i++) {
-    arr.push(code.charCodeAt(i));
-  }
-  console.log(arr.slice(arr.length - 25, arr.length))
+  console.log(formatLines(code, 0, -100, -100, 5000), "yay");
+  //console.log(ret.poly_keymap['_$_$_add_float_float']);
 
-  var program
-
-  let vtype = new ArrayType(new VarType("float"), 3, "vec3");
-  let pvar = ASTNode.VarRef("point", vtype, 0);
-  console.log(""+pvar)
-
-  pvar = ASTNode.VarRef("value", new VarType("float"))
-
-  console.log(formatLines(code, 0, -100, -100, 1000), "yay");
   //dfAst(ret, pvar);
   //console.log(""+ret.ast)
 }
