@@ -258,6 +258,7 @@ export class GLSLLexer extends lexer {
     this.structs = {};
   }
 }
+
 let lex = new GLSLLexer();
 
 let binops = new Set([

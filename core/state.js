@@ -63,6 +63,9 @@ export class ParseState {
 
     this.preprocessed = preprocessed;
 
+    this.poly_namemap = {};
+    this.poly_keymap = {};
+
     this.scope = {};
     this.localScope = {};
 
@@ -73,18 +76,81 @@ export class ParseState {
     this.outputs = {};
     this.uniforms = {};
 
+    this.functions = {};
+
     this.reset();
 
     this.source = source;
     this.filename = filename;
 
     this.builtinFuncs = new Set([
-      "cos", "sin", "fract", "abs", "floor", "vec3", "vec2", "vec4", "mat4", "float", "int",
+      "cos", "sin", "fract", "abs", "floor", "vec3", "vec2", "vec4", "mat4","mat3", "float", "int",
       "sqrt", "log", "pow", "exp", "acos", "asin", "tan", "atan", "atan2", "normalize",
       "dot", "cross", "reflect", "step", "smoothstep"
     ]);
 
     //this.flag = 0;
+  }
+
+  addPolyFunc(name, rtype, args, type2) {
+    if (type2 === "") {
+      type2 = this.getType(type2);
+    }
+    if (rtype === "") {
+      rtype = type2;
+    }
+
+    if (typeof name === "object") {
+      if (name.constructor.name === "ASTNode") {
+        if (name.type === "Ident") {
+          name = name.value;
+        } else if (name.type === "VarType") {
+          name = name.value.getTypeNameSafe();
+        }
+      } else if (name instanceof VarType) {
+        name = name.getTypeNameSafe();
+      }
+    }
+    for (let i=0; i<args.length; i++) {
+      if (args[i] === "") {
+        args[i] = type2;
+      }
+    }
+
+    rtype = this.resolveType(rtype);
+
+    let key = this.buildPolyKey(name, rtype, args, type2);
+
+    this.poly_keymap[key] = {
+      name, args, type : rtype, key
+    };
+
+    if (!(name in this.poly_namemap)) {
+      this.poly_namemap[name] = new Set();
+    }
+
+    this.poly_namemap[name].add({
+      type : rtype,
+      args,
+      key,
+      name
+    });
+
+    this.addFunc(name, rtype, args, key);
+  }
+
+  addFunc(name, rtype, args, key=name) {
+    args = args.filter(f => typeof f === "string" ? this.getType(f) : f);
+    if (typeof type === "string") {
+      rtype = this.getType(name);
+    }
+
+    this.functions[key] = {
+      type : rtype,
+      args,
+      name,
+      key
+    };
   }
 
   copy() {
@@ -107,6 +173,48 @@ export class ParseState {
     return p;
   }
 
+  buildPolyKey(name, rtype, args, type2) {
+    if (type2 && typeof type2 === "string") {
+      type2 = this.getType(type2);
+    }
+
+    if (typeof rtype === "string") {
+      rtype = rtype === "" ? type2 : this.getType(rtype);
+    }
+
+    if (typeof name === "object") {
+      if (name.constructor.name === "ASTNode") {
+        if (name.type === "VarType") {
+          name = name.value;
+        } else if (name.type === "Ident") {
+          name = name.value;
+        } else {
+          this.error(name, "Bad type node");
+        }
+      }
+
+      if (typeof name === "object" && name instanceof VarType) {
+        name = name.getTypeNameSafe();
+      }
+    }
+
+    let key = `_${name}_${rtype.getTypeNameSafe()}_`;
+
+    for (let i=0; i<args.length; i++) {
+      if (typeof args[i] === "string") {
+        if (args[i] === "") {
+          args[i] = type2;
+        } else {
+          args[i] = this.getType(args[i]);
+        }
+      }
+
+      key += args[i].getTypeNameSafe();
+    }
+
+    return key;
+  }
+
   resetScopeStack() {
     this.scopestack.length = 0;
     this.localScope = {};
@@ -124,6 +232,10 @@ export class ParseState {
 
   reset() {
     this.scopestack = [];
+    this.poly_keymap = {};
+    this.poly_namemap = {};
+    this.functions = {};
+    this.constructors = {};
     this.types = {};
     this.localScope = {};
     this.scope = {};
@@ -143,6 +255,103 @@ export class ParseState {
     let m3 = this.addType(new ArrayType(v3, 3, "mat3"), "mat3");
     let m4 = this.addType(new ArrayType(v4, 4, "mat4"), "mat4");
 
+
+    let keys = [
+      "", "float", "vec2", "vec3", "vec4"
+    ];
+
+    let sizes = {
+      "float" : 1,
+      "vec2" : 2,
+      "vec3" : 3,
+      "vec4" : 4
+    };
+
+    let out = [];
+    let visit = new Set();
+
+    let push = (list) => {
+      let listkey = JSON.stringify(list);
+      if (!visit.has(listkey)) {
+        visit.add(listkey);
+        out.push(list);
+      }
+    }
+    let getsize = (f) => {
+      let size = 0;
+      for (let item of f) {
+        size += sizes[item];
+      }
+      return size;
+    }
+
+    let rec = (a, size=a, lst=[], depth=0) => {
+      if (a <= 0 || a > size) {
+        return [];
+      }
+
+      if (depth > size) {
+        return [keys[a]];
+      }
+
+      if (getsize(lst) === size) {
+        push(lst);
+      }
+
+      for (let i=1; i<=size; i++) {
+        let lst2 = lst.concat([keys[i]]);
+
+        rec(i, size, lst2, depth + 1);
+      }
+    }
+
+    let constructors = {};
+
+    for (let i=1; i<=4; i++) {
+      out.length = 0;
+      rec(i);
+
+      let key = keys[i];
+      key = this.getType(key);
+
+
+      for (let args of out) {
+        let key2 = this.buildPolyKey(key, key, args, key);
+        this.addPolyFunc(key, key, args, key);
+
+        constructors[key2] = keys[i];
+      }
+    }
+
+    this.constructors = constructors;
+
+    for (let i=2; i<=4; i++) {
+      let key = "vec" + i;
+
+      this.addPolyFunc("normalize", "", ["", ""], key);
+      this.addPolyFunc("dot", "float", ["", ""], key);
+      this.addPolyFunc("cross", "", ["", ""], key);
+    }
+
+    for (let key of keys) {
+      if (key === "") {
+        continue;
+      }
+
+      this.addPolyFunc("min", "", ["", ""], key);
+      this.addPolyFunc("max", "", ["", ""], key);
+      this.addPolyFunc("fract", "", [""], key);
+      this.addPolyFunc("step", "", [""], key);
+      this.addPolyFunc("cos", "", [""], key);
+      this.addPolyFunc("sin", "", [""], key);
+      this.addPolyFunc("floor", "", [""], key);
+      this.addPolyFunc("ceil", "", [""], key);
+      this.addPolyFunc("mod", "", [""], key);
+      this.addPolyFunc("sqrt", "", [""], key);
+      this.addPolyFunc("pow", "", [""], key);
+      this.addPolyFunc("log", "", [""], key);
+    }
+
     return this;
   }
 
@@ -155,15 +364,22 @@ export class ParseState {
   }
 
   get line() {
-    return this.lexer ? this.lexer.lineno : -1;
+    return this.lexer ? this.lexer.linemap[this.lexer.lexpos] : -1;
   }
 
   error(node, msg) {
     //console.log(node)
-    let s = `\nError: ${this.filename}:${node.line+1}: ${msg}`;
-    console.error(s);
-    console.warn(formatLines(this.source, node.line, node.lexpos, node.col));
-    exit(s);
+
+    if (!node) {
+      console.error(`\nError: ${msg}`);
+    } else {
+      let s = `\nError: ${this.filename}:${node.line + 1}: ${msg}`;
+      console.error(s + "\n");
+
+      console.warn(formatLines(this.source, node.line, node.lexpos, node.col, 5));
+    }
+
+    exit(-1);
   }
 
   getType(name) {
@@ -184,6 +400,10 @@ export class ParseState {
   }
 
   resolveType(t) {
+    if (typeof t === "string") {
+      t = this.getType(t);
+    }
+
     if (!(t instanceof  VarType)) {
       if (typeof t === "object" && t.type === "VarType") {
         t = t.value;
@@ -216,8 +436,33 @@ export class ParseState {
     }
   }
 
+  typesEqual(a, b) {
+    if (a === undefined || b === undefined) {
+      console.log("A:"+a, "B:"+b);
+      throw new Error("undefined arguments to typesEqual");
+    }
+
+    a = this.resolveType(a);
+    b = this.resolveType(b);
+
+    if (!a) {
+      console.log(""+a);
+      this.error(undefined, "bad type " + arguments[0]);
+    }
+
+    if (!b) {
+      console.log(""+b);
+      this.error(undefined, "bad type " + arguments[1]);
+    }
+
+    if (!a || !b) {
+      return false;
+    }
+    return a.getTypeName() === b.getTypeName();
+  }
+
   getScope(k) {
-    return this.scope[k];
+    return this.resolveType(this.scope[k]);
   }
 
   hasType(name) {

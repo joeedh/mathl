@@ -40,11 +40,13 @@ export class InternalCodeGen {
         out += "]"
       },
       Trinary(node, state, visit) {
+        out += "(("
         visit(state, node[0]);
-        out += " ? ";
+        out += ") ? (";
         visit(state, node[1]);
-        out += " : ";
+        out += ") : (";
         visit(state, node[2]);
+        out += "))";
       },
       PreInc(node, state, visit) {
         out += "++";

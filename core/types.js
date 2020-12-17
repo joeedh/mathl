@@ -11,12 +11,27 @@ export class VarType {
     return 0.0;
   }
 
+  getComponents() {
+    return 1;
+  }
+
   getBaseName() {
     return this.type;
   }
 
   getTypeName() {
     return "" + this.type;
+  }
+
+  getTypeNameSafe() {
+    if (typeof this.type !== "string") {
+      return this.type.getTypeNameSafe();
+    }
+
+    let s = this.getTypeName();
+
+    s = s.replace(/[\[\]\(\)]/g, "_");
+    return s;
   }
 }
 
@@ -31,6 +46,10 @@ export class ArrayType extends VarType {
     this.alias = alias;
     this.type = type;
     this.size = size;
+  }
+
+  getComponents() {
+    return this.size;
   }
 
   makeZero() {
@@ -56,6 +75,14 @@ export class ArrayType extends VarType {
     return typeof this.type === "string" ? this.type : this.type.getBaseName();
   }
 
+  getTypeNameSafe() {
+    if (this.alias) {
+      return this.alias;
+    }
+
+    return `${this.type.getTypeNameSafe()}_${this.size}_`;
+  }
+
   toString() {
     return `ArrayType(${this.type}, ${this.size}, ${this.alias})`;
   }
@@ -68,6 +95,10 @@ export class DynamicArrayType extends ArrayType {
 
     this.alias = alias;
     this.type = type;
+  }
+
+  getComponents() {
+    return 100000;
   }
 
   makeZero() {

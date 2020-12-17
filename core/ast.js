@@ -23,6 +23,23 @@ export class ASTNode extends Array {
     this.col = state.state.col;
   }
 
+  set(idx, n) {
+    this.length = Math.max(this.length, idx+1);
+
+    if (this.idx && this.idx.parent === this) {
+      this.idx.parent = undefined;
+    }
+
+    if (n.parent) {
+      n.parent.remove(n);
+    }
+
+    this[idx] = n;
+    n.parent = this;
+
+    return this;
+  }
+
   static equalsVarRef(n, vref) {
     let ok = false;
 
@@ -76,7 +93,6 @@ export class ASTNode extends Array {
     b.line = this.line;
     b.col = this.col;
     b.lexpos = this.lexpos;
-    b.value = this.value;
   }
 
   copy() {
@@ -85,6 +101,7 @@ export class ASTNode extends Array {
     n.line = this.line;
     n.lexpos = this.lexpos;
     n.col = this.col;
+    n.ntype = this.ntype;
 
     n.value = this.value;
 
@@ -197,6 +214,11 @@ export class ASTNode extends Array {
       typestr += " (" + this.op + ")";
     }
 
+    if (this.ntype !== undefined) {
+      //console.log(this.ntype);
+      typestr += " <" + util.termPrint(this.ntype.getTypeNameSafe() + ">", "red");
+    }
+
     let s = tab + typestr + " { line:" + (this.line+1);
 
     if (this.length === 0) {
@@ -231,7 +253,7 @@ export function visit(root, nodetype, handler) {
   rec(root);
 }
 
-export function traverse(root, state, handlers, log=false) {
+export function traverse(root, state, handlers, log=false, bottomUp=false) {
   let visitset = new Set();
 
   handlers._visitset = visitset;
@@ -299,12 +321,22 @@ export function walk(root, handlers) {
 }
 
 
-export function scopeWalk(root, ctx, handlers) {
+export function scopeWalk(root, ctx, handlers, log=false, bottomUp=false) {
   ctx.pushScope();
 
   function visit(n) {
     if (n.type in handlers) {
       handlers[n.type](n, ctx);
+    }
+  }
+
+  function dodescend(descend, ctx, node) {
+    if (bottomUp) {
+      descend(ctx, node);
+      visit(node);
+    } else {
+      visit(node);
+      descend(ctx, node);
     }
   }
 
@@ -316,8 +348,7 @@ export function scopeWalk(root, ctx, handlers) {
 
       ctx.setScope(name, type);
 
-      visit(node);
-      descend(ctx, node);
+      dodescend(descend, ctx, node);
     },
 
     BinOp(node, ctx, descend) {
@@ -341,8 +372,7 @@ export function scopeWalk(root, ctx, handlers) {
         ctx.setScope("this", ctx.getScope(name));
       }
 
-      visit(node);
-      descend(ctx, node);
+      dodescend(descend, ctx, node);
 
       if (pop) {
         ctx.popScope();
@@ -362,18 +392,16 @@ export function scopeWalk(root, ctx, handlers) {
         ctx.setScope(name, type);
       }*/
 
-      visit(node);
-      descend(ctx, node);
+      dodescend(descend, ctx, node);
 
       ctx.popScope();
     },
     Default(node, ctx, descend) {
-      visit(node);
-      descend(ctx, node);
+      dodescend(descend, ctx, node);
     }
   }
 
-  traverse(root, ctx, handlers2);
+  traverse(root, ctx, handlers2, log, bottomUp);
 
   //console.log(""+root)
   ctx.popScope();

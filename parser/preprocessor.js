@@ -37,6 +37,7 @@ export function stripComments(code) {
 
       return i + 1;
     },
+
     comment(i) {
       if (code[i] === '*' && next(i) === '/') {
         this.state = "main";
@@ -240,16 +241,23 @@ export function preprocess(inCode) {
           found = true;
         }
       }
-      return s
+
+      while (s.endsWith("\n") || s.endsWith("\r")) {
+        s = s.slice(0, s.length-1);
+      }
+
+      return s;
     },
+
     main(i) {
       let l = lines[i];
 
       if (!l.trim().startsWith("#")) {
         if (this.enabled) {
-          lines2.push(this.subst(l));
+          l = this.subst(l);
+          lines2.push(l);
         } else {
-          lines2.push("\n");
+          lines2.push("");
         }
         return i + 1;
       }
@@ -258,7 +266,7 @@ export function preprocess(inCode) {
 
       while (i < lines.length - 1 && l.trim().endsWith("\\")) {
         i++;
-        lines2.push("\n");
+        lines2.push("");
 
         l = l.slice(0, l.length - 1) + " " + lines[i].trim()
       }
@@ -287,7 +295,6 @@ export function preprocess(inCode) {
 
 
         log("check " + msg, this.ifstack, this.enabled, enabled && !this.enabled);
-
         return enabled && !this.enabled;
       }
 
@@ -322,11 +329,11 @@ export function preprocess(inCode) {
           this.sortmacros();
         }
 
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "extension") {
         //ignore
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "elif") {
         let enabled = checkElseEnabled("elif");
@@ -343,7 +350,8 @@ export function preprocess(inCode) {
           keyword = "if";
         } else {
           this.enabled = false;
-          lines2.push("\n");
+
+          lines2.push("");
           return i;
         }
       }
@@ -353,19 +361,19 @@ export function preprocess(inCode) {
         let name = parts[1].trim();
 
         this.enabled = name in this.macros || name in this.defs;
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "ifndef") {
         this.push("ifndef");
         let name = parts[1].trim();
 
         this.enabled = !(name in this.macros || name in this.defs);
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "else") {
         this.enabled = checkElseEnabled("else");
 
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "endif") {
         let count = this.pop_depth;
@@ -374,7 +382,7 @@ export function preprocess(inCode) {
           this.pop("endif");
         }
 
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "if") {
         let code = parts.slice(1, parts.length).join(" ");
@@ -399,7 +407,7 @@ export function preprocess(inCode) {
 
         log("#if", val, was_elif, was_elif_enabled, this.ifstack, this.pop_depthcfv);
 
-        lines2.push("\n");
+        lines2.push("");
         return i;
       } else if (keyword === "undef") {
         let name = parts[1];
@@ -410,16 +418,14 @@ export function preprocess(inCode) {
 
         this.sortmacros();
 
-        lines2.push("\n");
+        lines2.push("");
         return i;
       }
 
       lines2.push(this.subst(l));
       return i;
     },
-    comment(i) {
 
-    },
     last_keyword: "",
     enabled     : true,
     pop_depth   : 1,

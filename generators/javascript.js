@@ -197,11 +197,13 @@ ${setter}
           out(";");
         }
       } else if (n.type === "Trinary") {
+        out("((");
         rec(n[0]);
-        out(" ? ");
+        out(") ? (");
         rec(n[1]);
-        out(" : ");
+        out(") : (");
         rec(n[2]);
+        out("))");
       } else if (n.type === "If") {
         out("if (");
         rec(n[0]);

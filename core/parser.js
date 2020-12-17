@@ -903,11 +903,14 @@ export function parse_intern_old(s, ctx=state.state, start="Run") {
 
 import {internalCodeGen} from '../generators/internal.js';
 
-export function parse(src, startNode, args) {
+export function parse(src, startNode, args, lineOff=0, lexposOff=0, column=0) {
   let src2 = '';
   let argi = 0;
 
   if (startNode !== undefined && startNode.constructor === Array) {
+    column = lexposOff ?? 0;
+    lexposOff = lineOff ?? 0;
+    lineOff = args ?? 0;
     args = startNode;
     startNode = undefined;
   }
@@ -993,6 +996,15 @@ export function parse(src, startNode, args) {
     }
   }
 
+  let rec = (n) => {
+    n.line = lineOff;
+    n.lexpos = lexposOff;
+    n.col = column;
+
+    for (let n2 of n) {
+      rec(n2);
+    }
+  }
 
   if (startNode) {
     find(ret);
@@ -1002,6 +1014,10 @@ export function parse(src, startNode, args) {
 
   if (retnode && retnode.type === "Program" && startNode !== "Program") {
     retnode.type = "StatementList";
+  }
+
+  if (retnode) {
+    rec(retnode);
   }
 
   return retnode;
