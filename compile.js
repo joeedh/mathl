@@ -1,5 +1,5 @@
 globalThis.window = globalThis;
 
-import('../brush/proceduralTex.js').then((texmod) => {
+import('../texture/proceduralTex.js').then((texmod) => {
 
 });

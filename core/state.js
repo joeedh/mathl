@@ -66,12 +66,22 @@ export function formatLines(s, line=0, lexpos=-1, col, count=5) {
 //  IGNORE_SEMI : 1
 //};
 
+function isBrowser() {
+  if (typeof window !== "undefined") {
+    return window.navigator && window.document;
+  } else if (typeof self !== "undefined") {
+    return true;
+  }
+
+  return false;
+}
+
 export class ParseState {
   constructor(source, filename="(anonymous)", parser, preprocessed="") {
     this.parser = undefined;
     this.lexer = undefined;
 
-    this.throwError = false;
+    this.throwError = isBrowser();
 
     this.temp_idgen = 0;
 

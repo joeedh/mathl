@@ -369,6 +369,8 @@ ${setter}
         out(n.value.toFixed(7));
       } else if (n.type === "IntConstant") {
         out(""+n.value);
+      } else if (n.type === "Precision") {
+        return; //do nothing
       } else if (n.type === "Function") {
         let fname = n.polyKey ?? n.value;
 

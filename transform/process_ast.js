@@ -769,14 +769,16 @@ export function transformPolymorphism(ast, ctx) {
           cs = cs.filter(f => f.totmatch > 0);
           if (cs.length > 1) {
             let cs2 = cs.map(f => f.key).join("\n");
-            ctx.error("Failed to resolve polymorphic function; candidates were:" + cs2);
+            ctx.error("Could not resolve polymorphic function; candidates were:" + cs2);
           }
         }
       }
 
       if (bad) {
-        console.log(""+node)
-        ctx.error(node, "Failed to resolve polymorphic function call");
+        console.log(""+type);
+        console.log(cs);
+        console.log(""+node);
+        ctx.error(node, "Could not resolve polymorphic function call");
       }
 
       let func;

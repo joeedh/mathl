@@ -248,8 +248,72 @@ export class Parser {
      */
   }
 
+  compressPopTab() {
+    let bits = 10;
+    let next = (1<<bits)-1;
+    let out = [];
+
+    for (let p of this.pdata.act_tab) {
+      for (let item of p) {
+        out.push(item);
+      }
+
+      out.push(next);
+    }
+
+    //we don't stray far intonegative territory. . .
+    let half = (1<<(bits-3))-1;
+
+    out = out.map(f => (f + half));
+
+    if (1) {
+      let out2 = [];
+      for (let i = 0; i < out.length; i++) {
+        for (let j = 0; j < bits; j++) {
+          out2.push(out[i] & (1<<j) ? 1 : 0);
+        }
+      }
+
+      let bits2 = 15;
+      out = out2;
+      let len = Math.ceil(out.length/bits2)*bits2;
+      while (out.length < len) {
+        out.push(0);
+      }
+
+      out2 = [];
+      for (let i = 0; i < len; i += bits2) {
+        let b = 0;
+
+        for (let j = 0; j < bits2; j++) {
+          b |= (1<<j)*out[i + j];
+        }
+
+        out2.push(b);
+      }
+      out = out2;
+
+      console.log(out2);
+      console.log(2*out2.length/1024);
+    } else {
+      console.log(out);
+    }
+
+    let s = '';
+
+    for (let i=0; i<out.length; i ++) {
+      let a = out[i];
+
+      s += String.fromCharCode(a);
+    }
+
+    s = LZString.compress(s);
+    console.log(s.length*2/1024);
+    console.log("size:", 2*out.length/1024);
+  }
   toJSON() {
     let pdata = this.pdata;
+
 
     return {
       pop_tab          : pdata.pop_tab,
