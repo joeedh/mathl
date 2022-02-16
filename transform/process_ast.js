@@ -1009,7 +1009,7 @@ export function propagateTypes(ast, ctx, stage=0) {
     }
   }, false, true);
 
-  console.log("FOUND", found);
+  //console.log("FOUND", found);
 }
 
 export function transformAst(ast, ctx) {
