@@ -569,7 +569,7 @@ export class Parser {
       message += "^\n";
 
       console.warn(message);
-      process.exit();
+      //process.exit();
 
       throw new Error(message);
     }
@@ -597,7 +597,7 @@ export class Parser {
           err_la.unshift([]);
 
           for (i = 0; i < act_tab[sstack.bottom].length; i += 2) {
-            err_la[0].push(labels[act_tab[sstack.bottom][i]]);
+            err_la.get(0).push(labels[act_tab[sstack.bottom][i]]);
           }
 
           PCB.errorLabels = err_la;

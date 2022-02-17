@@ -85,7 +85,7 @@ import {libraryCode} from './state.js';
 let compiledLibraryCode = undefined;
 
 const lskey = "_mathl_library_code";
-const libraryCodeVersion = 0;
+const libraryCodeVersion = 9;
 
 function saveLibraryCode() {
   let s = JSON.stringify(compiledLibraryCode);
@@ -229,13 +229,30 @@ export function genJS(ctx, args={}) {
 
 export {silence, unsilence} from '../util/util.js';
 
+window._parseGlsl = parse;
+
 export function compileJS(code, filename) {
   let ctx = parse(code, filename);
   let code2 = genJS(ctx);
 
   var program;
 
-  eval(code2);
-  return program();
+  try {
+    eval(code2);
+  } catch (error) {
+    console.log(code2);
+
+    console.error(error.stack);
+    console.error(error.message, error);
+    throw error;
+  }
+
+  let ret = program();
+
+  ret.sourceState = ctx;
+  ret.sourceCode = code2;
+  return ret;
 }
+window._compileJS = compileJS;
+
 
