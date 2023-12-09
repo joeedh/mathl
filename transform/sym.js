@@ -374,7 +374,7 @@ export class CallSym extends Sym {
   }
 
   df(name) {
-    if (!this.value in builtin_dvs) {
+    if (!(this.value in builtin_dvs)) {
       throw new Error("unknown builtin function " + this.value);
     }
 

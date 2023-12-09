@@ -361,7 +361,7 @@ export function transformOps(ast, ctx) {
       //key = "_$_$_" + key + "_" + key1 + "_" + key2;
       key = `_$_$_${key}_${key1}_${key2}`;
 
-      if (!key in ctx.poly_keymap) {
+      if (!(key in ctx.poly_keymap)) {
         ctx.error(node, "Unknown operator overload function " + key);
       }
 
