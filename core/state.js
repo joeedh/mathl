@@ -823,10 +823,7 @@ export function genLibraryCode() {
     op = transformAssignOp(op)
 
     s += `
-  int _$_$_int_${name}__int__int(int a, int b) {
-    return trunc(a ${op} b);
-  }
-  int _$_$_${name}__int__int(int a, int b) {
+  int _$_$_${name}__int__intint(int a, int b) {
     return trunc(a ${op} b);
   }
   
@@ -866,9 +863,9 @@ export function genLibraryCode() {
 
       for (let step = 0; step < 2; step++) {
         if (step) {
-          s += `${key} _$_$_${name}__float__${key}(float a, ${key} b) {\n`
+          s += `${key} _$_$_${name}__${key}__float${key}(float a, ${key} b) {\n`
         } else {
-          s += `${key} _$_$_${name}__${key}__float(${key} a, float b) {\n`
+          s += `${key} _$_$_${name}__${key}__${key}float(${key} a, float b) {\n`
         }
         s += `  ${key} r;\n`
         for (let i = 0; i < sizemap[key]; i++) {

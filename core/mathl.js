@@ -127,10 +127,26 @@ function loadLibraryCode() {
 }
 
 function getLibraryCode() {
+  function processLibraryAST(ast) {
+    for (let node of ast) {
+      if (node.type === 'Function') {
+        state.state.addLibraryFunc(node)
+      }
+    }
+  }
+
   const lskey = '_mathl_library_code'
-  if (lskey in localStorage) {
+  const lskeyHash = '_mathl_library_hash'
+
+  let hash = parseFloat(localStorage[lskeyHash] ?? '-1')
+  const digest = new util.HashDigest()
+  digest.add(libraryCode)
+  let codeHash = digest.get()
+
+  if (lskey in localStorage && hash === codeHash) {
     try {
       loadLibraryCode()
+      processLibraryAST(compiledLibraryCode)
       return compiledLibraryCode
     } catch (error) {
       console.error(error.stack)
@@ -149,14 +165,11 @@ function getLibraryCode() {
   compiledLibraryCode = parser.parse(libraryCode)
   compiledLibraryCode.version = libraryCodeVersion
 
-  for (let node of compiledLibraryCode) {
-    if (node.type === 'Function') {
-      state.state.addLibraryFunc(node)
-    }
-  }
+  processLibraryAST(compiledLibraryCode)
 
   state.popParseState({keepPolyFuncs: true})
   saveLibraryCode()
+  localStorage[lskeyHash] = '' + codeHash
 
   return compiledLibraryCode
 }

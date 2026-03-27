@@ -1,23 +1,38 @@
-import {ArrayType, VarType} from '../core/types.js';
-import * as util from '../util/util.js';
-import {CodeGenerator} from './generator_base.js';
-import {strong, indent, stronglog, log, termColor, termPrint} from '../util/util.js';
+import {ArrayType, VarType} from '../core/types.js'
+import * as util from '../util/util.js'
+import {CodeGenerator} from './generator_base.js'
+import {strong, indent, stronglog, log, termColor, termPrint} from '../util/util.js'
 
-let keys = new Set(["abs", "sin", "cos", "acos", "asin", "log", "sqrt", "exp",
-            "tan", "min", "max", "floor", "ceil", "trunc", "fract"]);
+let keys = new Set([
+  'abs',
+  'sin',
+  'cos',
+  'acos',
+  'asin',
+  'log',
+  'sqrt',
+  'exp',
+  'tan',
+  'min',
+  'max',
+  'floor',
+  'ceil',
+  'trunc',
+  'fract',
+])
 
-let mathcode = '';
+let mathcode = ''
 for (let k of keys) {
-  mathcode += `let _$_${k}_float_float = Math.${k};\n`;
+  mathcode += `let _$_${k}__float__float = Math.${k};\n`
 }
 
 export let jslib = `
   ${mathcode}
     
-  let _$_trunc_int_int = Math.trunc;
-  let _$_pow_float_floatfloat = Math.pow;
+  let _$_trunc__int__int = Math.trunc;
+  let _$_pow__float__floatfloat = Math.pow;
    
-  function _$_atan_float_floatfloat(y, x) {
+  function _$_atan__float__floatfloat(y, x) {
     if (x !== undefined) {
       return Math.atan2(y, x);
     }
@@ -72,63 +87,62 @@ export class JSGenerator extends CodeGenerator {
 
   static generatorDefine() {
     return {
-      typeName: "js"
+      typeName: 'js',
     }
   }
 
   genCode(ast = this.ctx.ast) {
-    let ctx = this.ctx;
+    let ctx = this.ctx
 
-    let outs = '';
+    let outs = ''
 
     function out(s) {
-      outs += s;
+      outs += s
     }
 
-    function endstatement(s = ";") {
+    function endstatement(s = ';') {
       if (!outs.trim().endsWith(s)) {
-        outs = outs.trim();
-        out(s);
+        outs = outs.trim()
+        out(s)
       }
     }
 
-    let inputs = '';
+    let inputs = ''
     for (let k in ctx.inputs) {
       if (inputs.length > 0) {
-        inputs += ", ";
+        inputs += ', '
       } else {
-        inputs = "let ";
+        inputs = 'let '
       }
 
-      inputs += k;
+      inputs += k
     }
     if (inputs.length > 0) {
-      inputs += ";";
+      inputs += ';'
     }
 
     for (let k in ctx.uniforms) {
-      let n = ctx.uniforms[k];
-      let type = n[0];
+      let n = ctx.uniforms[k]
+      let type = n[0]
 
-      let init = "0";
+      let init = '0'
       let setter = `    ${k} = val;`
 
       if (type.value instanceof ArrayType) {
-        setter = '';
+        setter = ''
 
-        init = "[";
+        init = '['
         for (let i = 0; i < type.value.size; i++) {
           if (i > 0) {
-            init += ",";
+            init += ','
           }
 
-          setter += `    ${k}[${i}] = val[${i}];\n`;
+          setter += `    ${k}[${i}] = val[${i}];\n`
 
-          init += "0";
+          init += '0'
         }
-        init += "]"
+        init += ']'
       }
-
 
       let s = `
   
@@ -136,25 +150,26 @@ export class JSGenerator extends CodeGenerator {
   function __set${k}(val) {
 ${setter}
   }
-    `.trim();
-      out("  " + s + "\n\n")
+    `.trim()
+      out('  ' + s + '\n\n')
     }
 
-    outs = `${jslib}
+    outs =
+      `${jslib}
     
-    program = function() {\n  let __outs;\n  ${inputs}\n\n` + outs;
+    program = function() {\n  let __outs;\n  ${inputs}\n\n` + outs
 
-    let outmap = {};
-    let oi = 0;
+    let outmap = {}
+    let oi = 0
 
     for (let k in ctx.outputs) {
-      outmap[k] = oi++;
+      outmap[k] = oi++
     }
-    let totoutput = oi;
+    let totoutput = oi
 
-    let tlvl = 1;
+    let tlvl = 1
 
-    let usestack = false;
+    let usestack = false
 
     let state = {
       stack     : [],
@@ -163,412 +178,440 @@ ${setter}
       scope     : {},
       pushNode  : undefined,
       copy() {
-        let ret = Object.assign({}, this);
+        let ret = Object.assign({}, this)
 
-        ret.scope = Object.assign({}, this.scope);
-        ret.stackscope = Object.assign({}, this.stackscope);
+        ret.scope = Object.assign({}, this.scope)
+        ret.stackscope = Object.assign({}, this.stackscope)
 
-        ret.copy = this.copy;
+        ret.copy = this.copy
 
-        return ret;
+        return ret
       },
       vardecl(name, type) {
-        this.stackscope[name] = type;
-        this.stack.push(name);
-        return this.stackcur++;
+        this.stackscope[name] = type
+        this.stack.push(name)
+        return this.stackcur++
       },
       leave() {
         if (usestack) {
           for (let k in this.stackscope) {
-            let type = this.stackscope[k];
-            out(indent(tlvl) + `    ${type}stack_cur--;\n`);
-            this.stack.pop();
-            this.stackcur--;
+            let type = this.stackscope[k]
+            out(indent(tlvl) + `    ${type}stack_cur--;\n`)
+            this.stack.pop()
+            this.stackcur--
           }
         }
 
         this.stackscope = {}
-        return this;
-      }
-    };
+        return this
+      },
+    }
 
-    let statestack = [];
+    let statestack = []
 
     function push(pushNode) {
-      let s = state.copy();
-      statestack.push(state);
+      let s = state.copy()
+      statestack.push(state)
 
-      state = s;
-      state.pushNode = pushNode;
+      state = s
+      state.pushNode = pushNode
 
-      return s;
+      return s
     }
 
     function pop(pushNode) {
       if (state.pushNode === pushNode) {
-        let s = state;
+        let s = state
 
-        state.leave();
-        state = statestack.pop();
-        return s;
+        state.leave()
+        state = statestack.pop()
+        return s
       }
     }
 
     function rec(n) {
-      if (n.type === "ArrayLookup") {
-        rec(n[0]);
-        out("[");
-        rec(n[1]);
-        out("]");
-      } else if (n.type === "VarDecl") {
-        let ok = n.value in ctx.inputs || n.value in ctx.outputs || n.value in ctx.uniforms;
+      if (n.type === 'ArrayLookup') {
+        rec(n[0])
+        out('[')
+        rec(n[1])
+        out(']')
+      } else if (n.type === 'VarDecl') {
+        let ok = n.value in ctx.inputs || n.value in ctx.outputs || n.value in ctx.uniforms
 
-        let inFunc = false;
+        let inFunc = false
 
-        let p = n.parent;
+        let p = n.parent
         while (p !== undefined) {
-          if (p.type === "Function") {
-            inFunc = true;
-            break;
+          if (p.type === 'Function') {
+            inFunc = true
+            break
           }
-          p = p.parent;
+          p = p.parent
         }
 
         if (ok && inFunc) {
-          let n2;
+          let n2
 
-          n2 = n.value in ctx.inputs ? ctx.inputs[n.value] : undefined;
-          n2 = n.value in ctx.outputs ? ctx.outputs[n.value] : undefined;
-          n2 = n.value in ctx.uniforms ? ctx.uniforms[n.value] : undefined;
+          n2 = n.value in ctx.inputs ? ctx.inputs[n.value] : undefined
+          n2 = n.value in ctx.outputs ? ctx.outputs[n.value] : undefined
+          n2 = n.value in ctx.uniforms ? ctx.uniforms[n.value] : undefined
 
           if (n2 === ctx.getScope(n.value)) {
-            ok = false;
+            ok = false
           }
         }
 
         if (!ok) {
-          out(`let ${n.value}`);
+          out(`let ${n.value}`)
           if (n.length > 1 && n[1].length > 0) {
-            out(" = ");
-            rec(n[1]);
+            out(' = ')
+            rec(n[1])
           } else {
-            let type = ctx.resolveType(n[0].value);
-            type = type.getTypeNameSafe();
+            let type = ctx.resolveType(n[0].value)
+            type = type.getTypeNameSafe()
 
-            if (type === "vec2" || type === "vec3" || type === "vec4" || type === "mat4" || type === "mat3") {
-              out(" = ");
+            if (type === 'vec2' || type === 'vec3' || type === 'vec4' || type === 'mat4' || type === 'mat3') {
+              out(' = ')
 
               if (usestack) {
-                let i = state.vardecl(n.value, type);
-                out(`${type}stack[${type}stack_cur++];\n`);
+                let i = state.vardecl(n.value, type)
+                out(`${type}stack[${type}stack_cur++];\n`)
               } else {
-                out(`${type}cache.next();`);
+                out(`${type}cache.next();`)
               }
             }
           }
 
-          out(";");
+          out(';')
         }
-      } else if (n.type === "PostDec") {
-        rec(n[0]);
-        out("--");
-      } else if (n.type === "PreDec") {
-        out("--");
-        rec(n[0]);
-      } else if (n.type === "PostInc") {
-        rec(n[0]);
-        out("++");
-      } else if (n.type === "PreInc") {
-        out("++");
-        rec(n[0]);
-      } else if (n.type === "ForLoop") {
-        push(n);
-        out("for (");
+      } else if (n.type === 'PostDec') {
+        rec(n[0])
+        out('--')
+      } else if (n.type === 'PreDec') {
+        out('--')
+        rec(n[0])
+      } else if (n.type === 'PostInc') {
+        rec(n[0])
+        out('++')
+      } else if (n.type === 'PreInc') {
+        out('++')
+        rec(n[0])
+      } else if (n.type === 'ForLoop') {
+        push(n)
+        out('for (')
 
-        let tlvl2 = tlvl;
-        tlvl = 0;
+        let tlvl2 = tlvl
+        tlvl = 0
 
-        rec(n[0]);
+        rec(n[0])
 
-        tlvl = tlvl2;
+        tlvl = tlvl2
 
-        outs = outs.trim();
-        endstatement(";");
+        outs = outs.trim()
+        endstatement(';')
 
-        rec(n[1][0]);
-        outs = outs.trim();
-        endstatement(";");
+        rec(n[1][0])
+        outs = outs.trim()
+        endstatement(';')
 
-        rec(n[1][1]);
-        outs = outs.trim();
+        rec(n[1][1])
+        outs = outs.trim()
 
-        if (outs.endsWith(";")) {
-          outs = outs.slice(0, outs.length - 1);
+        if (outs.endsWith(';')) {
+          outs = outs.slice(0, outs.length - 1)
         }
 
-        out(") {\n");
+        out(') {\n')
 
-        tlvl++;
-        rec(n[2]);
-        tlvl--;
+        tlvl++
+        rec(n[2])
+        tlvl--
 
-        out("}\n");
+        out('}\n')
 
-        pop(n);
-      } else if (n.type === "Return") {
-        let i1, i2, off, type, p, tname;
-        let tab = indent(tlvl + 2);
+        pop(n)
+      } else if (n.type === 'Return') {
+        let i1, i2, off, type, p, tname
+        let tab = indent(tlvl + 2)
 
         if (usestack) {
-          out("{\n");
-          i1 = state.stackcur;
-          pop(state.pushNode);
+          out('{\n')
+          i1 = state.stackcur
+          pop(state.pushNode)
 
-          i2 = state.stackcur;
-          off = i2 - i1;
+          i2 = state.stackcur
+          off = i2 - i1
 
-          let p = n;
+          let p = n
           while (p) {
             if (p.ntype) {
-              type = p.ntype;
-              break;
+              type = p.ntype
+              break
             }
-            p = p.parent;
+            p = p.parent
           }
 
-          type = type ?? ctx.getReturnType();
-          tname = type.getTypeNameSafe();
+          type = type ?? ctx.getReturnType()
+          tname = type.getTypeNameSafe()
 
-          out(`${tab}${tname}stack[${tname}stack_cur]`);
-          out(`.load(${tname}stack[${tname}stack_cur + (${off})]);\n`);
-          out(`${tab}${tname}stack_cur++;\n`);
+          out(`${tab}${tname}stack[${tname}stack_cur]`)
+          out(`.load(${tname}stack[${tname}stack_cur + (${off})]);\n`)
+          out(`${tab}${tname}stack_cur++;\n`)
         }
 
-        out(tab + "return")
+        out(tab + 'return')
         if (n.length > 0) {
-          out(" ");
+          out(' ')
           for (let n2 of n) {
-            rec(n2);
+            rec(n2)
           }
-          out(";");
+          out(';')
         }
         if (usestack) {
-          out("\n" + indent(tlvl) + "}\n");
+          out('\n' + indent(tlvl) + '}\n')
         }
-      } else if (n.type === "Trinary") {
-        out("((");
-        rec(n[0]);
-        out(") ? (");
-        rec(n[1]);
-        out(") : (");
-        rec(n[2]);
-        out("))");
-      } else if (n.type === "If") {
-        out("if (");
-        rec(n[0]);
-        out(") {\n");
-        rec(n[1][0]);
-        out(indent(tlvl) + "}");
+      } else if (n.type === 'Trinary') {
+        out('((')
+        rec(n[0])
+        out(') ? (')
+        rec(n[1])
+        out(') : (')
+        rec(n[2])
+        out('))')
+      } else if (n.type === 'If') {
+        out('if (')
+        rec(n[0])
+        out(') {\n')
+        rec(n[1][0])
+        out(indent(tlvl) + '}')
 
         if (n[1].length > 1) {
-          out(" else {\n");
-          if (n[1][1].type === "If") {
-            tlvl++;
-            out(indent(tlvl));
+          out(' else {\n')
+          if (n[1][1].type === 'If') {
+            tlvl++
+            out(indent(tlvl))
           }
-          rec(n[1][1]);
-          if (n[1][1].type === "If") {
-            tlvl--;
+          rec(n[1][1])
+          if (n[1][1].type === 'If') {
+            tlvl--
           }
-          out(indent(tlvl) + "}\n");
+          out(indent(tlvl) + '}\n')
         } else {
-          out("\n");
+          out('\n')
         }
+      } else if (n.type === 'UnaryOp') {
+        out(n.op)
+        rec(n[0])
+      } else if (n.type === 'BinOp' || n.type === 'Assign') {
+        let paren = false
 
-      } else if (n.type === "UnaryOp") {
-        out(n.op);
-        rec(n[0]);
-      } else if (n.type === "BinOp" || n.type === "Assign") {
-        let paren = false;
-
-        if (n.parent && n.parent.type === "BinOp") {
-          paren = n.parent.prec < n.prec;
+        if (n.parent && n.parent.type === 'BinOp') {
+          paren = n.parent.prec < n.prec
         }
 
         if (paren) {
-          out("(");
+          out('(')
         }
-        rec(n[0]);
+        rec(n[0])
 
-        if (n.op !== ".") {
-          out(' ' + n.op + ' ');
+        if (n.op !== '.') {
+          out(' ' + n.op + ' ')
         } else {
-          out(n.op);
+          out(n.op)
         }
 
-        rec(n[1]);
+        rec(n[1])
         if (paren) {
-          out(")");
+          out(')')
         }
-      } else if (n.type === "Ident") {
+      } else if (n.type === 'Ident') {
         if (n.value in ctx.outputs) {
           out(`__outs[${outmap[n.value]}]`)
         } else {
-          out(n.value);
+          out(n.value)
         }
-      } else if (n.type === "Call") {
-        let name;
+      } else if (n.type === 'Call') {
+        let name
 
-        if (n[0].type === "VarType") {
-          name = n[0].value.getTypeName();
+        if (n[0].type === 'VarType') {
+          name = n[0].value.getTypeName()
         } else {
-          name = n[0].value;
+          name = n[0].value
         }
 
-        if (name === "int_cast") {
-          out("~~");
+        if (name === 'int_cast') {
+          out('~~')
         }
 
-        out(name);
+        out(name)
 
-        out("(");
+        out('(')
         rec(n[1])
-        out(")");
-      } else if (n.type === "ExprList") {
-        let i = 0;
+        out(')')
+      } else if (n.type === 'ExprList') {
+        let i = 0
         for (let n2 of n) {
           if (i > 0) {
-            out(", ");
+            out(', ')
           }
 
-          rec(n2);
-          i++;
+          rec(n2)
+          i++
         }
-      } else if (n.type === "FloatConstant") {
-        out(n.value.toFixed(7));
-      } else if (n.type === "IntConstant") {
-        out("" + n.value);
-      } else if (n.type === "Precision") {
-        return; //do nothing
-      } else if (n.type === "Function") {
-        let fname = n.polyKey ?? n.value;
+      } else if (n.type === 'FloatConstant') {
+        out(n.value.toFixed(7))
+      } else if (n.type === 'IntConstant') {
+        out('' + n.value)
+      } else if (n.type === 'Precision') {
+        return //do nothing
+      } else if (n.type === 'Function') {
+        let fname = n.polyKey ?? n.value
 
-        if (n.value === "main") {
-          fname = "main";
+        if (n.value === 'main') {
+          fname = 'main'
         }
 
-        out(`\n  function ${fname}(`);
-        let i = 0;
+        out(`\n  function ${fname}(`)
+        let i = 0
 
         for (let c of n[1]) {
           if (i > 0) {
-            out(", ");
+            out(', ')
           }
           out(c.value)
-          i++;
+          i++
         }
-        out(") {\n");
+        out(') {\n')
 
-        tlvl++;
+        tlvl++
 
-        push(n);
-        rec(n[2]);
-        pop(n);
+        push(n)
+        rec(n[2])
+        pop(n)
 
-        tlvl--;
+        tlvl--
 
-        out(indent(tlvl) + "}\n");
-      } else if (n.type === "StatementList") {
-        let noScope = n.noScope;
+        out(indent(tlvl) + '}\n')
+      } else if (n.type === 'StatementList') {
+        let noScope = n.noScope
 
         if (!noScope) {
-          push(n);
+          push(n)
         }
 
         for (let c of n) {
-          out(indent(tlvl));
+          out(indent(tlvl))
 
-          let slen = outs.length;
+          let slen = outs.length
 
           rec(c)
 
-          outs = outs.trim();
+          outs = outs.trim()
 
-          if (!outs.endsWith(";") && !outs.endsWith("}")) {
-            out(";");
+          if (!outs.endsWith(';') && !outs.endsWith('}')) {
+            out(';')
           }
-          out("\n");
-
+          out('\n')
         }
 
         if (!noScope) {
-          pop(n);
+          pop(n)
         }
       } else {
         for (let n2 of n) {
-          rec(n2);
+          rec(n2)
         }
       }
     }
 
-    rec(ast);
+    rec(ast)
 
-    let argset = '';
-    outs += "  let __$func = function(outs";
+    outs += '  let __$func = function(outs, $ins) {\n'
 
+    let i = 0
     for (let k in ctx.inputs) {
-      outs += `, \$${k}`;
-      argset += `    ${k} = \$${k};\n`
+      outs += `    ${k} = $ins[${i}];\n`
+      i++
     }
-    outs += ") {\n";
 
     let footer = `
     __outs = outs;
-${argset}
     main();
 
-  `.trim();
+  `.trim()
 
-    out("    " + footer + "\n");
+    out('    ' + footer + '\n')
 
-    outs += "  }\n";
+    outs += '  }\n'
 
-    outs += '  return {\n    call : __$func,\n';
+    outs += '  return {\n    call : function() { return __$func(this.outputs, this.inputs) },\n'
 
     function buildType(t) {
       if (t instanceof VarType) {
-        return t.type;
+        return t.type
       } else if (t instanceof ArrayType) {
-        return t.name;
+        return t.name
       }
-      return t;
+      return t
     }
 
+    outs += `  setInput(index, value) { this.inputs[index] = value},\n`
+    outs += `  getInput(index) { return this.inputs[index] },\n`
+    outs += `  uniforms: {\n`
     for (let k in ctx.uniforms) {
-      outs += `    get ${k}() {return ${k}},\n`;
-      outs += `    set ${k}(val) {__set${k}(val)},\n`;
-
+      outs += `    get ${k}() {return ${k}},\n`
+      outs += `    set ${k}(val) {__set${k}(val)},\n`
     }
+    outs += '  },\n'
 
-    let os1 = `    outputs: {\n`;
-    let os2 = `    outputTypes: {\n`;
+    const defaultValueMap = new Map([
+      ['float', '0.0'],
+      ['int', '0'],
+      ['bool', 'false'],
+      ['vec2', '[0, 0]'],
+      ['vec3', '[0, 0, 0]'],
+      ['vec4', '[0, 0, 0, 0]'],
+      ['mat2', '[0, 0, 0, 0]'],
+      ['mat3', '[0, 0, 0, 0, 0, 0, 0, 0, 0]'],
+      ['mat4', '[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]'],
+    ])
+
+    // build outputs
+    let os1 = `    outputs: [\n`
+    let os2 = `    outputTypes: {\n`
+    i = 0
     for (let k in ctx.outputs) {
-      let type = buildType(ctx.outputs[k][0].value);
-      os1 += `      ${k} : ${outmap[k]},\n`;
-      os2 += `      ${k} : "${type}",\n`;
+      let type = buildType(ctx.outputs[k][0].value)
+      os1 += `      ${defaultValueMap.get(type)},\n`
+      os2 += `      ${k} : {type: '${type}', index: ${i}},\n`
+      i++
     }
 
-    os1 += '    },\n';
-    os2 += '    },\n';
+    os1 += '    ],\n'
+    os2 += '    },\n'
 
+    // build inputs
+    let is1 = `    inputs: [\n`
+    let is2 = `    inputTypes: {\n`
+    i = 0
+    for (let k in ctx.inputs) {
+      let type = buildType(ctx.inputs[k][0].value)
+      is1 += `      ${defaultValueMap.get(type)},\n`
+      is2 += `      ${k} : {type: '${type}', index: ${i}},\n`
+      i++
+    }
 
-    outs += os1 + os2;
+    is1 += '    ],\n'
+    is2 += '    },\n'
 
-    outs += `    outputCount: ${totoutput}\n`;
-    outs += '  }\n';
-    outs += '}\n';
-    return outs;
+    outs += os1 + os2 + is1 + is2
+
+    outs += `    outputCount: ${totoutput}\n`
+    outs += '  }\n'
+    outs += '}\n'
+
+    return outs
   }
 }
 
-CodeGenerator.register(JSGenerator);
+CodeGenerator.register(JSGenerator)

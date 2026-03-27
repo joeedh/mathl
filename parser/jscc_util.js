@@ -574,7 +574,7 @@ export class Parser {
       throw new Error(message);
     }
 
-    console.log("%cPARSING!", "color : orange;");
+    //console.log("%cPARSING!", "color : orange;");
 
     let err_off = new ParseStack();
     let err_la = new ParseStack();
@@ -692,8 +692,6 @@ export class Parser {
     let ret = rval;
     globalThis.noderet = ret;
 
-    console.log("%cDone.", "color : orange;");
-
     return ret;
   }
 }
@@ -805,12 +803,12 @@ export function getParser(lexer, parsedef, tokenlist, prec, parserName, force = 
   globalThis.grammar = grammar;
 
   if (parser && parser.hash === hash) {
-    console.log("Old hash:", parser.hash, "new hash:", hash);
+    //console.log("Old hash:", parser.hash, "new hash:", hash);
 
     globalThis.parser = parser;
     return parser;
   } else if (!force) {
-    console.log("Old hash:", parser.hash, "new hash:", hash);
+    //console.log("Old hash:", parser.hash, "new hash:", hash);
     throw new Error("parser is out of date; run build_parsetable.js");
   }
 
