@@ -14,7 +14,7 @@ let idgen = 0;
 export const strtable = new Map();
 export const hashtable = new Map();
 
-window.strtable = strtable;
+globalThis.strtable = strtable;
 
 function strTableAdd(type) {
   let hash = util.strhash(type);
@@ -41,7 +41,7 @@ for (let key of AstTypes) {
   strTableAdd(key);
 }
 
-window.jsonCompress = function(json) {
+globalThis.jsonCompress = function(json) {
   let delim = "\"',.{}[]|: ";
   let delimMap = {};
   let dicti = 0.0;

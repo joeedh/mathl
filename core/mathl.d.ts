@@ -1,11 +1,16 @@
-declare interface ICompiledCtx {
+export interface ICompiledCtx {
   source: string
   filename: string
 }
 
-declare interface ICompiledCode {
+export interface ICompiledCode {
   sourceState: ICompiledCtx
   sourceCode: string
+  
 }
 
-declare function compileJS(code: string, filename: string): ICompiledCode
+export function findSlots(ctx: ICompiledCtx, ast: any): void
+export function parse(src: any, filename: any): ParseState
+export function genCode(ctx: ICompiledCtx, type: any, args?: {}): any
+export function genJS(ctx: ICompiledCtx, args?: {}): any
+export function compileJS(code: string, filename: string): ICompiledCode

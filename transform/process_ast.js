@@ -332,6 +332,7 @@ export function transformOps(ast, ctx) {
 
       if (!t1 || !t2) {
         log("" + node);
+        debugger
         ctx.error(node, "Type system could not resolve types");
       }
 
@@ -340,6 +341,7 @@ export function transformOps(ast, ctx) {
 
       if (isint1 ^ isint2) {
         log("" + node);
+        debugger
         ctx.error(node, "Cannot do mixed math on integer and floats");
       }
 
@@ -355,13 +357,15 @@ export function transformOps(ast, ctx) {
       let key2 = t2.getTypeNameSafe();
 
       if (!key) {
+        debugger
         ctx.error(node, `Unsupported op ${node.op} for ${key1}/${key2}`);
       }
 
       //key = "_$_$_" + key + "_" + key1 + "_" + key2;
-      key = `_$_$_${key}_${key1}_${key2}`;
+      key = `_$_$_${key}__${key1}__${key1}${key2}`;
 
       if (!(key in ctx.poly_keymap)) {
+        debugger
         ctx.error(node, "Unknown operator overload function " + key);
       }
 
@@ -424,6 +428,7 @@ function getFinders(ctx, typemap, argmap) {
 
       if (!(type instanceof ArrayType) && !(type instanceof DynamicArrayType)) {
         log("type:", "" + type)
+        debugger
         ctx.error(n, "Not an array");
       }
 
@@ -471,6 +476,7 @@ function getFinders(ctx, typemap, argmap) {
       }
 
       if (!type) {
+        debugger
         ctx.error(node, "Unknown type for function " + name);
       }
     }
@@ -485,6 +491,7 @@ function getFinders(ctx, typemap, argmap) {
       let type2 = ctx.resolveType(findType(arg));
       if (!type2) {
         log("" + arg.parent.parent.parent);
+        debugger
         ctx.error(arg, "Unknown type for argument " + (i + 1));
       }
 
@@ -499,6 +506,7 @@ function getFinders(ctx, typemap, argmap) {
 
     if (!(key in ctx.functions)) {
       console.log("" + node.parent.parent)
+      debugger
       ctx.error(node, "Unknown function " + key);
     }
 
@@ -534,6 +542,7 @@ function getFinders(ctx, typemap, argmap) {
     if (fs && fs.size === 1) {
       for (let f of fs) {
         if (f.args.length !== p[1].length) {
+          debugger
           ctx.error(p, "Wrong number of function parameters for ", name);
         }
 
@@ -551,6 +560,7 @@ function getFinders(ctx, typemap, argmap) {
     let funcs = ctx.poly_namemap[name];
     if (!funcs) {
       console.log("" + p);
+      debugger
       ctx.error(p, "Unknown function " + name);
     }
 
@@ -647,6 +657,7 @@ function getFinders(ctx, typemap, argmap) {
     let candidates = buildPolyCandidates(p, idx);
 
     if (idx < 0 || idx === undefined) {
+      debugger
       ctx.error(node, "Internal parser error");
     }
 
@@ -681,6 +692,7 @@ function getFinders(ctx, typemap, argmap) {
       for (let c of candidates) {
         msg += "  " + c.key + "\n";
       }
+      debugger
       ctx.error(node, msg);
     }
 
@@ -694,6 +706,7 @@ function getFinders(ctx, typemap, argmap) {
     //XXX ideally we should branch the parser here and try each remaining candidate in turn
     if (!match) {
       console.log("" + node);
+      debugger
       ctx.error(node, "Failed to resolve polymorphic function call");
     }
 
@@ -830,6 +843,7 @@ export function transformPolymorphism(ast, ctx) {
           cs = cs.filter(f => f.totmatch > 0);
           if (cs.length > 1) {
             let cs2 = cs.map(f => f.key).join("\n");
+            debugger
             ctx.error("Could not resolve polymorphic function; candidates were:" + cs2);
           }
         }
@@ -839,6 +853,7 @@ export function transformPolymorphism(ast, ctx) {
         console.log("" + type);
         console.log(cs);
         console.log("" + node);
+        debugger
         ctx.error(node, "Could not resolve polymorphic function call");
       }
 
@@ -850,6 +865,7 @@ export function transformPolymorphism(ast, ctx) {
 
         if (!func) {
           //console.log(""+node.parent.parent);
+          debugger
           ctx.error(node, "Unknown function " + name + " (" + key + ")");
         }
         log(key, func, "" + node)
@@ -858,6 +874,7 @@ export function transformPolymorphism(ast, ctx) {
       } else { //should not happen;
         log(type, "" + node, cs)
         buildPolyCandidates(node, type);
+        debugger
         ctx.error(node, "internal parse error");
       }
 

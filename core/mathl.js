@@ -1,11 +1,9 @@
-import * as parseutil from '../util/parseutil.js'
+import {localStorage} from '../util/localStorage'
 import * as util from '../util/util.js'
 import {ASTNode} from './ast.js'
-import {ParseState} from './state.js'
-import {strong, stronglog, log, termColor, termPrint} from '../util/util.js'
 import '../generators/all.js'
 import {transformAst} from '../transform/process_ast.js'
-import {initParser, getParser} from '../parser/parser.js'
+import {getParser} from '../parser/parser.js'
 
 let indent = util.indent
 
@@ -142,8 +140,7 @@ function getLibraryCode() {
   }
 
   let parser = getParser()
-  state.pushParseState(libraryCode, 'ibrary', undefined, libraryCode)
-  state.popParseState()
+  state.pushParseState(libraryCode, 'library', undefined, libraryCode)
 
   state.state.parser = parser
   parser.lexer.line_lexstart = 0
@@ -152,6 +149,13 @@ function getLibraryCode() {
   compiledLibraryCode = parser.parse(libraryCode)
   compiledLibraryCode.version = libraryCodeVersion
 
+  for (let node of compiledLibraryCode) {
+    if (node.type === 'Function') {
+      state.state.addLibraryFunc(node)
+    }
+  }
+
+  state.popParseState({keepPolyFuncs: true})
   saveLibraryCode()
 
   return compiledLibraryCode
@@ -228,7 +232,7 @@ export function genJS(ctx, args = {}) {
 
 export {silence, unsilence} from '../util/util.js'
 
-window._parseGlsl = parse
+globalThis._parseGlsl = parse
 
 export function compileJS(code, filename) {
   let ctx = parse(code, filename)
@@ -253,4 +257,4 @@ export function compileJS(code, filename) {
 
   return ret
 }
-window._compileJS = compileJS
+globalThis._compileJS = compileJS
