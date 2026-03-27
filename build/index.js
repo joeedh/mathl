@@ -1,436 +1,181 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// util/parseutil.js
-var token = class {
-  static {
-    __name(this, "token");
-  }
-  constructor(type2, val2, lexpos, lexlen, lineno, lexer4, parser5) {
-    this.type = type2;
-    this.value = val2;
-    this.lexpos = lexpos;
-    this.lexlen = lexlen;
-    this.lineno = lineno;
-    this.lexer = lexer4;
-    this.parser = parser5;
-  }
-  toString() {
-    if (this.value !== void 0)
-      return "token(type=" + this.type + ", value='" + this.value + "')";
-    else
-      return "token(type=" + this.type + ")";
-  }
+// util/localStorage.js
+var localStorage_;
+var nodefs;
+var Cmds = {
+  LOADJSON: 0,
+  GETITEM: 1,
+  SETITEM: 2,
+  DELETE: 3,
+  SAVEJSON: 4
 };
-var tokdef = class {
+var LocalStorageNode = class {
   static {
-    __name(this, "tokdef");
+    __name(this, "LocalStorageNode");
   }
-  constructor(name2, regexpr, func) {
-    this.name = name2;
-    this.re = regexpr;
-    this.func = func;
+  queue = [];
+  filePath = "./localStorage.json";
+  json = void 0;
+  #timer = void 0;
+  onFlush = [];
+  constructor() {
   }
-};
-var PUTLParseError = class extends Error {
-  static {
-    __name(this, "PUTLParseError");
+  start() {
+    this.pushCommand([Cmds.LOADJSON]);
   }
-};
-var lexer = class _lexer {
-  static {
-    __name(this, "lexer");
+  pushCommand(cmd) {
+    this.queue.push(cmd);
+    this.flushQueueLater();
   }
-  constructor(tokdef3, errfunc) {
-    this.tokdef = tokdef3;
-    this.tokens = new Array();
-    this.lexpos = 0;
-    this.lexdata = "";
-    this.lineno = 0;
-    this.errfunc = errfunc;
-    this.tokints = {};
-    this.prev = void 0;
-    for (var i2 = 0; i2 < tokdef3.length; i2++) {
-      this.tokints[tokdef3[i2].name] = i2;
-    }
-    this.statestack = [["__main__", 0]];
-    this.states = { "__main__": [tokdef3, errfunc] };
-    this.statedata = 0;
+  get(key) {
+    return new Promise((accept, reject) => {
+      this.queue.push([Cmds.GETITEM, key, accept, reject]);
+    });
   }
-  copy() {
-    let ret2 = new _lexer(this.tokdef, this.errfunc);
-    for (let k2 in this.states) {
-      let state2 = this.states[k2];
-      state2 = [state2[0], state2[1]];
-      ret2.states[k2] = state2;
-    }
-    ret2.statedata = this.statedata;
-    return ret2;
+  set(key, value) {
+    return new Promise((accept, reject) => {
+      this.queue.push([Cmds.SETITEM, key, value, accept, reject]);
+    });
   }
-  //errfunc is optional, defines state-specific error function
-  add_state(name2, tokdef3, errfunc) {
-    if (errfunc === void 0) {
-      errfunc = /* @__PURE__ */ __name(function(lexer4) {
-        return true;
-      }, "errfunc");
-    }
-    this.states[name2] = [tokdef3, errfunc];
+  #delete(key) {
+    delete this.json[key];
+    this.#saveJSON();
   }
-  tok_int(name2) {
+  delete(key) {
+    return new Promise((accept, reject) => {
+      this.queue.push([Cmds.DELETE, key, accept, reject]);
+    });
   }
-  //statedata is optional.
-  //it stores state-specific data in lexer.statedata.
-  push_state(state2, statedata) {
-    this.statestack.push([state2, statedata]);
-    state2 = this.states[state2];
-    this.statedata = statedata;
-    this.tokdef = state2[0];
-    this.errfunc = state2[1];
-  }
-  pop_state() {
-    var item = this.statestack[this.statestack.length - 1];
-    var state2 = this.states[item[0]];
-    this.tokdef = state2[0];
-    this.errfunc = state2[1];
-    this.statedata = item[1];
-  }
-  input(str) {
-    while (this.statestack.length > 1) {
-      this.pop_state();
-    }
-    this.prev = void 0;
-    this.lexdata = str;
-    this.lexpos = 0;
-    this.lineno = 0;
-    this.tokens = new Array();
-    this.peeked_tokens = [];
-  }
-  error() {
-    if (this.errfunc !== void 0 && !this.errfunc(this))
-      return;
-    console.log("Syntax error near line " + this.lineno);
-    var next = Math.min(this.lexpos + 8, this.lexdata.length);
-    console.log("  " + this.lexdata.slice(this.lexpos, next));
-    throw new PUTLParseError("Parse error");
-  }
-  peek() {
-    var tok = this.next(123);
-    if (tok === void 0)
-      return void 0;
-    this.peeked_tokens.push(tok);
-    return tok;
-  }
-  peek_i(i2) {
-    while (this.peeked_tokens.length <= i2) {
-      var t2 = this.peek();
-      if (t2 === void 0)
-        return void 0;
-    }
-    return this.peeked_tokens[i2];
-  }
-  at_end() {
-    return this.lexpos >= this.lexdata.length && this.peeked_tokens.length === 0;
-  }
-  next(ignore_peek) {
-    if (ignore_peek !== 123 && this.peeked_tokens.length > 0) {
-      var tok = this.peeked_tokens[0];
-      this.peeked_tokens.shift();
-      return tok;
-    }
-    if (this.lexpos >= this.lexdata.length)
-      return void 0;
-    var ts = this.tokdef;
-    var tlen = ts.length;
-    var lexdata = this.lexdata.slice(this.lexpos, this.lexdata.length);
-    var results = [];
-    for (var i2 = 0; i2 < tlen; i2++) {
-      var t2 = ts[i2];
-      if (t2.re === void 0)
-        continue;
-      var res = t2.re.exec(lexdata);
-      if (res !== null && res !== void 0 && res.index === 0) {
-        results.push([t2, res]);
+  createProxy() {
+    return new Proxy(
+      {},
+      {
+        get: (target, key) => {
+          return this.json[key];
+        },
+        set: (target, key, value) => {
+          this.json[key] = value;
+          this.set(key, value);
+          return true;
+        },
+        has: (target, key) => {
+          return key in this.json;
+        },
+        deleteProperty: (target, key) => {
+          delete this.json[key];
+          this.delete(key);
+          return true;
+        },
+        ownKeys: (target) => {
+          return Object.keys(this.json);
+        }
       }
-    }
-    var max_res = 0;
-    var theres = void 0;
-    for (var i2 = 0; i2 < results.length; i2++) {
-      var res = results[i2];
-      if (res[1][0].length > max_res) {
-        theres = res;
-        max_res = res[1][0].length;
+    );
+  }
+  flushQueueLater() {
+    return new Promise((accept, reject) => {
+      if (this.#timer === void 0) {
+        this.#timer = setTimeout(() => {
+          this.#timer = void 0;
+          this.flushQueue();
+        }, 50);
       }
+      this.onFlush.push([accept, reject]);
+    });
+  }
+  #loadJSON() {
+    let buf;
+    try {
+      buf = nodefs.readFileSync(this.filePath, "utf8");
+    } catch (e2) {
+      console.log(e2.message);
+      buf = "{}";
     }
-    if (theres === void 0) {
-      this.error();
+    this.json = JSON.parse(buf);
+  }
+  #saveJSON() {
+    nodefs.writeFileSync(this.filePath, JSON.stringify(this.json));
+  }
+  flushQueue() {
+    if (nodefs === void 0) {
+      this.flushQueueLater();
       return;
     }
-    var def = theres[0];
-    var lexlen = max_res;
-    var tok = new token(def.name, theres[1][0], this.lexpos, lexlen, this.lineno, this, void 0);
-    this.lexpos += max_res;
-    if (def.func) {
-      tok = def.func(tok);
-      if (tok === void 0) {
-        return this.next(ignore_peek);
-      }
-    }
-    this.prev = tok;
-    return tok;
-  }
-};
-var parser2 = class _parser2 {
-  static {
-    __name(this, "parser");
-  }
-  constructor(lexer4, errfunc) {
-    this.lexer = lexer4;
-    this.errfunc = errfunc;
-    this.start = void 0;
-  }
-  copy() {
-    let ret2 = new _parser2(this.lexer.copy(), this.errfunc);
-    ret2.start = this.start;
-    return ret2;
-  }
-  parse(data, err_on_unconsumed) {
-    if (err_on_unconsumed === void 0)
-      err_on_unconsumed = true;
-    if (data !== void 0)
-      this.lexer.input(data);
-    var ret2 = this.start(this);
-    if (err_on_unconsumed && !this.lexer.at_end() && this.lexer.next() !== void 0) {
-      this.error(void 0, "parser did not consume entire input");
-    }
-    return ret2;
-  }
-  input(data) {
-    this.lexer.input(data);
-  }
-  error(tok, msg) {
-    if (msg == void 0)
-      msg = "";
-    if (tok == void 0)
-      var estr = "Parse error at end of input: " + msg;
-    else
-      estr = "Parse error at line " + (tok.lineno + 1) + ": " + msg;
-    var buf = "1| ";
-    var ld = this.lexer.lexdata;
-    var l2 = 1;
-    for (var i2 = 0; i2 < ld.length; i2++) {
-      var c = ld[i2];
-      if (c == "\n") {
-        l2++;
-        buf += "\n" + l2 + "| ";
-      } else {
-        buf += c;
-      }
-    }
-    console.log("------------------");
-    console.log(buf);
-    console.log("==================");
-    console.log(estr);
-    if (this.errfunc && !this.errfunc(tok)) {
-      return;
-    }
-    throw new PUTLParseError(estr);
-  }
-  peek() {
-    var tok = this.lexer.peek();
-    if (tok != void 0)
-      tok.parser = this;
-    return tok;
-  }
-  peek_i(i2) {
-    var tok = this.lexer.peek_i(i2);
-    if (tok !== void 0)
-      tok.parser = this;
-    return tok;
-  }
-  peeknext() {
-    return this.peek_i(0);
-  }
-  next() {
-    var tok = this.lexer.next();
-    if (tok !== void 0)
-      tok.parser = this;
-    return tok;
-  }
-  optional(type2) {
-    var tok = this.peek_i(0);
-    if (tok && tok.type === type2) {
-      this.next();
-      return true;
-    }
-    return false;
-  }
-  at_end() {
-    return this.lexer.at_end();
-  }
-  expect(type2, msg) {
-    var tok = this.next();
-    if (msg === void 0)
-      msg = type2;
-    if (tok !== void 0 && tok.type !== type2) {
-      this.error(tok, "Expected " + msg + ", not " + tok.type);
-    } else if (tok === void 0) {
-      this.error(tok, "Expected " + msg);
-    }
-    return tok.value;
-  }
-};
-function test_parser() {
-  var basic_types = new set([
-    "int",
-    "float",
-    "double",
-    "vec2",
-    "vec3",
-    "vec4",
-    "mat4",
-    "string"
-  ]);
-  var reserved_tokens = new set([
-    "int",
-    "float",
-    "double",
-    "vec2",
-    "vec3",
-    "vec4",
-    "mat4",
-    "string",
-    "static_string",
-    "array"
-  ]);
-  function tk3(name2, re, func) {
-    return new tokdef(name2, re, func);
-  }
-  __name(tk3, "tk");
-  var tokens3 = [
-    tk3("ID", /[a-zA-Z]+[a-zA-Z0-9_]*/, function(t2) {
-      if (reserved_tokens.has(t2.value)) {
-        t2.type = t2.value.toUpperCase();
-      }
-      return t2;
-    }),
-    tk3("OPEN", /\{/),
-    tk3("CLOSE", /}/),
-    tk3("COLON", /:/),
-    tk3("JSCRIPT", /\|/, function(t2) {
-      var js = "";
-      var lexer4 = t2.lexer;
-      while (lexer4.lexpos < lexer4.lexdata.length) {
-        var c = lexer4.lexdata[lexer4.lexpos];
-        if (c == "\n")
+    const queue = this.queue;
+    this.queue = [];
+    for (const cmd of queue) {
+      switch (cmd[0]) {
+        case Cmds.GETITEM:
+          try {
+            cmd[2](this.json[cmd[1]]);
+          } catch (e2) {
+            cmd[3](e2);
+          }
           break;
-        js += c;
-        lexer4.lexpos++;
-      }
-      if (js.endsWith(";")) {
-        js = js.slice(0, js.length - 1);
-        lexer4.lexpos--;
-      }
-      t2.value = js;
-      return t2;
-    }),
-    tk3("LPARAM", /\(/),
-    tk3("RPARAM", /\)/),
-    tk3("COMMA", /,/),
-    tk3("NUM", /[0-9]/),
-    tk3("SEMI", /;/),
-    tk3("NEWLINE", /\n/, function(t2) {
-      t2.lexer.lineno += 1;
-    }),
-    tk3("SPACE", / |\t/, function(t2) {
-    })
-  ];
-  for (var rt in reserved_tokens) {
-    tokens3.push(tk3(rt.toUpperCase()));
-  }
-  function errfunc(lexer4) {
-    return true;
-  }
-  __name(errfunc, "errfunc");
-  var lex3 = new lexer(tokens3, errfunc);
-  console.log("Testing lexical scanner...");
-  lex3.input(a);
-  var tok;
-  while (tok = lex3.next()) {
-    console.log(tok.toString());
-  }
-  var parser5 = new parser5(lex3);
-  parser5.input(a);
-  function p_Array(p) {
-    p.expect("ARRAY");
-    p.expect("LPARAM");
-    var arraytype = p_Type(p);
-    var itername = "";
-    if (p.optional("COMMA")) {
-      itername = arraytype;
-      arraytype = p_Type(p);
-    }
-    p.expect("RPARAM");
-    return { type: "array", data: { type: arraytype, iname: itername } };
-  }
-  __name(p_Array, "p_Array");
-  function p_Type(p) {
-    var tok2 = p.peek();
-    if (tok2.type == "ID") {
-      p.next();
-      return { type: "struct", data: '"' + tok2.value + '"' };
-    } else if (basic_types.has(tok2.type.toLowerCase())) {
-      p.next();
-      return { type: tok2.type.toLowerCase() };
-    } else if (tok2.type == "ARRAY") {
-      return p_Array(p);
-    } else {
-      p.error(tok2, "invalid type " + tok2.type);
-    }
-  }
-  __name(p_Type, "p_Type");
-  function p_Field(p) {
-    var field = {};
-    console.log("-----", p.peek().type);
-    field.name = p.expect("ID", "struct field name");
-    p.expect("COLON");
-    field.type = p_Type(p);
-    field.set = void 0;
-    field.get = void 0;
-    var tok2 = p.peek();
-    if (tok2.type == "JSCRIPT") {
-      field.get = tok2.value;
-      p.next();
-    }
-    tok2 = p.peek();
-    if (tok2.type == "JSCRIPT") {
-      field.set = tok2.value;
-      p.next();
-    }
-    p.expect("SEMI");
-    return field;
-  }
-  __name(p_Field, "p_Field");
-  function p_Struct(p) {
-    var st = {};
-    st.name = p.expect("ID", "struct name");
-    st.fields = [];
-    p.expect("OPEN");
-    while (1) {
-      if (p.at_end()) {
-        p.error(void 0);
-      } else if (p.optional("CLOSE")) {
-        break;
-      } else {
-        st.fields.push(p_Field(p));
+        case Cmds.SETITEM:
+          try {
+            this.json[cmd[1]] = cmd[2];
+            this.#saveJSON();
+            cmd[3](this.json[cmd[1]]);
+          } catch (e2) {
+            cmd[4](e2);
+          }
+          break;
+        case Cmds.SAVEJSON:
+          this.#saveJSON();
+          break;
+        case Cmds.LOADJSON:
+          this.#loadJSON();
+          break;
+        case Cmds.DELETE:
+          try {
+            this.#delete(cmd[1]);
+            cmd[2]();
+          } catch (e2) {
+            cmd[3](e2);
+          }
+          break;
       }
     }
-    return st;
+    const onFlush = this.onFlush;
+    this.onFlush = [];
+    for (const [accept, reject] of onFlush) {
+      try {
+        accept();
+      } catch (e2) {
+        reject(e2);
+      }
+    }
   }
-  __name(p_Struct, "p_Struct");
-  var ret2 = p_Struct(parser5);
-  console.log(JSON.stringify(ret2));
+};
+var haveNodeLS = false;
+var LS = void 0;
+if (globalThis.INSIDE_JEST || typeof globalThis.process !== "undefined") {
+  import("fs").then((mod) => {
+    nodefs = mod;
+  });
+  LS = new LocalStorageNode();
+  LS.start();
+  localStorage_ = LS.createProxy();
+  haveNodeLS = true;
+} else {
+  localStorage_ = globalThis.localStorage;
 }
-__name(test_parser, "test_parser");
+var localStorage = localStorage_;
+async function onLSFlush() {
+  if (haveNodeLS) {
+    return LS.flushQueueLater();
+  }
+}
+__name(onLSFlush, "onLSFlush");
+async function onLSStart() {
+  if (haveNodeLS) {
+    return LS.flushQueueLater();
+  }
+}
+__name(onLSStart, "onLSStart");
 
 // util/polyfill.js
 if (typeof window !== "undefined" && typeof globalThis === "undefined") {
@@ -1647,6 +1392,437 @@ var DynamicArrayType = class extends ArrayType {
 };
 VarType.register(ArrayType);
 
+// util/parseutil.js
+var token = class {
+  static {
+    __name(this, "token");
+  }
+  constructor(type2, val2, lexpos, lexlen, lineno, lexer4, parser5) {
+    this.type = type2;
+    this.value = val2;
+    this.lexpos = lexpos;
+    this.lexlen = lexlen;
+    this.lineno = lineno;
+    this.lexer = lexer4;
+    this.parser = parser5;
+  }
+  toString() {
+    if (this.value !== void 0)
+      return "token(type=" + this.type + ", value='" + this.value + "')";
+    else
+      return "token(type=" + this.type + ")";
+  }
+};
+var tokdef = class {
+  static {
+    __name(this, "tokdef");
+  }
+  constructor(name2, regexpr, func) {
+    this.name = name2;
+    this.re = regexpr;
+    this.func = func;
+  }
+};
+var PUTLParseError = class extends Error {
+  static {
+    __name(this, "PUTLParseError");
+  }
+};
+var lexer = class _lexer {
+  static {
+    __name(this, "lexer");
+  }
+  constructor(tokdef3, errfunc) {
+    this.tokdef = tokdef3;
+    this.tokens = new Array();
+    this.lexpos = 0;
+    this.lexdata = "";
+    this.lineno = 0;
+    this.errfunc = errfunc;
+    this.tokints = {};
+    this.prev = void 0;
+    for (var i2 = 0; i2 < tokdef3.length; i2++) {
+      this.tokints[tokdef3[i2].name] = i2;
+    }
+    this.statestack = [["__main__", 0]];
+    this.states = { "__main__": [tokdef3, errfunc] };
+    this.statedata = 0;
+  }
+  copy() {
+    let ret2 = new _lexer(this.tokdef, this.errfunc);
+    for (let k2 in this.states) {
+      let state2 = this.states[k2];
+      state2 = [state2[0], state2[1]];
+      ret2.states[k2] = state2;
+    }
+    ret2.statedata = this.statedata;
+    return ret2;
+  }
+  //errfunc is optional, defines state-specific error function
+  add_state(name2, tokdef3, errfunc) {
+    if (errfunc === void 0) {
+      errfunc = /* @__PURE__ */ __name(function(lexer4) {
+        return true;
+      }, "errfunc");
+    }
+    this.states[name2] = [tokdef3, errfunc];
+  }
+  tok_int(name2) {
+  }
+  //statedata is optional.
+  //it stores state-specific data in lexer.statedata.
+  push_state(state2, statedata) {
+    this.statestack.push([state2, statedata]);
+    state2 = this.states[state2];
+    this.statedata = statedata;
+    this.tokdef = state2[0];
+    this.errfunc = state2[1];
+  }
+  pop_state() {
+    var item = this.statestack[this.statestack.length - 1];
+    var state2 = this.states[item[0]];
+    this.tokdef = state2[0];
+    this.errfunc = state2[1];
+    this.statedata = item[1];
+  }
+  input(str) {
+    while (this.statestack.length > 1) {
+      this.pop_state();
+    }
+    this.prev = void 0;
+    this.lexdata = str;
+    this.lexpos = 0;
+    this.lineno = 0;
+    this.tokens = new Array();
+    this.peeked_tokens = [];
+  }
+  error() {
+    if (this.errfunc !== void 0 && !this.errfunc(this))
+      return;
+    console.log("Syntax error near line " + this.lineno);
+    var next = Math.min(this.lexpos + 8, this.lexdata.length);
+    console.log("  " + this.lexdata.slice(this.lexpos, next));
+    throw new PUTLParseError("Parse error");
+  }
+  peek() {
+    var tok = this.next(123);
+    if (tok === void 0)
+      return void 0;
+    this.peeked_tokens.push(tok);
+    return tok;
+  }
+  peek_i(i2) {
+    while (this.peeked_tokens.length <= i2) {
+      var t2 = this.peek();
+      if (t2 === void 0)
+        return void 0;
+    }
+    return this.peeked_tokens[i2];
+  }
+  at_end() {
+    return this.lexpos >= this.lexdata.length && this.peeked_tokens.length === 0;
+  }
+  next(ignore_peek) {
+    if (ignore_peek !== 123 && this.peeked_tokens.length > 0) {
+      var tok = this.peeked_tokens[0];
+      this.peeked_tokens.shift();
+      return tok;
+    }
+    if (this.lexpos >= this.lexdata.length)
+      return void 0;
+    var ts = this.tokdef;
+    var tlen = ts.length;
+    var lexdata = this.lexdata.slice(this.lexpos, this.lexdata.length);
+    var results = [];
+    for (var i2 = 0; i2 < tlen; i2++) {
+      var t2 = ts[i2];
+      if (t2.re === void 0)
+        continue;
+      var res = t2.re.exec(lexdata);
+      if (res !== null && res !== void 0 && res.index === 0) {
+        results.push([t2, res]);
+      }
+    }
+    var max_res = 0;
+    var theres = void 0;
+    for (var i2 = 0; i2 < results.length; i2++) {
+      var res = results[i2];
+      if (res[1][0].length > max_res) {
+        theres = res;
+        max_res = res[1][0].length;
+      }
+    }
+    if (theres === void 0) {
+      this.error();
+      return;
+    }
+    var def = theres[0];
+    var lexlen = max_res;
+    var tok = new token(def.name, theres[1][0], this.lexpos, lexlen, this.lineno, this, void 0);
+    this.lexpos += max_res;
+    if (def.func) {
+      tok = def.func(tok);
+      if (tok === void 0) {
+        return this.next(ignore_peek);
+      }
+    }
+    this.prev = tok;
+    return tok;
+  }
+};
+var parser2 = class _parser2 {
+  static {
+    __name(this, "parser");
+  }
+  constructor(lexer4, errfunc) {
+    this.lexer = lexer4;
+    this.errfunc = errfunc;
+    this.start = void 0;
+  }
+  copy() {
+    let ret2 = new _parser2(this.lexer.copy(), this.errfunc);
+    ret2.start = this.start;
+    return ret2;
+  }
+  parse(data, err_on_unconsumed) {
+    if (err_on_unconsumed === void 0)
+      err_on_unconsumed = true;
+    if (data !== void 0)
+      this.lexer.input(data);
+    var ret2 = this.start(this);
+    if (err_on_unconsumed && !this.lexer.at_end() && this.lexer.next() !== void 0) {
+      this.error(void 0, "parser did not consume entire input");
+    }
+    return ret2;
+  }
+  input(data) {
+    this.lexer.input(data);
+  }
+  error(tok, msg) {
+    if (msg == void 0)
+      msg = "";
+    if (tok == void 0)
+      var estr = "Parse error at end of input: " + msg;
+    else
+      estr = "Parse error at line " + (tok.lineno + 1) + ": " + msg;
+    var buf = "1| ";
+    var ld = this.lexer.lexdata;
+    var l2 = 1;
+    for (var i2 = 0; i2 < ld.length; i2++) {
+      var c = ld[i2];
+      if (c == "\n") {
+        l2++;
+        buf += "\n" + l2 + "| ";
+      } else {
+        buf += c;
+      }
+    }
+    console.log("------------------");
+    console.log(buf);
+    console.log("==================");
+    console.log(estr);
+    if (this.errfunc && !this.errfunc(tok)) {
+      return;
+    }
+    throw new PUTLParseError(estr);
+  }
+  peek() {
+    var tok = this.lexer.peek();
+    if (tok != void 0)
+      tok.parser = this;
+    return tok;
+  }
+  peek_i(i2) {
+    var tok = this.lexer.peek_i(i2);
+    if (tok !== void 0)
+      tok.parser = this;
+    return tok;
+  }
+  peeknext() {
+    return this.peek_i(0);
+  }
+  next() {
+    var tok = this.lexer.next();
+    if (tok !== void 0)
+      tok.parser = this;
+    return tok;
+  }
+  optional(type2) {
+    var tok = this.peek_i(0);
+    if (tok && tok.type === type2) {
+      this.next();
+      return true;
+    }
+    return false;
+  }
+  at_end() {
+    return this.lexer.at_end();
+  }
+  expect(type2, msg) {
+    var tok = this.next();
+    if (msg === void 0)
+      msg = type2;
+    if (tok !== void 0 && tok.type !== type2) {
+      this.error(tok, "Expected " + msg + ", not " + tok.type);
+    } else if (tok === void 0) {
+      this.error(tok, "Expected " + msg);
+    }
+    return tok.value;
+  }
+};
+function test_parser() {
+  var basic_types = new set([
+    "int",
+    "float",
+    "double",
+    "vec2",
+    "vec3",
+    "vec4",
+    "mat4",
+    "string"
+  ]);
+  var reserved_tokens = new set([
+    "int",
+    "float",
+    "double",
+    "vec2",
+    "vec3",
+    "vec4",
+    "mat4",
+    "string",
+    "static_string",
+    "array"
+  ]);
+  function tk3(name2, re, func) {
+    return new tokdef(name2, re, func);
+  }
+  __name(tk3, "tk");
+  var tokens3 = [
+    tk3("ID", /[a-zA-Z]+[a-zA-Z0-9_]*/, function(t2) {
+      if (reserved_tokens.has(t2.value)) {
+        t2.type = t2.value.toUpperCase();
+      }
+      return t2;
+    }),
+    tk3("OPEN", /\{/),
+    tk3("CLOSE", /}/),
+    tk3("COLON", /:/),
+    tk3("JSCRIPT", /\|/, function(t2) {
+      var js = "";
+      var lexer4 = t2.lexer;
+      while (lexer4.lexpos < lexer4.lexdata.length) {
+        var c = lexer4.lexdata[lexer4.lexpos];
+        if (c == "\n")
+          break;
+        js += c;
+        lexer4.lexpos++;
+      }
+      if (js.endsWith(";")) {
+        js = js.slice(0, js.length - 1);
+        lexer4.lexpos--;
+      }
+      t2.value = js;
+      return t2;
+    }),
+    tk3("LPARAM", /\(/),
+    tk3("RPARAM", /\)/),
+    tk3("COMMA", /,/),
+    tk3("NUM", /[0-9]/),
+    tk3("SEMI", /;/),
+    tk3("NEWLINE", /\n/, function(t2) {
+      t2.lexer.lineno += 1;
+    }),
+    tk3("SPACE", / |\t/, function(t2) {
+    })
+  ];
+  for (var rt in reserved_tokens) {
+    tokens3.push(tk3(rt.toUpperCase()));
+  }
+  function errfunc(lexer4) {
+    return true;
+  }
+  __name(errfunc, "errfunc");
+  var lex3 = new lexer(tokens3, errfunc);
+  console.log("Testing lexical scanner...");
+  lex3.input(a);
+  var tok;
+  while (tok = lex3.next()) {
+    console.log(tok.toString());
+  }
+  var parser5 = new parser5(lex3);
+  parser5.input(a);
+  function p_Array(p) {
+    p.expect("ARRAY");
+    p.expect("LPARAM");
+    var arraytype = p_Type(p);
+    var itername = "";
+    if (p.optional("COMMA")) {
+      itername = arraytype;
+      arraytype = p_Type(p);
+    }
+    p.expect("RPARAM");
+    return { type: "array", data: { type: arraytype, iname: itername } };
+  }
+  __name(p_Array, "p_Array");
+  function p_Type(p) {
+    var tok2 = p.peek();
+    if (tok2.type == "ID") {
+      p.next();
+      return { type: "struct", data: '"' + tok2.value + '"' };
+    } else if (basic_types.has(tok2.type.toLowerCase())) {
+      p.next();
+      return { type: tok2.type.toLowerCase() };
+    } else if (tok2.type == "ARRAY") {
+      return p_Array(p);
+    } else {
+      p.error(tok2, "invalid type " + tok2.type);
+    }
+  }
+  __name(p_Type, "p_Type");
+  function p_Field(p) {
+    var field = {};
+    console.log("-----", p.peek().type);
+    field.name = p.expect("ID", "struct field name");
+    p.expect("COLON");
+    field.type = p_Type(p);
+    field.set = void 0;
+    field.get = void 0;
+    var tok2 = p.peek();
+    if (tok2.type == "JSCRIPT") {
+      field.get = tok2.value;
+      p.next();
+    }
+    tok2 = p.peek();
+    if (tok2.type == "JSCRIPT") {
+      field.set = tok2.value;
+      p.next();
+    }
+    p.expect("SEMI");
+    return field;
+  }
+  __name(p_Field, "p_Field");
+  function p_Struct(p) {
+    var st = {};
+    st.name = p.expect("ID", "struct name");
+    st.fields = [];
+    p.expect("OPEN");
+    while (1) {
+      if (p.at_end()) {
+        p.error(void 0);
+      } else if (p.optional("CLOSE")) {
+        break;
+      } else {
+        st.fields.push(p_Field(p));
+      }
+    }
+    return st;
+  }
+  __name(p_Struct, "p_Struct");
+  var ret2 = p_Struct(parser5);
+  console.log(JSON.stringify(ret2));
+}
+__name(test_parser, "test_parser");
+
 // core/state.js
 var opnames = {
   "*": "mul",
@@ -1672,10 +1848,10 @@ var opnames = {
   "^=": "assign_bxor"
 };
 function exit2(msg) {
-  if (typeof process !== "undefined" && process.exit) {
+  if (!globalThis.INSIDE_JEST && typeof process !== "undefined" && process.exit) {
     process.exit(-1);
   } else {
-    throw new PUTLParseError(msg);
+    throw new PUTLParseError("" + msg);
   }
 }
 __name(exit2, "exit");
@@ -1723,10 +1899,10 @@ var ParseState = class _ParseState {
   static {
     __name(this, "ParseState");
   }
-  constructor(source, filename2 = "(anonymous)", parser5, preprocessed = "") {
+  constructor(source, filename2 = "(anonymous)", parser5, preprocessed = "", oldState) {
     this.parser = void 0;
     this.lexer = void 0;
-    this.throwError = isBrowser();
+    this.throwError = isBrowser() || globalThis.INSIDE_JEST;
     this.temp_idgen = 0;
     this.preprocessed = preprocessed;
     this.poly_namemap = {};
@@ -1774,6 +1950,17 @@ var ParseState = class _ParseState {
       "bool",
       "trunc"
     ]);
+    if (oldState !== void 0) {
+      this.loadOldState(oldState);
+    }
+  }
+  // load a few library related things
+  loadOldState(state2) {
+    this.poly_keymap = { ...state2.poly_keymap, ...this.poly_keymap };
+    this.poly_namemap = { ...state2.poly_namemap, ...this.poly_namemap };
+    this.functions = { ...state2.functions, ...this.functions };
+    this.inputs = { ...state2.inputs, ...this.inputs };
+    this.outputs = { ...state2.outputs, ...this.outputs };
   }
   get col() {
     return this.lexer ? this.lexer.lexpos - this.lexer.line_lexstart : -1;
@@ -1813,6 +2000,13 @@ var ParseState = class _ParseState {
       p = p.parent;
     }
     this.error(n2, "Failed to place variable declaration");
+  }
+  addLibraryFunc(node2) {
+    const args2 = node2[1].map((arg) => arg[0].value);
+    const retType = node2[0];
+    if (this.isPolyKey(node2.value)) {
+      this.addPolyFunc(this.getPolyKeyName(node2.value), retType, args2);
+    }
   }
   addPolyFunc(name2, rtype, args2, type2) {
     if (type2 === "") {
@@ -1883,6 +2077,17 @@ var ParseState = class _ParseState {
     p.source = this.source;
     return p;
   }
+  isPolyKey(name2) {
+    return name2.startsWith("_$_");
+  }
+  getPolyKeyName(name2) {
+    name2 = name2.slice(3);
+    let i2 = name2.search(/__/);
+    if (i2 === -1) {
+      throw new Error("invalid poly key");
+    }
+    return name2.slice(0, i2);
+  }
   buildPolyKey(name2, rtype, args2, type2) {
     if (type2 && typeof type2 === "string") {
       type2 = this.getType(type2);
@@ -1904,7 +2109,7 @@ var ParseState = class _ParseState {
         name2 = name2.getTypeNameSafe();
       }
     }
-    let key = `_$_${name2}_${rtype.getTypeNameSafe()}_`;
+    let key = `_$_${name2}__${rtype.getTypeNameSafe()}__`;
     let t2 = rtype.getTypeNameSafe();
     let nonfloat = !castFuncs.has(t2);
     for (let i2 = 0; i2 < args2.length; i2++) {
@@ -1956,20 +2161,14 @@ var ParseState = class _ParseState {
     let v4 = this.addType(new ArrayType(f, 4, "vec4"), "vec4");
     let m3 = this.addType(new ArrayType(v3, 3, "mat3"), "mat3");
     let m4 = this.addType(new ArrayType(v4, 4, "mat4"), "mat4");
-    let keys2 = [
-      "",
-      "float",
-      "vec2",
-      "vec3",
-      "vec4"
-    ];
+    let keys2 = ["", "float", "vec2", "vec3", "vec4"];
     let sizes = {
-      "float": 1,
-      "int": 1,
-      "bool": 1,
-      "vec2": 2,
-      "vec3": 3,
-      "vec4": 4
+      float: 1,
+      int: 1,
+      bool: 1,
+      vec2: 2,
+      vec3: 3,
+      vec4: 4
     };
     let out = [];
     let visit3 = /* @__PURE__ */ new Set();
@@ -2152,6 +2351,7 @@ Error: ${this.filename}:${node2.line + 1}: ${msg}`;
     this.scope = Object.assign({}, this.scope);
   }
   popScope() {
+    ;
     [this.scope, this.localScope] = this.scopestack.pop();
   }
 };
@@ -2159,12 +2359,22 @@ var statestack = [];
 var state = new ParseState();
 function pushParseState(source = state.source, filename2 = state.filename, parser5, preprocessed) {
   statestack.push(state);
-  state = new ParseState(source, filename2, parser5, preprocessed);
+  state = new ParseState(source, filename2, parser5, preprocessed, state);
   return state;
 }
 __name(pushParseState, "pushParseState");
-function popParseState() {
+function popParseState(options = { keepPolyFuncs: false, keepFuncs: false }) {
+  let old = state;
   state = statestack.pop();
+  if (options?.keepPolyFuncs) {
+    Object.assign(state.poly_keymap, old.poly_keymap);
+    Object.assign(state.poly_namemap, old.poly_namemap);
+    for (const k2 in old.functions) {
+      if (options?.keepFuncs || state.isPolyKey(k2) && options?.keepPolyFuncs) {
+        state.functions[k2] = old.functions[k2];
+      }
+    }
+  }
 }
 __name(popParseState, "popParseState");
 function genLibraryCode() {
@@ -2281,10 +2491,7 @@ function genLibraryCode() {
     let name2 = opnames[op];
     op = transformAssignOp(op);
     s += `
-  int _$_$_int_${name2}_int_int(int a, int b) {
-    return trunc(a ${op} b);
-  }
-  int _$_$_${name2}_int_int(int a, int b) {
+  int _$_$_${name2}__int__intint(int a, int b) {
     return trunc(a ${op} b);
   }
   
@@ -2300,7 +2507,7 @@ function genLibraryCode() {
         continue;
       }
       op = transformAssignOp(op);
-      s += `${key} _$_$_${name2}_${key}_${key}(${key} a, ${key} b) {
+      s += `${key} _$_$_${name2}__${key}__${key}(${key} a, ${key} b) {
 `;
       s += `  ${key} r;
 `;
@@ -2322,10 +2529,10 @@ function genLibraryCode() {
       }
       for (let step = 0; step < 2; step++) {
         if (step) {
-          s += `${key} _$_$_${name2}_float_${key}(float a, ${key} b) {
+          s += `${key} _$_$_${name2}__${key}__float${key}(float a, ${key} b) {
 `;
         } else {
-          s += `${key} _$_$_${name2}_${key}_float(${key} a, float b) {
+          s += `${key} _$_$_${name2}__${key}__${key}float(${key} a, float b) {
 `;
         }
         s += `  ${key} r;
@@ -2415,7 +2622,7 @@ bool bool_cast(int i) {
   return i != 0;
 }
   
-vec4 _$_$_mul_mat4_vec4(mat4 m, vec4 v) {
+vec4 _$_$_mul__mat4__vec4(mat4 m, vec4 v) {
   vec4 r;
   
   r[0] = m[0][0]*v[0] + m[1][0]*v[1] + m[2][0]*v[2] + m[3][0]*v[3];
@@ -5495,7 +5702,7 @@ __name(exit3, "exit");
 var idgen = 0;
 var strtable = /* @__PURE__ */ new Map();
 var hashtable = /* @__PURE__ */ new Map();
-window.strtable = strtable;
+globalThis.strtable = strtable;
 function strTableAdd(type2) {
   let hash = strhash(type2);
   let entry = hashtable.get(hash);
@@ -5532,7 +5739,7 @@ var AstTypes = [
 for (let key of AstTypes) {
   strTableAdd(key);
 }
-window.jsonCompress = function(json) {
+globalThis.jsonCompress = function(json) {
   let delim = `"',.{}[]|: `;
   let delimMap = {};
   let dicti = 0;
@@ -6030,16 +6237,16 @@ var keys = /* @__PURE__ */ new Set([
 ]);
 var mathcode = "";
 for (let k2 of keys) {
-  mathcode += `let _$_${k2}_float_float = Math.${k2};
+  mathcode += `let _$_${k2}__float__float = Math.${k2};
 `;
 }
 var jslib = `
   ${mathcode}
     
-  let _$_trunc_int_int = Math.trunc;
-  let _$_pow_float_floatfloat = Math.pow;
+  let _$_trunc__int__int = Math.trunc;
+  let _$_pow__float__floatfloat = Math.pow;
    
-  function _$_atan_float_floatfloat(y, x) {
+  function _$_atan__float__floatfloat(y, x) {
     if (x !== undefined) {
       return Math.atan2(y, x);
     }
@@ -6132,11 +6339,11 @@ var JSGenerator = class extends CodeGenerator {
       if (type2.value instanceof ArrayType) {
         setter = "";
         init = "[";
-        for (let i2 = 0; i2 < type2.value.size; i2++) {
-          if (i2 > 0) {
+        for (let i3 = 0; i3 < type2.value.size; i3++) {
+          if (i3 > 0) {
             init += ",";
           }
-          setter += `    ${k2}[${i2}] = val[${i2}];
+          setter += `    ${k2}[${i3}] = val[${i3}];
 `;
           init += "0";
         }
@@ -6253,7 +6460,7 @@ ${setter}
             if (type2 === "vec2" || type2 === "vec3" || type2 === "vec4" || type2 === "mat4" || type2 === "mat3") {
               out(" = ");
               if (usestack) {
-                let i2 = state2.vardecl(n2.value, type2);
+                let i3 = state2.vardecl(n2.value, type2);
                 out(`${type2}stack[${type2}stack_cur++];
 `);
               } else {
@@ -6299,14 +6506,14 @@ ${setter}
         out("}\n");
         pop(n2);
       } else if (n2.type === "Return") {
-        let i1, i2, off, type2, p, tname;
+        let i1, i22, off, type2, p, tname;
         let tab = indent(tlvl + 2);
         if (usestack) {
           out("{\n");
           i1 = state2.stackcur;
           pop(state2.pushNode);
-          i2 = state2.stackcur;
-          off = i2 - i1;
+          i22 = state2.stackcur;
+          off = i22 - i1;
           let p2 = n2;
           while (p2) {
             if (p2.ntype) {
@@ -6404,13 +6611,13 @@ ${setter}
         rec(n2[1]);
         out(")");
       } else if (n2.type === "ExprList") {
-        let i2 = 0;
+        let i3 = 0;
         for (let n22 of n2) {
-          if (i2 > 0) {
+          if (i3 > 0) {
             out(", ");
           }
           rec(n22);
-          i2++;
+          i3++;
         }
       } else if (n2.type === "FloatConstant") {
         out(n2.value.toFixed(7));
@@ -6425,13 +6632,13 @@ ${setter}
         }
         out(`
   function ${fname}(`);
-        let i2 = 0;
+        let i3 = 0;
         for (let c of n2[1]) {
-          if (i2 > 0) {
+          if (i3 > 0) {
             out(", ");
           }
           out(c.value);
-          i2++;
+          i3++;
         }
         out(") {\n");
         tlvl++;
@@ -6466,23 +6673,21 @@ ${setter}
     }
     __name(rec, "rec");
     rec(ast);
-    let argset = "";
-    outs += "  let __$func = function(outs";
+    outs += "  let __$func = function(outs, $ins) {\n";
+    let i2 = 0;
     for (let k2 in ctx2.inputs) {
-      outs += `, $${k2}`;
-      argset += `    ${k2} = $${k2};
+      outs += `    ${k2} = $ins[${i2}];
 `;
+      i2++;
     }
-    outs += ") {\n";
     let footer = `
     __outs = outs;
-${argset}
     main();
 
   `.trim();
     out("    " + footer + "\n");
     outs += "  }\n";
-    outs += "  return {\n    call : __$func,\n";
+    outs += "  return {\n    call : function() { return __$func(this.outputs, this.inputs) },\n";
     function buildType(t2) {
       if (t2 instanceof VarType) {
         return t2.type;
@@ -6492,26 +6697,61 @@ ${argset}
       return t2;
     }
     __name(buildType, "buildType");
+    outs += `  setInput(index, value) { this.inputs[index] = value},
+`;
+    outs += `  getInput(index) { return this.inputs[index] },
+`;
+    outs += `  uniforms: {
+`;
     for (let k2 in ctx2.uniforms) {
       outs += `    get ${k2}() {return ${k2}},
 `;
       outs += `    set ${k2}(val) {__set${k2}(val)},
 `;
     }
-    let os1 = `    outputs: {
+    outs += "  },\n";
+    const defaultValueMap = /* @__PURE__ */ new Map([
+      ["float", "0.0"],
+      ["int", "0"],
+      ["bool", "false"],
+      ["vec2", "[0, 0]"],
+      ["vec3", "[0, 0, 0]"],
+      ["vec4", "[0, 0, 0, 0]"],
+      ["mat2", "[0, 0, 0, 0]"],
+      ["mat3", "[0, 0, 0, 0, 0, 0, 0, 0, 0]"],
+      ["mat4", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"]
+    ]);
+    let os1 = `    outputs: [
 `;
     let os2 = `    outputTypes: {
 `;
+    i2 = 0;
     for (let k2 in ctx2.outputs) {
       let type2 = buildType(ctx2.outputs[k2][0].value);
-      os1 += `      ${k2} : ${outmap[k2]},
+      os1 += `      ${defaultValueMap.get(type2)},
 `;
-      os2 += `      ${k2} : "${type2}",
+      os2 += `      ${k2} : {type: '${type2}', index: ${i2}},
 `;
+      i2++;
     }
-    os1 += "    },\n";
+    os1 += "    ],\n";
     os2 += "    },\n";
-    outs += os1 + os2;
+    let is1 = `    inputs: [
+`;
+    let is2 = `    inputTypes: {
+`;
+    i2 = 0;
+    for (let k2 in ctx2.inputs) {
+      let type2 = buildType(ctx2.inputs[k2][0].value);
+      is1 += `      ${defaultValueMap.get(type2)},
+`;
+      is2 += `      ${k2} : {type: '${type2}', index: ${i2}},
+`;
+      i2++;
+    }
+    is1 += "    ],\n";
+    is2 += "    },\n";
+    outs += os1 + os2 + is1 + is2;
     outs += `    outputCount: ${totoutput}
 `;
     outs += "  }\n";
@@ -7265,7 +7505,6 @@ var Parser = class {
       throw new Error(message);
     }
     __name(doerror, "doerror");
-    console.log("%cPARSING!", "color : orange;");
     let err_off = new ParseStack();
     let err_la = new ParseStack();
     PCB.lex();
@@ -7346,7 +7585,6 @@ var Parser = class {
     }
     let ret2 = rval;
     globalThis.noderet = ret2;
-    console.log("%cDone.", "color : orange;");
     return ret2;
   }
 };
@@ -7421,11 +7659,9 @@ function getParser(lexer4, parsedef2, tokenlist, prec, parserName, force = false
   }
   globalThis.grammar = grammar;
   if (parser5 && parser5.hash === hash) {
-    console.log("Old hash:", parser5.hash, "new hash:", hash);
     globalThis.parser = parser5;
     return parser5;
   } else if (!force) {
-    console.log("Old hash:", parser5.hash, "new hash:", hash);
     throw new Error("parser is out of date; run build_parsetable.js");
   }
   console.log(`Building parse tables (will be cached in localStorage[${storageKey}]. . .`);
@@ -10743,12 +10979,14 @@ function transformOps(ast, ctx2) {
       let t2 = safeTypeGet(node2[1]);
       if (!t1 || !t2) {
         log3("" + node2);
+        debugger;
         ctx3.error(node2, "Type system could not resolve types");
       }
       let isint1 = ctx3.typesEqual(t1, types["int"]);
       let isint2 = ctx3.typesEqual(t2, types["int"]);
       if (isint1 ^ isint2) {
         log3("" + node2);
+        debugger;
         ctx3.error(node2, "Cannot do mixed math on integer and floats");
       }
       let isbase1 = ctx3.typesEqual(t1, types["float"]) || ctx3.typesEqual(t1, types["bool"]);
@@ -10760,10 +10998,12 @@ function transformOps(ast, ctx2) {
       let key1 = t1.getTypeNameSafe();
       let key2 = t2.getTypeNameSafe();
       if (!key) {
+        debugger;
         ctx3.error(node2, `Unsupported op ${node2.op} for ${key1}/${key2}`);
       }
-      key = `_$_$_${key}_${key1}_${key2}`;
+      key = `_$_$_${key}__${key1}__${key1}${key2}`;
       if (!(key in ctx3.poly_keymap)) {
+        debugger;
         ctx3.error(node2, "Unknown operator overload function " + key);
       }
       let id = new ASTNode("Ident");
@@ -10812,6 +11052,7 @@ function getFinders(ctx2, typemap, argmap) {
       type2 = findType(n2[0], ignoreCalls, arrDepth - 1);
       if (!(type2 instanceof ArrayType) && !(type2 instanceof DynamicArrayType)) {
         log3("type:", "" + type2);
+        debugger;
         ctx2.error(n2, "Not an array");
       }
       if (arrDepth > 0) {
@@ -10852,6 +11093,7 @@ function getFinders(ctx2, typemap, argmap) {
         type2 = findTypeUp(node2.parent);
       }
       if (!type2) {
+        debugger;
         ctx3.error(node2, "Unknown type for function " + name2);
       }
     }
@@ -10864,6 +11106,7 @@ function getFinders(ctx2, typemap, argmap) {
       let type22 = ctx3.resolveType(findType(arg));
       if (!type22) {
         log3("" + arg.parent.parent.parent);
+        debugger;
         ctx3.error(arg, "Unknown type for argument " + (i2 + 1));
       }
       args2.push(type22);
@@ -10873,6 +11116,7 @@ function getFinders(ctx2, typemap, argmap) {
     let key = ctx3.buildPolyKey(name2, type2, args2);
     if (!(key in ctx3.functions)) {
       console.log("" + node2.parent.parent);
+      debugger;
       ctx3.error(node2, "Unknown function " + key);
     }
     argmap.set(node2, args2);
@@ -10900,6 +11144,7 @@ function getFinders(ctx2, typemap, argmap) {
     if (fs && fs.size === 1) {
       for (let f of fs) {
         if (f.args.length !== p[1].length) {
+          debugger;
           ctx2.error(p, "Wrong number of function parameters for ", name2);
         }
         p.ntype = f.type;
@@ -10912,6 +11157,7 @@ function getFinders(ctx2, typemap, argmap) {
     let funcs = ctx2.poly_namemap[name2];
     if (!funcs) {
       console.log("" + p);
+      debugger;
       ctx2.error(p, "Unknown function " + name2);
     }
     let args2 = [];
@@ -10988,6 +11234,7 @@ function getFinders(ctx2, typemap, argmap) {
   function guessPolyFunc(p, idx) {
     let candidates = buildPolyCandidates(p, idx);
     if (idx < 0 || idx === void 0) {
+      debugger;
       ctx2.error(node, "Internal parser error");
     }
     let count4 = 0;
@@ -11016,6 +11263,7 @@ function getFinders(ctx2, typemap, argmap) {
       for (let c of candidates) {
         msg += "  " + c.key + "\n";
       }
+      debugger;
       ctx2.error(node, msg);
     }
     let match;
@@ -11025,6 +11273,7 @@ function getFinders(ctx2, typemap, argmap) {
     }
     if (!match) {
       console.log("" + node);
+      debugger;
       ctx2.error(node, "Failed to resolve polymorphic function call");
     }
     let type2 = ctx2.resolveType(match.args[idx]);
@@ -11134,6 +11383,7 @@ function transformPolymorphism(ast, ctx2) {
           cs = cs.filter((f) => f.totmatch > 0);
           if (cs.length > 1) {
             let cs2 = cs.map((f) => f.key).join("\n");
+            debugger;
             ctx3.error("Could not resolve polymorphic function; candidates were:" + cs2);
           }
         }
@@ -11142,6 +11392,7 @@ function transformPolymorphism(ast, ctx2) {
         console.log("" + type2);
         console.log(cs);
         console.log("" + node2);
+        debugger;
         ctx3.error(node2, "Could not resolve polymorphic function call");
       }
       let func;
@@ -11149,6 +11400,7 @@ function transformPolymorphism(ast, ctx2) {
         let key = ctx3.buildPolyKey(name2, type2, args2);
         func = ctx3.poly_keymap[key];
         if (!func) {
+          debugger;
           ctx3.error(node2, "Unknown function " + name2 + " (" + key + ")");
         }
         log3(key, func, "" + node2);
@@ -11157,6 +11409,7 @@ function transformPolymorphism(ast, ctx2) {
       } else {
         log3(type2, "" + node2, cs);
         buildPolyCandidates(node2, type2);
+        debugger;
         ctx3.error(node2, "internal parse error");
       }
       let n2 = new ASTNode("Ident");
@@ -11781,10 +12034,24 @@ function loadLibraryCode() {
 }
 __name(loadLibraryCode, "loadLibraryCode");
 function getLibraryCode() {
+  function processLibraryAST(ast) {
+    for (let node2 of ast) {
+      if (node2.type === "Function") {
+        state.addLibraryFunc(node2);
+      }
+    }
+  }
+  __name(processLibraryAST, "processLibraryAST");
   const lskey2 = "_mathl_library_code";
-  if (lskey2 in localStorage) {
+  const lskeyHash = "_mathl_library_hash";
+  let hash = parseFloat(localStorage[lskeyHash] ?? "-1");
+  const digest = new HashDigest();
+  digest.add(libraryCode);
+  let codeHash = digest.get();
+  if (lskey2 in localStorage && hash === codeHash) {
     try {
       loadLibraryCode();
+      processLibraryAST(compiledLibraryCode);
       return compiledLibraryCode;
     } catch (error2) {
       console.error(error2.stack);
@@ -11793,14 +12060,16 @@ function getLibraryCode() {
     }
   }
   let parser5 = getParser2();
-  pushParseState(libraryCode, "ibrary", void 0, libraryCode);
-  popParseState();
+  pushParseState(libraryCode, "library", void 0, libraryCode);
   state.parser = parser5;
   parser5.lexer.line_lexstart = 0;
   state.lexer = parser5.lexer;
   compiledLibraryCode = parser5.parse(libraryCode);
   compiledLibraryCode.version = libraryCodeVersion;
+  processLibraryAST(compiledLibraryCode);
+  popParseState({ keepPolyFuncs: true });
   saveLibraryCode();
+  localStorage[lskeyHash] = "" + codeHash;
   return compiledLibraryCode;
 }
 __name(getLibraryCode, "getLibraryCode");
@@ -11856,7 +12125,7 @@ function genJS(ctx2, args2 = {}) {
   return genCode(ctx2, "js", args2);
 }
 __name(genJS, "genJS");
-window._parseGlsl = parse2;
+globalThis._parseGlsl = parse2;
 function compileJS(code, filename) {
   let ctx = parse2(code, filename);
   let code2 = genJS(ctx);
@@ -11875,7 +12144,7 @@ function compileJS(code, filename) {
   return ret;
 }
 __name(compileJS, "compileJS");
-window._compileJS = compileJS;
+globalThis._compileJS = compileJS;
 export {
   compileJS,
   findSlots,
