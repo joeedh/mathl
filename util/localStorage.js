@@ -164,7 +164,19 @@ class LocalStorageNode {
 let haveNodeLS = false
 let LS = undefined
 
-if (globalThis.INSIDE_JEST || typeof globalThis.process !== 'undefined') {
+if (globalThis.haveElectron) {
+  // we are running inside electronjs
+
+  // hack to prevent bundlers from messing with require call
+  const rstr = 'require'
+  const reqAny = globalThis[rstr]
+  const fs = reqAny('fs')
+
+  LS = new LocalStorageNode()
+  LS.start()
+  localStorage_ = LS.createProxy()
+  haveNodeLS = true
+} else if (globalThis.INSIDE_JEST || typeof globalThis.process !== 'undefined') {
   import('fs').then((mod) => {
     nodefs = mod
   })
