@@ -1,2 +1,2 @@
-import './javascript.js';
-import './glsl.js';
+import './javascript.js'
+import './glsl.js'

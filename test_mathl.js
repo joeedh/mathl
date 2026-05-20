@@ -1,4 +1,4 @@
-import {ArrayType, VarType} from './core/types.js';
+import {ArrayType, VarType} from './core/types.js'
 
 let test = `
 in vec3 point;
@@ -249,45 +249,43 @@ void main() {
   value = vec2(f, fract(point[1]*size + 0.5));
 }
 
-`;
+`
 
 //test = test2;
-import fs from 'fs';
+import fs from 'fs'
 
 import * as mathl from './core/mathl.js'
-import * as util from './util/util.js';
-import {formatLines, libraryCode} from './core/state.js';
-import {parser} from './parser/parser.js';
-import {dfAst} from './transform/derivative.js';
-import {ASTNode} from './core/ast.js';
+import * as util from './util/util.js'
+import {formatLines, libraryCode} from './core/state.js'
+import {parser} from './parser/parser.js'
+import {dfAst} from './transform/derivative.js'
+import {ASTNode} from './core/ast.js'
 
-import {internalCodeGen, InternalCodeGen} from './generators/internal.js';
+import {internalCodeGen, InternalCodeGen} from './generators/internal.js'
 
 //console.log(""+mathl.parse(test));
 
 if (0) {
-  let ret = mathl.preprocess(test);
-  console.log(ret);
+  let ret = mathl.preprocess(test)
+  console.log(ret)
 }
 
 if (1) {
-  let ret = mathl.parse(test);
-//console.log("RET:", ret);
-//console.log("\n\n"+ret);
+  let ret = mathl.parse(test)
+  //console.log("RET:", ret);
+  //console.log("\n\n"+ret);
 
-//console.log(""+ret.ast);
-  let code = mathl.genCode(ret, "js").trim();
+  //console.log(""+ret.ast);
+  let code = mathl.genCode(ret, 'js').trim()
 
-  let igen = new InternalCodeGen(ret);
+  let igen = new InternalCodeGen(ret)
 
-  fs.writeFileSync("out_test.js", code);
-  fs.writeFileSync("out_test.glsl", igen.genCode(ret.ast));
+  fs.writeFileSync('out_test.js', code)
+  fs.writeFileSync('out_test.glsl', igen.genCode(ret.ast))
 
-  console.log(formatLines(code, 0, -100, -100, 5000), "yay");
+  console.log(formatLines(code, 0, -100, -100, 5000), 'yay')
   //console.log(ret.poly_keymap['_$_$_add_float_float']);
 
   //dfAst(ret, pvar);
   //console.log(""+ret.ast)
 }
-
-

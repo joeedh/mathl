@@ -43,7 +43,7 @@ void main() {
     'Outputs:',
     Object.fromEntries(Object.entries(result.outputTypes).map((item) => [item[0], result.outputs[item[1].index]]))
   )
-  
+
   expect(result.inputs).toMatchSnapshot()
   expect(result.outputs).toMatchSnapshot()
 })

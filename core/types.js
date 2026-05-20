@@ -1,179 +1,176 @@
-export let VarTypeClasses = [];
+export let VarTypeClasses = []
 
 export class VarType {
   constructor(type) {
-    this.type = type;
+    this.type = type
   }
 
   static fromJSON(json) {
     for (let cls of VarTypeClasses) {
       if (cls.name === json.Class) {
-        let ret = new cls();
+        let ret = new cls()
 
-        ret.loadJSON(json);
+        ret.loadJSON(json)
 
-        return ret;
+        return ret
       }
     }
 
-    throw new Error("unknown vardecl class for " + json);
+    throw new Error('unknown vardecl class for ' + json)
   }
 
   static register(cls) {
-    VarTypeClasses.push(cls);
+    VarTypeClasses.push(cls)
   }
 
   toJSON() {
     return {
       type : this.type,
-      Class: this.constructor.name
+      Class: this.constructor.name,
     }
   }
 
   loadJSON(json) {
-    if (typeof json.type === "object") {
-      this.type = VarType.fromJSON(json.type);
+    if (typeof json.type === 'object') {
+      this.type = VarType.fromJSON(json.type)
     } else {
-      this.type = json.type;
+      this.type = json.type
     }
 
-    return this;
+    return this
   }
 
   toString() {
-    return `VarType(${this.type})`;
+    return `VarType(${this.type})`
   }
 
   makeZero() {
-    return 0.0;
+    return 0.0
   }
 
   getComponents() {
-    return 1;
+    return 1
   }
 
   getBaseName() {
-    return this.type;
+    return this.type
   }
 
   getTypeName() {
-    return "" + this.type;
+    return '' + this.type
   }
 
   getTypeNameSafe() {
-    if (typeof this.type !== "string") {
-      return this.type.getTypeNameSafe();
+    if (typeof this.type !== 'string') {
+      return this.type.getTypeNameSafe()
     }
 
-    let s = this.getTypeName();
+    let s = this.getTypeName()
 
-    s = s.replace(/[\[\]\(\)]/g, "_");
-    return s;
+    s = s.replace(/[\[\]\(\)]/g, '_')
+    return s
   }
 }
 
-VarType.register(VarType);
+VarType.register(VarType)
 
 export class ArrayType extends VarType {
-  constructor(type, size, alias = "") {
-    super();
+  constructor(type, size, alias = '') {
+    super()
 
-    if (typeof type === "string") {
-      type = new VarType(type);
+    if (typeof type === 'string') {
+      type = new VarType(type)
     }
 
-    this.alias = alias;
-    this.type = type;
-    this.size = size;
+    this.alias = alias
+    this.type = type
+    this.size = size
   }
 
   toJSON() {
     return Object.assign(super.toJSON(), {
       alias: this.alias,
-      size : this.size
-    });
+      size : this.size,
+    })
   }
 
   loadJSON(json) {
-    super.loadJSON(json);
+    super.loadJSON(json)
 
-    this.alias = json.alias;
-    this.size = json.size;
+    this.alias = json.alias
+    this.size = json.size
   }
 
   getComponents() {
-    return this.size;
+    return this.size
   }
 
   makeZero() {
-    let ret = [];
+    let ret = []
 
     for (let i = 0; i < this.size; i++) {
-      ret.push(this.type.makeZero());
+      ret.push(this.type.makeZero())
     }
 
-    return ret;
+    return ret
   }
 
   getTypeName() {
     if (this.alias.length > 0) {
-      return this.alias;
+      return this.alias
     }
 
-    return `${this.type.getTypeName()}[${this.size}]`;
-
+    return `${this.type.getTypeName()}[${this.size}]`
   }
 
   getBaseName() {
-    return typeof this.type === "string" ? this.type : this.type.getBaseName();
+    return typeof this.type === 'string' ? this.type : this.type.getBaseName()
   }
 
   getTypeNameSafe() {
     if (this.alias) {
-      return this.alias;
+      return this.alias
     }
 
-    return `${this.type.getTypeNameSafe()}_${this.size}_`;
+    return `${this.type.getTypeNameSafe()}_${this.size}_`
   }
 
   toString() {
-    return `ArrayType(${this.type}, ${this.size}, ${this.alias})`;
+    return `ArrayType(${this.type}, ${this.size}, ${this.alias})`
   }
 }
 
-
 export class DynamicArrayType extends ArrayType {
-  constructor(type, alias = "") {
-    super();
+  constructor(type, alias = '') {
+    super()
 
-    this.alias = alias;
-    this.type = type;
+    this.alias = alias
+    this.type = type
   }
 
   getComponents() {
-    return 100000;
+    return 100000
   }
 
   makeZero() {
-    return [];
+    return []
   }
 
   getTypeName() {
     if (this.alias.length > 0) {
-      return this.alias;
+      return this.alias
     }
 
-    return `${this.type.getTypeName()}[]`;
-
+    return `${this.type.getTypeName()}[]`
   }
 
   getBaseName() {
-    return typeof this.type === "string" ? this.type : this.type.getBaseName();
+    return typeof this.type === 'string' ? this.type : this.type.getBaseName()
   }
 
   toString() {
-    return `ArrayType(${this.type}, ${this.alias})`;
+    return `ArrayType(${this.type}, ${this.alias})`
   }
 }
 
-VarType.register(ArrayType);
+VarType.register(ArrayType)

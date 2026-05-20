@@ -1,12 +1,12 @@
-import commonjs from '@rollup/plugin-commonjs';
-import {terser} from 'rollup-plugin-terser';
+import commonjs from '@rollup/plugin-commonjs'
+import {terser} from 'rollup-plugin-terser'
 
 export default {
-  input: 'core/mathl.js',
+  input  : 'core/mathl.js',
   output: {
-    file: 'bundle.js',
+    file  : 'bundle.js',
     format: 'iife',
-    name : "JsGLSL"
+    name  : 'JsGLSL',
   },
-  plugins: [commonjs(), terser()]
-};
+  plugins: [commonjs(), terser()],
+}

@@ -25,7 +25,7 @@ export interface ICompiledCode {
 
   setInput<T extends ValueType>(index: number, value: T): void
   getInput<T extends ValueType>(index: number): T
-  
+
   /* one input per input type*/
   call(): void
 
