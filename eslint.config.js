@@ -9,11 +9,13 @@ export default defineConfig([
   globalIgnores([
     //
     '**/node_modules/**',
+    '**/emsdk/**',
+    '**/sculptcore/**',
     './scripts/path.ux/**',
     './scripts/mathl/**',
     './types/**',
     './esdocs/**',
-    './addons/**', // might want to remove this line later
+    './vendor/**',
   ]),
   {
     files          : ['**/*.{js,mjs,cjs,ts,mts,cts}'],
@@ -25,17 +27,90 @@ export default defineConfig([
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService : true,
+        tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+  // Layer boundaries: prevent core/util from reaching into mesh, prevent cross-addon
+  // direct imports. Warn-level today (codebase has legacy violations);
+  // converted to error in the cleanup step (§6 step 12) once the mesh body has
+  // moved into addons/builtin/mesh/.
+  {
+    files: ['scripts/core/**/*.{ts,tsx,js,mjs,cjs}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group  : ['*/mesh/*', '../mesh/*', '**/mesh/*'],
+              message:
+                'core/ must not import scripts/mesh/* — use the data_kinds / default_file / file_migrations registries (see plan §3).',
+            },
+            {
+              group  : ['../editors/view3d/tools/*'],
+              message:
+                'core/ must not import view3d toolmode files — only the ToolMode base in view3d_toolmode is allowed.',
+            },
+            {
+              group           : ['../../addons/**'],
+              allowTypeImports: true,
+              message:
+                'core/ must not import addon source — addons depend on core, not the other way around. Type-only imports are allowed (they erase at compile time).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['scripts/util/**/*.{ts,tsx,js,mjs,cjs}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group  : ['*/mesh/*', '../mesh/*'],
+              message:
+                'util/ must stay mesh-agnostic — extract any needed interfaces into util/spatial.ts (see plan §3).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['addons/builtin/*/src/**/*.{ts,tsx,js,mjs,cjs}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group  : ['../../../../addons/builtin/*'],
+              message:
+                'Builtin addons must not reach into each other directly — declare a manifest dependency and use api.deps or @addon/<id>/api (see plan §2.5).',
+            },
+          ],
+        },
+      ],
     },
   },
   {
     rules: {
-      'no-unused-vars'                                            : 'error',
+      'no-unused-vars'                                            : 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          args: 'none',
+        },
+      ],
       'sort-imports'                                              : 'off',
       'no-constant-condition'                                     : 'off',
       'no-unassigned-vars'                                        : 'error',
-      'no-unreachable-loop'                                       : 'error',
+      'no-unreachable-loop'                                       : 'off',
       'no-unreachable'                                            : 'error',
       'no-unsafe-negation'                                        : 'error',
       'no-useless-assignment'                                     : 'error',
@@ -57,6 +132,8 @@ export default defineConfig([
       '@typescript-eslint/prefer-includes'                : 'error',
       '@typescript-eslint/prefer-optional-chain'          : 'error',
       '@typescript-eslint/related-getter-setter-pairs'    : 'error',
+      '@typescript-eslint/no-empty-object-type'           : 'off',
+      'one-var'                                           : ['error', 'never'],
     },
   },
   eslintConfigPrettier,

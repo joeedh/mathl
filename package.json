@@ -1,4 +1,5 @@
 {
+  "name": "mathl",
   "type": "module",
   "scripts": {
     "test": "npx jest",
@@ -6,20 +7,28 @@
     "debug-test": "npx --node-options=\"--inspect-brk\" jest --runInBand --watch",
     "build": "node esbuilder.js",
     "watch": "node esbuilder.js --watch",
-    "typecheck": "tsc",
-    "watch-typecheck": "tsc --watch",
+    "typecheck": "npx tsgo --noEmit",
+    "watch-typecheck": "npx tsgo --noEmit --watch",
     "eslint": "npx eslint"
   },
   "main": "build/index.js",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "esbuild": "^0.19.7",
     "@pathtx/prettier": "^3.3.0-dev",
     "@rollup/plugin-commonjs": "^17.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@swc/jest": "^0.2.39",
     "jest": "^30.3.0",
     "rollup-plugin-terser": "^7.0.2",
-    "typescript": "^5.9",
-    "typescript-eslint": "^8.57.0"
-  }
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0",
+    "typescript-language-server": "^5.1.3",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript/native-preview": "7.0.0-dev.20260406.1",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.4.0"
+  },
+  "packageManager": "pnpm@10.30.3"
 }
