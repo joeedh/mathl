@@ -1,3 +1,5 @@
+import type {ParseState} from '../core/state'
+
 export interface ICompiledCtx {
   source: string
   filename: string
@@ -16,7 +18,7 @@ export enum GLSLValueType {
   mat4 = 'mat4',
 }
 
-export interface ICompiledCode {
+export interface CompiledJS {
   inputTypes: {[k: string]: {index: number; type: GLSLValueType}}
   outputTypes: {[k: string]: {index: number; type: GLSLValueType}}
   inputs: ValueType[]
@@ -29,12 +31,6 @@ export interface ICompiledCode {
   /* one input per input type*/
   call(): void
 
-  sourceState: ICompiledCtx
+  sourceState: ParseState
   sourceCode: string
 }
-
-export function findSlots(ctx: ICompiledCtx, ast: any): void
-export function parse(src: any, filename: any): ParseState
-export function genCode(ctx: ICompiledCtx, type: any, args?: {}): any
-export function genJS(ctx: ICompiledCtx, args?: {}): any
-export function compileJS(code: string, filename: string): ICompiledCode

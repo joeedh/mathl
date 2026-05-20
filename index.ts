@@ -1,1 +1,3 @@
-export * from './core/mathl.js'
+export * from './core/mathl'
+export * from './generators/javascript_types'
+

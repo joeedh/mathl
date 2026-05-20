@@ -1,9 +1,14 @@
 import {ArrayType, VarType} from '../core/types.js'
-import * as util from '../util/util.js'
 import {CodeGenerator} from './generator_base.js'
-import {strong, indent, stronglog, log, termColor, termPrint} from '../util/util.js'
+import {indent} from '../util/util.js'
+import type {ASTNode} from '../core/ast.js'
+import type {ParseState} from '../core/state.js'
 
-let keys = new Set([
+interface ParseStateWithAst extends ParseState {
+  ast?: ASTNode
+}
+
+const keys: Set<string> = new Set([
   'abs',
   'sin',
   'cos',
@@ -22,39 +27,39 @@ let keys = new Set([
 ])
 
 let mathcode = ''
-for (let k of keys) {
+for (const k of keys) {
   mathcode += `let _$_${k}__float__float = Math.${k};\n`
 }
 
-export let jslib = `
+export const jslib = `
   ${mathcode}
-    
+
   let _$_trunc__int__int = Math.trunc;
   let _$_pow__float__floatfloat = Math.pow;
-   
+
   function _$_atan__float__floatfloat(y, x) {
     if (x !== undefined) {
       return Math.atan2(y, x);
     }
-    
+
     return Math.atan(y);
   }
-  
+
   function cachering(func, count) {
     this.list = new Array(count);
     this.length = count;
-    
+
     for (let i=0; i<this.length; i++) {
       this.list[i] = func();
     }
-    
+
     this.cur = 0;
   }
-  
+
   cachering.prototype = Object.create(Object.prototype);
   cachering.prototype.next = function() {
       let ret = this.list[this.cur];
-      
+
       this.cur = (this.cur + 1) % this.length;
       return ret;
   };
@@ -64,9 +69,9 @@ export let jslib = `
   cachering.prototype.pop = function() {
     return [this.cur--];
   };
-  
+
   let vec2cache = new cachering(() => [0, 0], 2048);
-  
+
   let vec3cache = new cachering(() => [0, 0, 0], 2048);
   let vec4cache = new cachering(() => [0, 0, 0, 0], 2048);
   let mat3cache = new cachering(() => [[0,0,0], [0,0,0], [0,0,0]], 2048);
@@ -77,30 +82,45 @@ export let jslib = `
   let vec4stack = new cachering(() => [0, 0, 0, 0], 128);
   let mat3stack = new cachering(() => [[0,0,0], [0,0,0], [0,0,0]], 128);
   let mat4stack = new cachering(() => [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]], 128);
-    
+
 `
 
+interface JSGenState {
+  stack: string[]
+  stackcur: number
+  stackscope: Map<string, string>
+  scope: Map<string, unknown>
+  pushNode: ASTNode | undefined
+  copy(): JSGenState
+  vardecl(name: string, type: string): number
+  leave(): JSGenState
+}
+
 export class JSGenerator extends CodeGenerator {
-  constructor(ctx, args) {
+  constructor(ctx: ParseState, args: unknown = {}) {
     super(ctx, args)
   }
 
-  static generatorDefine() {
+  static generatorDefine(): {typeName: string} {
     return {
       typeName: 'js',
     }
   }
 
-  genCode(ast = this.ctx.ast) {
-    let ctx = this.ctx
+  genCode(ast?: ASTNode): string {
+    const ctx = this.ctx as ParseStateWithAst
+    const root: ASTNode | undefined = ast ?? ctx.ast
+    if (!root) {
+      throw new Error('JSGenerator.genCode: no AST')
+    }
 
     let outs = ''
 
-    function out(s) {
+    function out(s: string): void {
       outs += s
     }
 
-    function endstatement(s = ';') {
+    function endstatement(s = ';'): void {
       if (!outs.trim().endsWith(s)) {
         outs = outs.trim()
         out(s)
@@ -108,7 +128,7 @@ export class JSGenerator extends CodeGenerator {
     }
 
     let inputs = ''
-    for (let k in ctx.inputs) {
+    for (const k of ctx.inputs.keys()) {
       if (inputs.length > 0) {
         inputs += ', '
       } else {
@@ -121,9 +141,8 @@ export class JSGenerator extends CodeGenerator {
       inputs += ';'
     }
 
-    for (let k in ctx.uniforms) {
-      let n = ctx.uniforms[k]
-      let type = n[0]
+    for (const [k, n] of ctx.uniforms) {
+      const type = n[0]
 
       let init = '0'
       let setter = `    ${k} = val;`
@@ -144,8 +163,8 @@ export class JSGenerator extends CodeGenerator {
         init += ']'
       }
 
-      let s = `
-  
+      const s = `
+
   let ${k} = ${init};
   function __set${k}(val) {
 ${setter}
@@ -156,61 +175,63 @@ ${setter}
 
     outs =
       `${jslib}
-    
+
     program = function() {\n  let __outs;\n  ${inputs}\n\n` + outs
 
-    let outmap = {}
+    const outmap: Map<string, number> = new Map()
     let oi = 0
 
-    for (let k in ctx.outputs) {
-      outmap[k] = oi++
+    for (const k of ctx.outputs.keys()) {
+      outmap.set(k, oi++)
     }
-    let totoutput = oi
+    const totoutput = oi
 
     let tlvl = 1
 
-    let usestack = false
+    const usestack = false
 
-    let state = {
-      stack     : [],
-      stackcur  : 0,
-      stackscope: {},
-      scope     : {},
-      pushNode  : undefined,
-      copy() {
-        let ret = Object.assign({}, this)
-
-        ret.scope = Object.assign({}, this.scope)
-        ret.stackscope = Object.assign({}, this.stackscope)
-
-        ret.copy = this.copy
-
-        return ret
-      },
-      vardecl(name, type) {
-        this.stackscope[name] = type
-        this.stack.push(name)
-        return this.stackcur++
-      },
-      leave() {
-        if (usestack) {
-          for (let k in this.stackscope) {
-            let type = this.stackscope[k]
-            out(indent(tlvl) + `    ${type}stack_cur--;\n`)
-            this.stack.pop()
-            this.stackcur--
+    const makeState = (): JSGenState => {
+      const s: JSGenState = {
+        stack     : [],
+        stackcur  : 0,
+        stackscope: new Map(),
+        scope     : new Map(),
+        pushNode  : undefined,
+        copy(): JSGenState {
+          const ret = makeState()
+          ret.stack = this.stack.slice()
+          ret.stackcur = this.stackcur
+          ret.stackscope = new Map(this.stackscope)
+          ret.scope = new Map(this.scope)
+          ret.pushNode = this.pushNode
+          return ret
+        },
+        vardecl(name: string, type: string): number {
+          this.stackscope.set(name, type)
+          this.stack.push(name)
+          return this.stackcur++
+        },
+        leave(): JSGenState {
+          if (usestack) {
+            for (const [, type] of this.stackscope) {
+              out(indent(tlvl) + `    ${type}stack_cur--;\n`)
+              this.stack.pop()
+              this.stackcur--
+            }
           }
-        }
 
-        this.stackscope = {}
-        return this
-      },
+          this.stackscope = new Map()
+          return this
+        },
+      }
+      return s
     }
 
-    let statestack = []
+    let state: JSGenState = makeState()
+    const statestack: JSGenState[] = []
 
-    function push(pushNode) {
-      let s = state.copy()
+    function push(pushNode: ASTNode): JSGenState {
+      const s = state.copy()
       statestack.push(state)
 
       state = s
@@ -219,28 +240,34 @@ ${setter}
       return s
     }
 
-    function pop(pushNode) {
+    function pop(pushNode: ASTNode): JSGenState | undefined {
       if (state.pushNode === pushNode) {
-        let s = state
+        const s = state
 
         state.leave()
-        state = statestack.pop()
+        const popped = statestack.pop()
+        if (popped) {
+          state = popped
+        }
         return s
       }
+      return undefined
     }
 
-    function rec(n) {
+    function rec(n: ASTNode): void {
       if (n.type === 'ArrayLookup') {
         rec(n[0])
         out('[')
         rec(n[1])
         out(']')
       } else if (n.type === 'VarDecl') {
-        let ok = n.value in ctx.inputs || n.value in ctx.outputs || n.value in ctx.uniforms
+        const nameVal = n.value
+        const name = typeof nameVal === 'string' ? nameVal : ''
+        let ok = ctx.inputs.has(name) || ctx.outputs.has(name) || ctx.uniforms.has(name)
 
         let inFunc = false
 
-        let p = n.parent
+        let p: ASTNode | undefined = n.parent
         while (p !== undefined) {
           if (p.type === 'Function') {
             inFunc = true
@@ -250,31 +277,34 @@ ${setter}
         }
 
         if (ok && inFunc) {
-          let n2
+          let n2: ASTNode | undefined
 
-          n2 = n.value in ctx.inputs ? ctx.inputs[n.value] : undefined
-          n2 = n.value in ctx.outputs ? ctx.outputs[n.value] : undefined
-          n2 = n.value in ctx.uniforms ? ctx.uniforms[n.value] : undefined
+          n2 = ctx.inputs.get(name)
+          n2 = ctx.outputs.get(name) ?? n2
+          n2 = ctx.uniforms.get(name) ?? n2
 
-          if (n2 === ctx.getScope(n.value)) {
+          const scoped = ctx.scope.get(name)
+          if (n2 === scoped) {
             ok = false
           }
         }
 
         if (!ok) {
-          out(`let ${n.value}`)
+          out(`let ${name}`)
           if (n.length > 1 && n[1].length > 0) {
             out(' = ')
             rec(n[1])
           } else {
-            let type = ctx.resolveType(n[0].value)
-            type = type.getTypeNameSafe()
+            const t0: unknown = n[0].value
+            const tArg = t0 instanceof VarType || typeof t0 === 'string' ? (t0 as VarType | string) : undefined
+            const resolved = ctx.resolveType(tArg)
+            const type = resolved ? resolved.getTypeNameSafe() : ''
 
             if (type === 'vec2' || type === 'vec3' || type === 'vec4' || type === 'mat4' || type === 'mat3') {
               out(' = ')
 
               if (usestack) {
-                let i = state.vardecl(n.value, type)
+                state.vardecl(name, type)
                 out(`${type}stack[${type}stack_cur++];\n`)
               } else {
                 out(`${type}cache.next();`)
@@ -300,7 +330,7 @@ ${setter}
         push(n)
         out('for (')
 
-        let tlvl2 = tlvl
+        const tlvl2 = tlvl
         tlvl = 0
 
         rec(n[0])
@@ -331,18 +361,20 @@ ${setter}
 
         pop(n)
       } else if (n.type === 'Return') {
-        let i1, i2, off, type, p, tname
-        let tab = indent(tlvl + 2)
+        const tab = indent(tlvl + 2)
 
         if (usestack) {
           out('{\n')
-          i1 = state.stackcur
-          pop(state.pushNode)
+          const i1 = state.stackcur
+          if (state.pushNode) {
+            pop(state.pushNode)
+          }
 
-          i2 = state.stackcur
-          off = i2 - i1
+          const i2 = state.stackcur
+          const off = i2 - i1
 
-          let p = n
+          let p: ASTNode | undefined = n
+          let type: VarType | undefined
           while (p) {
             if (p.ntype) {
               type = p.ntype
@@ -352,7 +384,7 @@ ${setter}
           }
 
           type = type ?? ctx.getReturnType()
-          tname = type.getTypeNameSafe()
+          const tname = type ? type.getTypeNameSafe() : 'float'
 
           out(`${tab}${tname}stack[${tname}stack_cur]`)
           out(`.load(${tname}stack[${tname}stack_cur + (${off})]);\n`)
@@ -362,7 +394,7 @@ ${setter}
         out(tab + 'return')
         if (n.length > 0) {
           out(' ')
-          for (let n2 of n) {
+          for (const n2 of n) {
             rec(n2)
           }
           out(';')
@@ -405,8 +437,9 @@ ${setter}
       } else if (n.type === 'BinOp' || n.type === 'Assign') {
         let paren = false
 
-        if (n.parent && n.parent.type === 'BinOp') {
-          paren = n.parent.prec < n.prec
+        const parent = n.parent
+        if (parent && parent.type === 'BinOp' && n.type === 'BinOp') {
+          paren = parent.prec < n.prec
         }
 
         if (paren) {
@@ -425,18 +458,21 @@ ${setter}
           out(')')
         }
       } else if (n.type === 'Ident') {
-        if (n.value in ctx.outputs) {
-          out(`__outs[${outmap[n.value]}]`)
+        const idName = typeof n.value === 'string' ? n.value : ''
+        if (ctx.outputs.has(idName)) {
+          out(`__outs[${outmap.get(idName)}]`)
         } else {
-          out(n.value)
+          out(idName)
         }
       } else if (n.type === 'Call') {
-        let name
+        let name: string
 
-        if (n[0].type === 'VarType') {
-          name = n[0].value.getTypeName()
+        const head = n[0]
+        if (head.type === 'VarType' && head.value instanceof VarType) {
+          name = head.value.getTypeName()
         } else {
-          name = n[0].value
+          const v = head.value
+          name = typeof v === 'string' ? v : ''
         }
 
         if (name === 'int_cast') {
@@ -450,7 +486,7 @@ ${setter}
         out(')')
       } else if (n.type === 'ExprList') {
         let i = 0
-        for (let n2 of n) {
+        for (const n2 of n) {
           if (i > 0) {
             out(', ')
           }
@@ -459,13 +495,15 @@ ${setter}
           i++
         }
       } else if (n.type === 'FloatConstant') {
-        out(n.value.toFixed(7))
+        const v = n.value
+        out(typeof v === 'number' ? v.toFixed(7) : '0')
       } else if (n.type === 'IntConstant') {
         out('' + n.value)
       } else if (n.type === 'Precision') {
-        return //do nothing
+        return
       } else if (n.type === 'Function') {
-        let fname = n.polyKey ?? n.value
+        const polyKey = n.polyKey
+        let fname = polyKey ?? (typeof n.value === 'string' ? n.value : '')
 
         if (n.value === 'main') {
           fname = 'main'
@@ -474,11 +512,11 @@ ${setter}
         out(`\n  function ${fname}(`)
         let i = 0
 
-        for (let c of n[1]) {
+        for (const c of n[1]) {
           if (i > 0) {
             out(', ')
           }
-          out(c.value)
+          out(typeof c.value === 'string' ? c.value : '')
           i++
         }
         out(') {\n')
@@ -493,16 +531,14 @@ ${setter}
 
         out(indent(tlvl) + '}\n')
       } else if (n.type === 'StatementList') {
-        let noScope = n.noScope
+        const noScope = n.noScope
 
         if (!noScope) {
           push(n)
         }
 
-        for (let c of n) {
+        for (const c of n) {
           out(indent(tlvl))
-
-          let slen = outs.length
 
           rec(c)
 
@@ -518,23 +554,23 @@ ${setter}
           pop(n)
         }
       } else {
-        for (let n2 of n) {
+        for (const n2 of n) {
           rec(n2)
         }
       }
     }
 
-    rec(ast)
+    rec(root)
 
     outs += '  let __$func = function(outs, $ins) {\n'
 
     let i = 0
-    for (let k in ctx.inputs) {
+    for (const k of ctx.inputs.keys()) {
       outs += `    ${k} = $ins[${i}];\n`
       i++
     }
 
-    let footer = `
+    const footer = `
     __outs = outs;
     main();
 
@@ -546,25 +582,31 @@ ${setter}
 
     outs += '  return {\n    call : function() { return __$func(this.outputs, this.inputs) },\n'
 
-    function buildType(t) {
-      if (t instanceof VarType) {
-        return t.type
-      } else if (t instanceof ArrayType) {
-        return t.name
+    function buildType(t: unknown): string {
+      if (t instanceof ArrayType) {
+        const name = t.getTypeName()
+        return name
       }
-      return t
+      if (t instanceof VarType) {
+        const inner = t.type
+        if (typeof inner === 'string') {
+          return inner
+        }
+        return t.getTypeNameSafe()
+      }
+      return typeof t === 'string' ? t : ''
     }
 
     outs += `  setInput(index, value) { this.inputs[index] = value},\n`
     outs += `  getInput(index) { return this.inputs[index] },\n`
     outs += `  uniforms: {\n`
-    for (let k in ctx.uniforms) {
+    for (const k of ctx.uniforms.keys()) {
       outs += `    get ${k}() {return ${k}},\n`
       outs += `    set ${k}(val) {__set${k}(val)},\n`
     }
     outs += '  },\n'
 
-    const defaultValueMap = new Map([
+    const defaultValueMap: Map<string, string> = new Map([
       ['float', '0.0'],
       ['int', '0'],
       ['bool', 'false'],
@@ -576,12 +618,11 @@ ${setter}
       ['mat4', '[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]'],
     ])
 
-    // build outputs
     let os1 = `    outputs: [\n`
     let os2 = `    outputTypes: {\n`
     i = 0
-    for (let k in ctx.outputs) {
-      let type = buildType(ctx.outputs[k][0].value)
+    for (const [k, node] of ctx.outputs) {
+      const type = buildType(node[0].value)
       os1 += `      ${defaultValueMap.get(type)},\n`
       os2 += `      ${k} : {type: '${type}', index: ${i}},\n`
       i++
@@ -590,12 +631,11 @@ ${setter}
     os1 += '    ],\n'
     os2 += '    },\n'
 
-    // build inputs
     let is1 = `    inputs: [\n`
     let is2 = `    inputTypes: {\n`
     i = 0
-    for (let k in ctx.inputs) {
-      let type = buildType(ctx.inputs[k][0].value)
+    for (const [k, node] of ctx.inputs) {
+      const type = buildType(node[0].value)
       is1 += `      ${defaultValueMap.get(type)},\n`
       is2 += `      ${k} : {type: '${type}', index: ${i}},\n`
       i++

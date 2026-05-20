@@ -2,7 +2,7 @@ import * as state from './state.js'
 import * as parseutil from '../util/parseutil.js'
 import * as util from '../util/util.js'
 import * as cconst from './const.js'
-import {ASTNode} from './ast.js'
+import {ASTNodeCtor as ASTNode, ASTNodeBase} from './ast.js'
 import {indent, strong, stronglog, log, termColor, termPrint} from '../util/util.js'
 
 globalThis.count = function count(s, chr) {
@@ -515,7 +515,7 @@ export function parse_intern_old(s, ctx = state.state, start = 'Run') {
 
     let r = bin_next(depth + 1)
 
-    if (r instanceof ASTNode) {
+    if (r instanceof ASTNodeBase) {
       right = r
     } else {
       if (r.prec > prec) {
@@ -884,12 +884,12 @@ export function parse_intern_old(s, ctx = state.state, start = 'Run') {
         map = ctx.uniforms
       }
 
-      if (ret.value in map || ret.value in ctx.scope) {
+      if (map.has(ret.value) || ctx.scope.has(ret.value)) {
         p.error(t, ret.value + ' is already declared')
       }
 
-      ctx.scope[ret.value] = ret
-      map[ret.value] = ret
+      ctx.scope.set(ret.value, ret)
+      map.set(ret.value, ret)
 
       p.expect('SEMI')
 
@@ -1008,7 +1008,7 @@ export function parse(src, startNode, args, lineOff = 0, lexposOff = 0, column =
       }
 
       let sub = args[ai]
-      if (typeof sub === 'object' && sub instanceof ASTNode) {
+      if (typeof sub === 'object' && sub instanceof ASTNodeBase) {
         sub = internalCodeGen.genCode(sub)
       }
 

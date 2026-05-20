@@ -1,18 +1,32 @@
 import fs from 'fs'
+import * as esbuild from 'esbuild'
+import {pathToFileURL} from 'url'
+import path from 'path'
 
-import {rebuildParser} from './parser/parser.js'
+const outFile = path.resolve('./.tmp_build_parsetable.mjs')
 
-import('./util/jscc.js').then((jscc) => {
-  //console.log(""+mathl.parse(test));
-  let parser = rebuildParser()
-  let data = parser.save()
+await esbuild.build({
+  entryPoints: [path.resolve('./parser/parser.ts')],
+  outfile: outFile,
+  bundle: true,
+  format: 'esm',
+  platform: 'node',
+  sourcemap: false,
+  logLevel: 'warning',
+  external: ['fs'],
+  keepNames: true,
+})
 
-  data = `/* WARNING: auto-generated file! */
-export const parsetable = "${data}";
+const mod = await import(pathToFileURL(outFile).href)
+const parser = mod.rebuildParser()
+const data = parser.save()
+
+const tsOut = `/* WARNING: auto-generated file! */
+export const parsetable =
+  '${data}'
 `
 
-  //console.log(parser.compressPopTab());
-  //console.log((data.length/1024).toFixed(2) + "kb");
+fs.writeFileSync('parser/parsetab.ts', tsOut)
+fs.unlinkSync(outFile)
 
-  fs.writeFileSync('parser/parsetab.js', data)
-})
+console.log('Wrote parser/parsetab.ts (' + (tsOut.length / 1024).toFixed(2) + 'KB)')

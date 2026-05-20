@@ -14,7 +14,8 @@
     "noEmit": true,
     "noImplicitThis": true,
     "listEmittedFiles": false,
-    "outDir": "types"
+    "outDir": "types",
+    "types": ["jest"]
   },
   "include": ["**/*.ts"],
 }

@@ -1,37 +1,90 @@
 import * as jscc_util from './jscc_util.js'
+import type {ActionP, ParseDefItem, PrecRow} from './jscc_util.js'
 import {token, tokdef, lexer, PUTLParseError} from '../util/parseutil.js'
+import type {TokFunc} from '../util/parseutil.js'
 import {VarType, ArrayType, DynamicArrayType} from '../core/types.js'
+import type {ASTNode} from '../core/ast.js'
+import {
+  ArrayLookupNode,
+  AssignNode,
+  BasicMemberLookupNode,
+  BinOpNode,
+  BoolConstantNode,
+  BreakNode,
+  CallNode,
+  CaseLabelNode,
+  ConditionNode,
+  ContinueNode,
+  DefaultCaseNode,
+  DiscardNode,
+  DoWhileNode,
+  ElseNode,
+  ExprListNode,
+  ExprNode,
+  FloatConstantNode,
+  ForLoopNode,
+  FunctionNode,
+  IdentNode,
+  IfNode,
+  InitDeclaratorListNode,
+  IntConstantNode,
+  LayoutQualifierIdNode,
+  LayoutQualifierNode,
+  PostDecNode,
+  PostIncNode,
+  PreDecNode,
+  PreIncNode,
+  PrecisionNode,
+  ProgramNode,
+  ReturnNode,
+  StatementListNode,
+  StructDeclNode,
+  StructMemberListNode,
+  StructMemberNode,
+  SubroutineQualifierNode,
+  SwitchNode,
+  TrinaryNode,
+  TypeNameNode,
+  TypeQualifierNode,
+  UintConstantNode,
+  UnaryOpNode,
+  VarDeclNode,
+  VarTypeNode,
+  WhileNode,
+} from '../core/ast.js'
 
-let tk = (n, r, f) => new tokdef(n, r, f)
+const tk = (n: string, r?: RegExp, f?: TokFunc): tokdef => new tokdef(n, r, f)
 
-let precedence2 = {
-  '(' : 0,
-  ')' : 0,
-  '[' : 1,
-  ']' : 1,
-  '.' : 1,
-  '++': 1,
-  '--': 1,
-  '*' : 2,
-  '/' : 2,
-  '%' : 2,
-  '+' : 3,
-  '-' : 3,
-  '>=': 4,
-  '<=': 4,
-  '>' : 4,
-  '<' : 4,
-  '!=': 5,
-  '==': 5,
-  '&' : 6,
-  '^' : 7,
-  '|' : 8,
-  '&&': 9,
-  '^^': 10,
-  '||': 11,
-}
+const precedence2: Map<string, number> = new Map<string, number>(
+  Object.entries({
+    '(' : 0,
+    ')' : 0,
+    '[' : 1,
+    ']' : 1,
+    '.' : 1,
+    '++': 1,
+    '--': 1,
+    '*' : 2,
+    '/' : 2,
+    '%' : 2,
+    '+' : 3,
+    '-' : 3,
+    '>=': 4,
+    '<=': 4,
+    '>' : 4,
+    '<' : 4,
+    '!=': 5,
+    '==': 5,
+    '&' : 6,
+    '^' : 7,
+    '|' : 8,
+    '&&': 9,
+    '^^': 10,
+    '||': 11,
+  })
+)
 
-let count = (str, match) => {
+const count = (str: string, match: string | RegExp): number => {
   let c = 0
   do {
     let i = str.search(match)
@@ -220,65 +273,68 @@ let keywords = new Set([
   "LEFT_ANGLE", "RIGHT_ANGLE", "VERTICAL_BAR", "CARET", "AMPERSAND", "QUESTION",
 */
 
-let tokendef = [
+const tokendef: tokdef[] = [
   tk('HIGH_PRECISION', /highp/),
   tk('MEDIUM_PRECISION', /mediump/),
   tk('LOW_PRECISION', /lowp/),
   tk('ID', /[a-zA-Z$_]+[a-zA-Z0-9$_]*/, (t) => {
     t.isKeyword = false
 
-    if (t.value in t.lexer.structs) {
+    const lex = t.lexer as GLSLLexer
+    const val = t.value as string
+
+    if (lex.structs.has(val)) {
       t.type = 'TYPE_NAME'
       return t
     }
 
-    if (t.lexer.prev && t.lexer.prev.type === 'DOT') {
+    if (lex.prev && lex.prev.type === 'DOT') {
       t.type = 'FIELD_SELECTION'
       return t
     }
 
-    if (keywords.has(t.value.toUpperCase())) {
+    if (keywords.has(val.toUpperCase())) {
       t.isKeyword = true
-      t.type = t.value.toUpperCase()
-      t.value = t.value.toLowerCase()
+      t.type = val.toUpperCase()
+      t.value = val.toLowerCase()
     }
 
     return t
   }),
   tk('FLOATCONSTANT', /[0-9]+\.([0-9]*)?/, (t) => {
-    t.value = parseFloat(t.value)
+    t.value = parseFloat(t.value as string)
     return t
   }),
   tk('INTCONSTANT', /[0-9]+/, (t) => {
-    t.value = parseInt(t.value)
+    t.value = parseInt(t.value as string)
     return t
   }),
   tk('UINTCONSTANT', /[0-9]+u/, (t) => {
-    t.value = parseInt(t.value)
+    t.value = parseInt(t.value as string)
     return t
   }),
   tk('BOOLCONSTANT', /(true|false)/),
   tk('DOUBLECONSTANT', /[0-9]+(\.[0-9]*)?d/, (t) => {
-    t.value = t.value.slice(0, t.value.length - 1)
-    t.value = parseFloat(t.value)
-
+    const s = t.value as string
+    t.value = parseFloat(s.slice(0, s.length - 1))
     return t
   }),
   tk('LPAREN', /\(/),
   tk('RPAREN', /\)/),
   tk('STRLIT', /".*(?<!\\)\"/, (t) => {
-    let v = t.value
-    t.lexer.lineno += count(t.value, '\n')
+    const lex = t.lexer as GLSLLexer
+    lex.lineno += count(t.value as string, '\n')
     return t
   }),
   tk('NL', /[\n\r]/, (t) => {
     if (t.value === '\n') {
-      t.lexer.lineno++
-      t.lexer.line_lexstart = t.lexer.lexpos
+      const lex = t.lexer as GLSLLexer
+      lex.lineno++
+      lex.line_lexstart = lex.lexpos
     }
     //drop token by not returning it
   }),
-  tk('WS', /[ \t]/, (t) => {
+  tk('WS', /[ \t]/, (_t) => {
     //drop token by not returning it
   }),
   tk('COMMA', /\,/),
@@ -319,8 +375,8 @@ let tokendef = [
   tk('PLUS_ASSIGN', /\+\=/),
   tk('MINUS_ASSIGN', /\-\=/),
   tk('COMMENT', /\/\/[^\n]*\n/, (t) => {
-    //t.lexer.lineno++;
-    t.lexer.lineno += count(t.value, '\n')
+    const lex = t.lexer as GLSLLexer
+    lex.lineno += count(t.value as string, '\n')
     //drop token by not returning it
   }),
   tk('MOD_ASSIGN', /\%\=/),
@@ -333,29 +389,32 @@ let tokendef = [
 ]
 
 export class GLSLLexer extends lexer {
+  scope: Map<string, ASTNode> = new Map()
+  structs: Map<string, ASTNode> = new Map()
+  scopestack: Map<string, ASTNode>[] = []
+
   constructor() {
-    super(tokendef, (t) => {
+    super(tokendef, (_t) => {
       console.log('Token error')
       return true
     })
 
-    this.scope = {}
-    this.structs = {}
-    this.scopestack = []
-
     this.linemap = []
   }
 
-  pushScope() {
+  pushScope(): void {
     this.scopestack.push(this.scope)
-    this.scope = Object.assign({}, this.scope)
+    this.scope = new Map(this.scope)
   }
 
-  popScope() {
-    this.scope = this.scopestack.pop()
+  popScope(): void {
+    const popped = this.scopestack.pop()
+    if (popped) {
+      this.scope = popped
+    }
   }
 
-  input(data) {
+  input(data: string): void {
     super.input(data)
 
     this.linemap = new Array(data.length)
@@ -369,8 +428,8 @@ export class GLSLLexer extends lexer {
       }
     }
 
-    this.scope = {}
-    this.structs = {}
+    this.scope = new Map()
+    this.structs = new Map()
   }
 }
 
@@ -398,7 +457,7 @@ let binops = new Set([
   '>=', //, "(", ")"
 ])
 
-let precedence = [
+let precedence: PrecRow[] = [
   ['nonassoc', 'LPAREN', 'RPAREN'],
   ['left', 'LSBRACKET', 'RSBRACKET', 'DOT', 'INC', 'DEC', 'FIELD_SELECTOR'],
   ['right', 'UNARY'],
@@ -431,56 +490,63 @@ let precedence = [
   ['left', 'COMMA'],
 ]
 
-let opmap = {
-  TIMES       : '*',
-  DIV         : '/',
-  MOD         : '%',
-  PLUS        : '+',
-  MINUS       : '-',
-  GTHAN       : '>',
-  LTHAN       : '<',
-  GEQUALS     : '>=',
-  LEQUALTS    : '<=',
-  NEQUALS     : '!=',
-  EQUALS      : '==',
-  ASSIGN      : '=',
-  MUL_ASSIGN  : '*=',
-  DIV_ASSIGN  : '/=',
-  PLUS_ASSIGN : '+=',
-  MOD_ASSIGN  : '%=',
-  OR_ASSIGN   : '|=',
-  AND_ASSIGN  : '&=',
-  LEFT_ASSIGN : '<<=',
-  RIGHT_ASSIGN: '>>=',
-  XOR_ASSIGN  : '^=',
-  MINUS_ASSIGN: '-=',
-  XOR         : '^',
-  BITOR       : '|',
-  LAND        : '&&',
-  LOR         : '||',
-  LXOR        : '^^',
-  BITAND      : '&',
-  BITINV      : '~',
-  LSHIFT      : '<<',
-  RSHIFT      : '>>',
-  INC         : '++',
-  DEC         : '--',
-  DOT         : '.',
+const opmap: Map<string, string> = new Map<string, string>(
+  Object.entries({
+    TIMES       : '*',
+    DIV         : '/',
+    MOD         : '%',
+    PLUS        : '+',
+    MINUS       : '-',
+    GTHAN       : '>',
+    LTHAN       : '<',
+    GEQUALS     : '>=',
+    LEQUALTS    : '<=',
+    NEQUALS     : '!=',
+    EQUALS      : '==',
+    ASSIGN      : '=',
+    MUL_ASSIGN  : '*=',
+    DIV_ASSIGN  : '/=',
+    PLUS_ASSIGN : '+=',
+    MOD_ASSIGN  : '%=',
+    OR_ASSIGN   : '|=',
+    AND_ASSIGN  : '&=',
+    LEFT_ASSIGN : '<<=',
+    RIGHT_ASSIGN: '>>=',
+    XOR_ASSIGN  : '^=',
+    MINUS_ASSIGN: '-=',
+    XOR         : '^',
+    BITOR       : '|',
+    LAND        : '&&',
+    LOR         : '||',
+    LXOR        : '^^',
+    BITAND      : '&',
+    BITINV      : '~',
+    LSHIFT      : '<<',
+    RSHIFT      : '>>',
+    INC         : '++',
+    DEC         : '--',
+    DOT         : '.',
+  })
+)
+
+export interface PrecedenceEntry {
+  prec: number
+  assoc: string
 }
 
-export const Precedence = {}
+export const Precedence: Map<string, PrecedenceEntry> = new Map()
 let pi = 0
-for (let row of precedence) {
-  for (let key of row.slice(1, row.length)) {
-    Precedence[opmap[key]] = {
-      prec : pi,
-      assoc: row[0],
+for (const row of precedence) {
+  for (const key of row.slice(1, row.length)) {
+    const opChar = opmap.get(key)
+    if (opChar !== undefined) {
+      Precedence.set(opChar, {prec: pi, assoc: row[0]})
     }
   }
   pi++
 }
 
-function indent(n, chr = '  ') {
+function indent(n: number, chr = '  '): string {
   let s = ''
   for (let i = 0; i < n; i++) {
     s += chr
@@ -489,191 +555,97 @@ function indent(n, chr = '  ') {
   return s
 }
 
-import {ASTNode} from '../core/ast.js'
-
-const Node = ASTNode
-
-export class Node1 extends Array {
-  constructor(type) {
-    super()
-    this.type = type
-    this.parent = undefined
-  }
-
-  [Symbol.toStringTag]() {
-    return `${this.type}(${this.length})`
-  }
-
-  push(n) {
-    if (typeof n === 'string') {
-      let n2 = new Node('Ident')
-      n2.value = n
-      n = n2
-    }
-
-    n.parent = this
-    return super.push(n)
-  }
-
-  add(n) {
-    this.push(n)
-  }
-
-  remove(n) {
-    let i = this.indexOf(n)
-
-    if (i < 0) {
-      console.log(n)
-      throw new Error('item not in array')
-    }
-
-    while (i < this.length) {
-      this[i] = this[i + 1]
-      i++
-    }
-
-    n.parent = undefined
-    this.length--
-
-    return this
-  }
-
-  insert(starti, n) {
-    let i = this.length - 1
-    this.length++
-
-    if (n.parent) {
-      n.parent.remove(n)
-    }
-
-    while (i > starti) {
-      this[i] = this[i - 1]
-      i--
-    }
-
-    n.parent = this
-    this[starti] = n
-
-    return this
-  }
-
-  replace(n, n2) {
-    if (n2.parent) {
-      n2.parent.remove(n2)
-    }
-
-    this[this.indexOf(n)] = n2
-    n.parent = undefined
-    n2.parent = this
-
-    return this
-  }
-
-  toString(t = 0) {
-    let tab = indent(t, '-')
-
-    let typestr = this.type
-
-    if (this.value !== undefined) {
-      typestr += ' : ' + this.value
-    } else if (this.op !== undefined) {
-      typestr += ' (' + this.op + ')'
-    }
-
-    let s = tab + typestr + ' {\n'
-    for (let c of this) {
-      s += c.toString(t + 1)
-    }
-    s += tab + '}\n'
-
-    return s
-  }
+type P<ARGS extends readonly unknown[] = unknown[]> = ARGS & {
+  lexer: GLSLLexer
+  length: number
 }
 
-let BinOpHandler = (p) => {
+type BinOpP = P<[ASTNode, ASTNode] | [BinOpNode, ASTNode, string, ASTNode]>
+type ConstantNode = IntConstantNode | FloatConstantNode | UintConstantNode | BoolConstantNode | IdentNode
+
+let BinOpHandler = (p: BinOpP) => {
   if (p.length === 2) {
     p[0] = p[1]
   } else {
-    p[0] = new Node('BinOp')
-    p[0].op = p[2]
-
-    p[0].prec = precedence2[p[0].op]
-
-    p[0].push(p[1])
-    p[0].push(p[3])
+    const op = p[2]
+    const prec = precedence2.get(op) ?? 0
+    const n = new BinOpNode(op, prec)
+    n.push(p[1])
+    n.push(p[3])
+    p[0] = n
   }
 }
 
 let parsedef = [
   {
     grammar: `var_expr: ID`,
-    func: (p) => {
-      p[0] = new Node('Ident')
+    func: (p: P<[IdentNode, string]>) => {
+      p[0] = new IdentNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `intconstant: INTCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('IntConstant')
+    func: (p: P<[IntConstantNode, number]>) => {
+      p[0] = new IntConstantNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `floatconstant: FLOATCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('FloatConstant')
+    func: (p: P<[FloatConstantNode, number]>) => {
+      p[0] = new FloatConstantNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `boolconstant: BOOLCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('BoolConstant')
+    func: (p: P<[BoolConstantNode, string]>) => {
+      p[0] = new BoolConstantNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `uintconstant: UINTCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('UIntConstant')
+    func: (p: P<[UintConstantNode, number]>) => {
+      p[0] = new UintConstantNode()
       p[0].value = p[1]
     },
   },
 
   {
     grammar: `expression: INTCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('IntConstant')
+    func: (p: P<[IntConstantNode, number]>) => {
+      p[0] = new IntConstantNode()
       p[0].value = p[1]
     },
   },
 
   {
     grammar: `intconstant : INTCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('IntConstant')
+    func: (p: P<[IntConstantNode, number]>) => {
+      p[0] = new IntConstantNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `uintconstant : UINTCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('UintConstant')
+    func: (p: P<[UintConstantNode, number]>) => {
+      p[0] = new UintConstantNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `floatconstant : FLOATCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('FloatConstant')
+    func: (p: P<[FloatConstantNode, number]>) => {
+      p[0] = new FloatConstantNode()
       p[0].value = p[1]
     },
   },
   {
     grammar: `boolconstant : BOOLCONSTANT`,
-    func: (p) => {
-      p[0] = new Node('BoolConstant')
+    func: (p: P<[BoolConstantNode, string]>) => {
+      p[0] = new BoolConstantNode()
       p[0].value = p[1]
     },
   },
@@ -684,7 +656,7 @@ let parsedef = [
                                   | floatconstant
                                   | boolconstant
                                   | LPAREN expression RPAREN`,
-    func: (p) => {
+    func: (p: P<[ConstantNode, ConstantNode] | [ASTNode, string, ASTNode, string]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else if (p.length === 4) {
@@ -694,39 +666,46 @@ let parsedef = [
   },
   {
     grammar: `field_selection : FIELD_SELECTION`,
-    func: (p) => {
-      p[0] = new Node('Ident')
+    func: (p: P<[IdentNode, string]>) => {
+      p[0] = new IdentNode()
       p[0].value = p[1]
     },
   },
   {
-    grammar: `postfix_expression: primary_expression
+    grammar: `postfix_expression : primary_expression
                                  | postfix_expression LSBRACKET integer_expression RSBRACKET
                                  | function_call
                                  | postfix_expression DOT field_selection
                                  | postfix_expression INC
-                                 | postfix_expression DEC 
+                                 | postfix_expression DEC
                `,
-    func: (p) => {
+    func: (
+      p: P<
+        | [ASTNode, ASTNode]
+        | [ArrayLookupNode, ASTNode, string, ASTNode, string]
+        | [BasicMemberLookupNode, ASTNode, string, ASTNode | string]
+        | [PostIncNode | PostDecNode, ASTNode, string]
+      >
+    ) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else if (p.length === 5) {
-        p[0] = new Node('ArrayLookup')
+        p[0] = new ArrayLookupNode()
         p[0].push(p[1])
         p[0].push(p[3])
       } else if (p.length === 4) {
-        p[0] = new Node('BasicMemberLookup')
+        p[0] = new BasicMemberLookupNode()
         let n = p[3]
         if (typeof n === 'string') {
-          n = new Node('Ident')
-          n.value = p[3]
+          const id = new IdentNode()
+          id.value = n
+          n = id
         }
 
         p[0].push(p[1])
         p[0].push(n)
       } else if (p.length === 3) {
-        let type = p[2] === '++' ? 'PostInc' : 'PostDec'
-        p[0] = new Node(type)
+        p[0] = p[2] === '++' ? new PostIncNode() : new PostDecNode()
         p[0].push(p[1])
       }
     },
@@ -734,19 +713,19 @@ let parsedef = [
 
   {
     grammar: `integer_expression: expression`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `function_call: function_call_or_method`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `function_call_or_method: function_call_generic`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
@@ -754,42 +733,42 @@ let parsedef = [
     grammar: `function_call_generic: function_call_header_with_parameters RPAREN
                                     | function_call_header_no_parameters RPAREN
             `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode, string]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `function_call_header_no_parameters: function_call_header VOID
                                                  | function_call_header`,
-    func: (p) => {
+    func: (p: P<[CallNode, CallNode] | [CallNode, CallNode, string]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `function_call_header_with_parameters: function_call_header assignment_expression
                                                    | function_call_header_with_parameters COMMA assignment_expression`,
-    func: (p) => {
+    func: (p: P<[CallNode, CallNode, ASTNode] | [CallNode, CallNode, string, ASTNode]>) => {
       if (p.length === 3) {
         p[0] = p[1]
-        p[0][1].push(p[2])
+        ;(p[0][1] as ExprListNode).push(p[2])
       } else {
         p[0] = p[1]
-        p[0][1].push(p[3])
+        ;(p[0][1] as ExprListNode).push(p[3])
       }
     },
   },
   {
     grammar: `function_call_header: function_id LPAREN`,
-    func: (p) => {
-      p[0] = new Node('Call')
+    func: (p: P<[CallNode, ASTNode, string]>) => {
+      p[0] = new CallNode()
       p[0].push(p[1])
-      p[0].push(new Node('ExprList'))
+      p[0].push(new ExprListNode())
     },
   },
   {
     grammar: `function_id: type_specifier
                           | postfix_expression`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
@@ -798,19 +777,20 @@ let parsedef = [
                                | INC unary_expression &UNARY
                                | DEC unary_expression &UNARY
                                | unary_operator unary_expression &UNARY`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [PreIncNode | PreDecNode | UnaryOpNode, string, ASTNode, string]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else if (p.length === 4 && p[1] === '++') {
-        p[0] = new Node('PreInc')
+        p[0] = new PreIncNode()
         p[0].push(p[2])
       } else if (p.length === 4 && p[1] === '--') {
-        p[0] = new Node('PreDec')
+        p[0] = new PreDecNode()
         p[0].push(p[2])
       } else {
-        p[0] = new Node('UnaryOp')
-        p[0].push(p[2])
-        p[0].op = p[1]
+        const n = new UnaryOpNode()
+        n.push(p[2])
+        n.op = p[1]
+        p[0] = n
       }
     },
   },
@@ -819,7 +799,7 @@ let parsedef = [
                               | MINUS
                               | BITINV
                               | NOT`,
-    func: (p) => {
+    func: (p: P<[string, string]>) => {
       p[0] = p[1]
     },
   },
@@ -901,14 +881,15 @@ let parsedef = [
     grammar: `conditional_expression: logical_or_expression
                                      | logical_or_expression QUESTION expression COLON assignment_expression
                                `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [TrinaryNode, ASTNode, string, ASTNode, string, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        p[0] = new Node('Trinary')
-        p[0].push(p[1])
-        p[0].push(p[3])
-        p[0].push(p[5])
+        const n = new TrinaryNode()
+        n.push(p[1])
+        n.push(p[3])
+        n.push(p[5])
+        p[0] = n
       }
     },
   },
@@ -916,14 +897,15 @@ let parsedef = [
     grammar: `assignment_expression: conditional_expression
                                     | unary_expression assignment_operator assignment_expression
                                `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [AssignNode, ASTNode, string, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        p[0] = new Node('Assign')
-        p[0].push(p[1])
-        p[0].push(p[3])
-        p[0].op = p[2]
+        const n = new AssignNode()
+        n.push(p[1])
+        n.push(p[3])
+        n.op = p[2]
+        p[0] = n
       }
     },
   },
@@ -940,54 +922,49 @@ let parsedef = [
                                   | RIGHT_ASSIGN
                                   | LEFT_ASSIGN
                                   | AND_ASSIGN
-                                  
+
                                   `,
-    func: (p) => {
+    func: (p: P<[string, string]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `expression : assignment_expression
                           | expression COMMA assignment_expression`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [ASTNode | ExprListNode, ASTNode, string, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        if (p[1].type !== 'ExprList') {
-          p[0] = new Node('ExprList')
-          p[0].push(p[1])
+        const left = p[1]
+        let list: ExprListNode
+        if (left.type !== 'ExprList') {
+          list = new ExprListNode()
+          list.push(left)
         } else {
-          p[0] = p[1]
+          list = left as ExprListNode
         }
 
-        p[0].push(p[3])
+        list.push(p[3])
+        p[0] = list
       }
     },
   },
   {
     grammar: `constant_expression: conditional_expression`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `type_specifier: type_specifier_nonarray
                               | type_specifier_nonarray array_specifier`,
-    func: (p) => {
+    func: (p: P<[VarType, VarType] | [ArrayType, VarType, ArrayType]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        let type
-
-        if (typeof p[1] === 'string') {
-          type = new Node('VarType')
-          type.value = new VarType(p[1])
-        } else {
-          type = p[1]
-        }
-
-        p[0] = p[2]
-        p[0].type = p[1].value
+        const arr = p[2]
+        arr.type = p[1]
+        p[0] = arr
       }
     },
   },
@@ -996,28 +973,37 @@ let parsedef = [
                               | LSBRACKET constant_expression RSBRACKET
                               | array_specifier LSBRACKET RSBRACKET
                               | array_specifier LSBRACKET constant_expression RSBRACKET
-                             
+
  `,
 
-    func: (p) => {
+    func: (
+      p: P<
+        | [DynamicArrayType, string, string]
+        | [ArrayType, string, ASTNode, string]
+        | [DynamicArrayType, ArrayType, string, string]
+        | [ArrayType, ArrayType, string, ASTNode, string]
+      >
+    ) => {
       if (p.length === 3) {
         p[0] = new DynamicArrayType()
       } else if (p.length === 4 && p[1] === '[') {
-        p[0] = new ArrayType(undefined, p[2])
+        const sizeNode = p[2] as IntConstantNode
+        p[0] = new ArrayType(undefined, sizeNode.value)
       } else if (p.length === 4) {
-        p[0] = new DynamicArrayType(p[1])
+        p[0] = new DynamicArrayType(p[1] as ArrayType)
       } else if (p.length === 5) {
-        p[0] = new ArrayType(p[3], p[1])
+        const inner = p[1] as ArrayType
+        const sizeNode = p[3] as IntConstantNode
+        p[0] = new ArrayType(inner, sizeNode.value)
       } else {
-        console.log(p.length, p)
-        throw new Error()
+        throw new Error('array_specifier: unexpected p shape')
       }
     },
   },
   {
     grammar: `type_name : TYPE_NAME`,
-    func: (p) => {
-      p[0] = new Node('TypeName')
+    func: (p: P<[ASTNode, string]>) => {
+      p[0] = new TypeNameNode()
       p[0].value = p[1]
     },
   },
@@ -1142,19 +1128,19 @@ let parsedef = [
                                       | IIMAGE2DMSARRAY 
                                       | UIMAGE2DMSARRAY
                                       | struct_specifier
-                                      | type_name 
- 
+                                      | type_name
+
     `,
-    func: (p) => {
+    func: (p: P<[VarType, string | ASTNode]>) => {
       p[0] = new VarType(p[1])
     },
   },
   {
     grammar: `struct_declaration_list : struct_declaration
                                        | struct_declaration_list struct_declaration`,
-    func: (p) => {
+    func: (p: P<[ExprListNode, ASTNode] | [ExprListNode, ExprListNode, ASTNode]>) => {
       if (p.length === 2) {
-        p[0] = new Node('ExprList')
+        p[0] = new ExprListNode()
         p[0].push(p[1])
       } else {
         p[0] = p[1]
@@ -1163,10 +1149,15 @@ let parsedef = [
     },
   },
   {
-    grammar: `struct_declaration: type_specifier struct_declarator_list SEMI 
+    grammar: `struct_declaration: type_specifier struct_declarator_list SEMI
                                  | type_qualifier type_specifier struct_declarator_list SEMI`,
-    func: (p) => {
-      p[0] = new Node('StructMemberList')
+    func: (
+      p: P<
+        | [StructMemberListNode, ASTNode, ASTNode, string]
+        | [StructMemberListNode, ASTNode, ASTNode, ASTNode, string]
+      >
+    ) => {
+      p[0] = new StructMemberListNode()
 
       if (p.length === 4) {
         p[0].push(p[1])
@@ -1188,9 +1179,9 @@ let parsedef = [
   {
     grammar: `struct_declarator_list: struct_declarator
                                      | struct_declarator_list COMMA struct_declarator`,
-    func: (p) => {
+    func: (p: P<[ExprListNode, ASTNode] | [ExprListNode, ExprListNode, string, ASTNode]>) => {
       if (p.length === 2) {
-        p[0] = new Node('ExprList')
+        p[0] = new ExprListNode()
         p[0].push(p[1])
       } else {
         p[0] = p[1]
@@ -1201,22 +1192,27 @@ let parsedef = [
   {
     grammar: `struct_declarator: ID
                                 | ID array_specifier`,
-    func: (p) => {
-      p[0] = new Node('StructMember')
+    func: (p: P<[StructMemberNode, string] | [StructMemberNode, string, ArrayType]>) => {
+      p[0] = new StructMemberNode()
       p[0].value = p[1]
 
-      if (p.length > 2) {
+      if (p.length === 3) {
         p[0].arraytype = p[2]
       }
     },
   },
   {
     grammar: `struct_specifier: STRUCT ID LBRACE struct_declaration_list RBRACE
-                               | STRUCT LBRACE struct_declaration_list RBRACE 
- 
+                               | STRUCT LBRACE struct_declaration_list RBRACE
+
  `,
-    func: (p) => {
-      p[0] = new Node('StructDecl')
+    func: (
+      p: P<
+        | [StructDeclNode, string, string, string, ASTNode, string]
+        | [StructDeclNode, string, string, ASTNode, string]
+      >
+    ) => {
+      p[0] = new StructDeclNode()
 
       if (p.length > 5) {
         p[0].value = p[2]
@@ -1226,12 +1222,12 @@ let parsedef = [
         p[0].push(p[3])
       }
 
-      p.lexer.structs[p[0].value] = p[0]
+      p.lexer.structs.set(p[0].value, p[0])
     },
   },
   {
     grammar: 'function_prototype_pop_scope: function_prototype',
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
       p.lexer.popScope()
     },
@@ -1248,129 +1244,155 @@ let parsedef = [
                           | type_qualifier ID id_list SEMI
 
     `,
-    func: (p) => {
-      if (p.length === 3 && p[1].type === 'InitDeclaratorList') {
-        p[1].type = 'StatementList'
-        p[1].noScope = true
+    func: (
+      p: P<
+        | [ASTNode, ASTNode, string]
+        | [ASTNode, ASTNode, string, string]
+        | [ASTNode, string, ASTNode, ASTNode, string]
+        | [ASTNode, ASTNode, string, ExprListNode, string]
+        | [ASTNode, ASTNode, string, string, ASTNode, string, string]
+        | [ASTNode, ASTNode, string, string, ASTNode, string, string, string]
+        | [ASTNode, ASTNode, string, string, ASTNode, string, string, ArrayType, string]
+      >
+    ) => {
+      if (p.length === 3) {
+        const p1 = p[1]
+        if (p1 instanceof InitDeclaratorListNode) {
+          const list = new StatementListNode()
+          list.noScope = true
 
-        let type = p[1][0][0]
-        for (let n of p[1]) {
-          n[0].value = type.value
-          n[0].qualifier = type.qualifier
+          const type = p1[0][0]
+          while (p1.length > 0) {
+            const child = p1[0]
+            p1.remove(child)
+            list.push(child)
+          }
+
+          for (const n of list) {
+            n[0].value = type.value
+            n[0].qualifier = type.qualifier
+          }
+
+          p[0] = list
+        } else {
+          p[0] = p1
         }
+      } else if (p.length === 5) {
+        if (p[1] === 'precision') {
+          // Precision declarations are discarded by the JS generator,
+          // so we don't need to attach the qualifier/type children.
+          p[0] = new PrecisionNode()
+        } else {
+          const p1 = p[1]
+          const p2 = p[2]
+          const p3 = p[3]
+          if (typeof p1 === 'string' || typeof p2 !== 'string' || typeof p3 === 'string') {
+            throw new Error('declaration id_list: unexpected shape')
+          }
+          const n = new VarDeclNode()
+          n.value = p2
+          n.push(p1)
 
-        p[0] = p[1]
-      } else if (p.length === 5 && p[1] === 'precision') {
-        let n = new Node('Precision')
-        n.push(p[2])
-        n.push(p[3])
+          p.lexer.scope.set(n.value, n)
 
-        p[0] = n
-      } else if (p.length > 6) {
-        let n = new Node('StructDecl')
+          const list = new StatementListNode()
+          list.noScope = true
+          list.push(n)
+          p[0] = list
+
+          for (const c of p3) {
+            const n2 = new VarDeclNode()
+            n2.push(n[0])
+            n2.value = c.value as string
+            p.lexer.scope.set(n2.value, n2)
+            list.push(n2)
+          }
+        }
+      } else if (p.length === 7) {
+        const n = new StructDeclNode()
         n.value = p[2]
         n.push(p[4])
 
-        p.lexer.structs[n.value] = n
+        p.lexer.structs.set(n.value, n)
+        n.qualifier = p[1]
+        p[0] = n
+      } else if (p.length === 8 || p.length === 9) {
+        const n = new StructDeclNode()
+        n.value = p[2]
+        n.push(p[4])
+
+        p.lexer.structs.set(n.value, n)
         n.qualifier = p[1]
 
-        if (p.length > 7) {
-          let n2 = new Node('VarDecl')
-          n2.push(n)
+        const n2 = new VarDeclNode()
+        n2.push(n)
+        n2.value = p[6]
 
-          n2.value = p[6]
+        p.lexer.scope.set(n2.value, n2)
 
-          p.lexer.scope[n2.value] = n2
-
-          if (p.length > 8) {
-            let n3 = new Node('VarType')
-            n3.value = p[7]
-
-            p[7].type = n[0]
-            n.replace(n[0], n3)
-          }
-          p[0] = n2
-        } else {
-          p[0] = n
+        if (p.length === 9) {
+          const arr = p[7]
+          arr.type = n[0].type
+          const n3 = new VarTypeNode()
+          n3.value = arr
+          n.replace(n[0], n3)
         }
-      } else if (n.length === 4) {
-        p[0] = new Node('VarDecl')
-        p[0].value = p[2]
+        p[0] = n2
+      } else if (p.length === 4) {
+        const decl = new VarDeclNode()
+        decl.value = p[2]
+        decl.push(p[1])
 
-        /*if (p[1] instanceof Node && p[1].type === "Ident") {
-          p[1].type = "VarType"
-          p[1].value = new VarType(p[1].value);
-        }*/
-
-        p[0].add(p[1])
-
-        p.lexer.scope[p[0].value] = p[0]
-      } else if (n.length === 5) {
-        let n = new Node('VarDecl')
-        n.value = p[2]
-
-        n.push(p[1])
-        //n.ntype = p[1];
-
-        p.lexer.scope[p[0].value] = n
-
-        p[0] = new Node('StatementList')
-        p[0].noScope = true
-        p[0].push(n)
-
-        for (let c of p[3]) {
-          let n2 = new Node('VarDecl')
-
-          //n2.ntype = n.ntype;
-          n2.push(n[0])
-
-          n2.value = c
-          p.lexer.scope[n2.value] = n2
-
-          p[0].push(n2)
-        }
+        p.lexer.scope.set(decl.value, decl)
+        p[0] = decl
       } else {
         console.log(p)
-        throw new Error('bad p length ' + p.length)
+        throw new Error('bad p length')
       }
     },
   },
   {
     grammar: `id_list: COMMA ID
                       | id_list COMMA ID`,
-    func: (p) => {
+    func: (p: P<[ExprListNode, string, string] | [ExprListNode, ExprListNode, string, string]>) => {
+      const makeIdent = (name: string): IdentNode => {
+        const id = new IdentNode()
+        id.value = name
+        return id
+      }
+
       if (p.length === 3) {
-        p[0] = [p[2]]
+        p[0] = new ExprListNode()
+        p[0].push(makeIdent(p[2]))
       } else {
         p[0] = p[1]
-        p[0].push(p[3])
+        p[0].push(makeIdent(p[3]))
       }
     },
   },
   {
     grammar: `function_prototype: function_declarator RPAREN`,
-    func: (p) => {
+    func: (p: P<[FunctionNode, FunctionNode, string]>) => {
       p.lexer.pushScope()
 
-      for (let c of p[1][0]) {
-        p.lexer.scope[c.value] = c
+      for (const c of p[1][0]) {
+        p.lexer.scope.set(c.value as string, c)
       }
 
-      globalThis.fn = p[1]
       p[0] = p[1]
     },
   },
   {
     grammar: `function_declarator : function_header
                                    | function_header_with_parameters`,
-    func: (p) => {
+    func: (p: P<[FunctionNode, FunctionNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `function_header_with_parameters : function_header parameter_declaration
                                                | function_header_with_parameters COMMA parameter_declaration`,
-    func: (p) => {
+    func: (p: P<[FunctionNode, FunctionNode, ASTNode] | [FunctionNode, FunctionNode, string, ASTNode]>) => {
       p[0] = p[1]
 
       if (p.length === 3) {
@@ -1382,22 +1404,22 @@ let parsedef = [
   },
   {
     grammar: `function_header: fully_specified_type ID LPAREN`,
-    func: (p) => {
-      p[0] = new Node('Function')
+    func: (p: P<[FunctionNode, VarType, string, string]>) => {
+      p[0] = new FunctionNode()
 
-      let n = new Node('VarType')
+      const n = new VarTypeNode()
       n.value = p[1]
 
       p[0].push(n)
-      p[0].push(new Node('ExprList'))
+      p[0].push(new ExprListNode())
       p[0].value = p[2]
     },
   },
   {
     grammar: `parameter_declarator : type_specifier ID
                                     | type_specifier ID array_specifier`,
-    func: (p) => {
-      p[0] = new Node('VarDecl')
+    func: (p: P<[VarDeclNode, ASTNode, string] | [VarDeclNode, ASTNode, string, ASTNode]>) => {
+      p[0] = new VarDeclNode()
       p[0].push(p[1])
       p[0].value = p[2]
 
@@ -1412,10 +1434,10 @@ let parsedef = [
                                     | type_qualifier parameter_type_specifier
                                     | parameter_type_specifier
  `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [ASTNode, ASTNode, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
-      } else if (p.length === 3) {
+      } else {
         p[0] = p[2]
         p[0].qualifier = p[1]
       }
@@ -1423,7 +1445,7 @@ let parsedef = [
   },
   {
     grammar: `parameter_type_specifier : type_specifier`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
@@ -1435,54 +1457,45 @@ let parsedef = [
                                     | init_declarator_list COMMA ID ASSIGN initializer
 
 `,
-    func: (p) => {
+    func: (
+      p: P<
+        | [InitDeclaratorListNode, ASTNode]
+        | [InitDeclaratorListNode, InitDeclaratorListNode, string, string]
+        | [InitDeclaratorListNode, InitDeclaratorListNode, string, string, ArrayType]
+        | [InitDeclaratorListNode, InitDeclaratorListNode, string, string, string, ASTNode]
+        | [InitDeclaratorListNode, InitDeclaratorListNode, string, string, ArrayType, string, ASTNode]
+      >
+    ) => {
       if (p.length === 2) {
-        p[0] = new Node('InitDeclaratorList') //parent production will turn this into a StatementList
+        p[0] = new InitDeclaratorListNode() //parent production will turn this into a StatementList
         p[0].push(p[1])
         p[0].noScope = true
-
-        /*
-        p[0] = new Node("ExprList");
-
-        let n = new Node("VarDecl")
-        n.value = p[1];
-
-        p[0].push(n);//*/
       } else if (p.length === 4) {
-        let n = new Node('VarDecl')
-        n.push(new Node('VarType')) //will be initialized later
+        const n = new VarDeclNode()
+        n.push(new VarTypeNode()) //will be initialized later
         n.value = p[3]
 
         p[0] = p[1]
         p[0].push(n)
       } else if (p.length === 5) {
         p[0] = p[1]
-
-        let n = new Node('VarDecl')
+        const n = new VarDeclNode()
         n.push(p[4])
-
         n.value = p[3]
-        //n.arraytype = p[4];
-
         p[0].push(n)
       } else if (p.length === 6) {
         p[0] = p[1]
-        let n = new Node('VarDecl')
-        n.push(new Node('VarType')) //will be initialized later
-
+        const n = new VarDeclNode()
+        n.push(new VarTypeNode()) //will be initialized later
         n.value = p[3]
         n.push(p[5])
-
         p[0].push(n)
       } else if (p.length === 7) {
         p[0] = p[1]
-        let n = new Node('VarDecl')
+        const n = new VarDeclNode()
         n.push(p[4])
-
         n.value = p[3]
-        //n.arraytype = p[4];
         n.push(p[5])
-
         p[0].push(n)
       }
     },
@@ -1495,63 +1508,58 @@ let parsedef = [
                                   | fully_specified_type ID ASSIGN initializer 
 
  `,
-    func: (p) => {
+    func: (
+      p: P<
+        | [ASTNode, ASTNode]
+        | [VarDeclNode, ASTNode, string]
+        | [VarDeclNode, ASTNode, string, ArrayType]
+        | [VarDeclNode, ASTNode, string, string, ASTNode]
+        | [VarDeclNode, ASTNode, string, ArrayType, string, ASTNode]
+      >
+    ) => {
       if (p.length === 2) {
         p[0] = p[1]
-
-        //p[0] = new Node("VarDecl")
-        //p[0].ntype = p[1];
-        //p[0].value = "(anonymous)";
-      } else {
-        p[0] = new Node('VarDecl')
-        p[0].value = p[2]
-
-        let type = p[1]
-        if (typeof type === 'string') {
-          let n = new Node('VarType')
-          n.value = new VarType(type)
-          type = n
-        } else if ((typeof type) instanceof Node && type.type === 'Ident') {
-          type.type = 'VarType'
-          type.value = new VarType(type.value)
-        }
-
-        p[0].push(type)
-
-        if (p.length > 3 && p[3] !== '=') {
-          p[0].arraytype = p[3]
-          if (p.length > 5) {
-            p[0].push(p[5])
-          }
-        } else {
-          if (p[4]) {
-            p[0].push(p[4])
-          }
-        }
+        return
       }
+
+      const decl = new VarDeclNode()
+      decl.value = p[2]
+
+      const type = p[1]
+      if (type instanceof IdentNode) {
+        const n = new VarTypeNode()
+        n.value = new VarType(type.value)
+        decl.push(n)
+      } else {
+        decl.push(type)
+      }
+
+      if (p.length === 4) {
+        decl.arraytype = p[3]
+      } else if (p.length === 5) {
+        decl.push(p[4])
+      } else if (p.length === 6) {
+        decl.arraytype = p[3]
+        decl.push(p[5])
+      }
+      p[0] = decl
     },
   },
   {
-    grammar: `fully_specified_type : type_specifier 
+    grammar: `fully_specified_type : type_specifier
                                     | type_qualifier type_specifier`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [ASTNode, ASTNode, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
         p[0] = p[2]
-
-        if (typeof p[0] === 'string') {
-          p[0] = new Node('Ident')
-          p[0].value = p[2]
-        }
-
         p[0].qualifier = p[1]
       }
     },
   },
   {
     grammar: `invariant_qualifier : INVARIANT`,
-    func: (p) => {
+    func: (p: P<[string, string]>) => {
       p[0] = p[1]
     },
   },
@@ -1560,14 +1568,14 @@ let parsedef = [
                                        | FLAT
                                        | NOPERSPECTIVE
                                        `,
-    func: (p) => {
+    func: (p: P<[string, string]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `layout_qualifier : LAYOUT LPAREN layout_qualifier_id_list RPAREN`,
-    func: (p) => {
-      p[0] = new Node('LayoutQualifier')
+    func: (p: P<[ASTNode, string, string, ASTNode, string]>) => {
+      p[0] = new LayoutQualifierNode()
       p[0].push(p[3])
     },
   },
@@ -1575,9 +1583,9 @@ let parsedef = [
     grammar: `layout_qualifier_id_list : layout_qualifier_id
                                         | layout_qualifier_id_list COMMA layout_qualifier_id
                                         `,
-    func: (p) => {
+    func: (p: P<[ExprListNode, ASTNode] | [ExprListNode, ExprListNode, string, ASTNode]>) => {
       if (p.length === 2) {
-        p[0] = new Node('ExprList')
+        p[0] = new ExprListNode()
         p[0].push(p[1])
       } else {
         p[0] = p[1]
@@ -1589,8 +1597,8 @@ let parsedef = [
     grammar: `layout_qualifier_id : ID
                                    | ID ASSIGN constant_expression
                                    | SHARED`,
-    func: (p) => {
-      p[0] = new Node('LayoutQualifierId')
+    func: (p: P<[LayoutQualifierIdNode, string] | [LayoutQualifierIdNode, string, string, ASTNode]>) => {
+      p[0] = new LayoutQualifierIdNode()
 
       if (p.length === 2) {
         p[0].value = p[1]
@@ -1602,29 +1610,39 @@ let parsedef = [
   },
   {
     grammar: `precise_qualifier : PRECISE`,
-    func: (p) => {
+    func: (p: P<[string, string]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `type_qualifier : single_type_qualifier
                               | type_qualifier single_type_qualifier`,
-    func: (p) => {
+    func: (
+      p: P<
+        | [ASTNode, ASTNode | string]
+        | [ASTNode, ASTNode, ASTNode | string]
+      >
+    ) => {
       if (p.length === 2) {
-        p[0] = p[1]
-
-        if (typeof p[0] === 'string') {
-          p[0] = new Node('TypeQualifier')
-          p[0].value = p[1]
+        const v = p[1]
+        if (typeof v === 'string') {
+          const n = new TypeQualifierNode()
+          n.value = v
+          p[0] = n
+        } else {
+          p[0] = v
         }
       } else {
-        p[0] = p[2]
-
-        if (typeof p[0] === 'string') {
-          p[0] = new Node('TypeQualifier')
-          p[0].value = p[2]
+        const v = p[2]
+        let n2: ASTNode
+        if (typeof v === 'string') {
+          n2 = new TypeQualifierNode()
+          n2.value = v
+        } else {
+          n2 = v
         }
-        p[0].qualifier = p[1]
+        n2.qualifier = p[1]
+        p[0] = n2
       }
     },
   },
@@ -1637,7 +1655,7 @@ let parsedef = [
                                     | invariant_qualifier
                                     | precise_qualifier
                                      `,
-    func: (p) => {
+    func: (p: P<[ASTNode | string, ASTNode | string]>) => {
       p[0] = p[1]
     },
   },
@@ -1660,15 +1678,15 @@ let parsedef = [
                                 | SUBROUTINE
                                 | SUBROUTINE LPAREN type_name_list RPAREN
     `,
-    func: (p) => {
-      if (p.length === 2) {
-        p[0] = p[1]
-      } else if (p.length === 5) {
-        p[0] = new Node('SubroutineQualifier')
-        p[0].push(p[3])
+    func: (
+      p: P<[ASTNode | string, string] | [SubroutineQualifierNode, string, string, ASTNode, string]>
+    ) => {
+      if (p.length === 5) {
+        const n = new SubroutineQualifierNode()
+        n.push(p[3])
+        p[0] = n
       } else {
         p[0] = p[1]
-        //throw new Error("bad p vector: length was " + p.length);
       }
     },
   },
@@ -1676,20 +1694,17 @@ let parsedef = [
     grammar: `type_name_list: type_name
                              | type_name_list COMMA type_name
                              `,
-    func: (p) => {
+    func: (p: P<[ExprListNode, string] | [ExprListNode, ExprListNode, string, string]>) => {
       if (p.length === 2) {
-        p[0] = new Node('ExprList')
-
-        let n = new Node('Ident')
+        const list = new ExprListNode()
+        const n = new IdentNode()
         n.value = p[1]
-
-        p[0].push(n)
+        list.push(n)
+        p[0] = list
       } else {
         p[0] = p[1]
-
-        let n = new Node('Ident')
+        const n = new IdentNode()
         n.value = p[3]
-
         p[0].push(n)
       }
     },
@@ -1699,7 +1714,7 @@ let parsedef = [
                                   | MEDIUM_PRECISION
                                   | LOW_PRECISION
     `,
-    func: (p) => {
+    func: (p: P<[string, string]>) => {
       p[0] = p[1]
     },
   },
@@ -1709,10 +1724,17 @@ let parsedef = [
                           | LBRACE initializer_list COMMA RBRACE
 
  `,
-    func: (p) => {
+    func: (
+      p: P<
+        | [ExprListNode, ASTNode]
+        | [ASTNode, string, ASTNode, string]
+        | [ASTNode, string, ASTNode, string, string]
+      >
+    ) => {
       if (p.length === 2) {
-        p[0] = new Node('ExprList')
-        p[0].push(p[1])
+        const list = new ExprListNode()
+        list.push(p[1])
+        p[0] = list
       } else {
         p[0] = p[2]
       }
@@ -1721,10 +1743,11 @@ let parsedef = [
   {
     grammar: `initializer_list: initializer
                                | initializer_list COMMA initializer`,
-    func: (p) => {
+    func: (p: P<[ExprListNode, ASTNode] | [ExprListNode, ExprListNode, string, ASTNode]>) => {
       if (p.length === 2) {
-        p[0] = new Node('ExprList')
-        p[0].push(p[1])
+        const list = new ExprListNode()
+        list.push(p[1])
+        p[0] = list
       } else {
         p[0] = p[1]
         p[0].push(p[3])
@@ -1733,15 +1756,15 @@ let parsedef = [
   },
   {
     grammar: `declaration_statement: declaration`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
-    grammar: `statement: compound_statement  
+    grammar: `statement: compound_statement
                         | simple_statement
               `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
@@ -1755,16 +1778,16 @@ let parsedef = [
                                | jump_statement
 `,
 
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `compound_statement: LBRACE RBRACE
                                  | LBRACE statement_list RBRACE `,
-    func: (p) => {
+    func: (p: P<[ASTNode, string, string] | [ASTNode, string, ASTNode, string]>) => {
       if (p.length === 3) {
-        p[0] = new Node('Expr')
+        p[0] = new ExprNode()
       } else {
         p[0] = p[2]
       }
@@ -1772,34 +1795,36 @@ let parsedef = [
   },
   {
     grammar: `statement_no_new_scope: compound_statement_no_new_scope
-                                     | simple_statement 
+                                     | simple_statement
     `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `compound_statement_no_new_scope: LBRACE RBRACE
                                               | LBRACE statement_list RBRACE`,
-    func: (p) => {
+    func: (p: P<[ASTNode, string, string] | [ASTNode, string, ASTNode, string]>) => {
       if (p.length === 3) {
-        p[0] = new Node('ExprList')
+        p[0] = new ExprListNode()
       } else {
-        p[0] = p[2]
-        p[0].noScope = true
+        const list = p[2]
+        list.noScope = true
+        p[0] = list
       }
     },
   },
   {
     grammar: `statement_list: statement
-                             | statement_list statement 
+                             | statement_list statement
               `,
-    func: (p) => {
+    func: (p: P<[StatementListNode, ASTNode] | [StatementListNode, StatementListNode, ASTNode]>) => {
       if (p.length === 2) {
-        p[0] = new Node('StatementList')
+        const list = new StatementListNode()
         if (p[1]) {
-          p[0].push(p[1])
+          list.push(p[1])
         }
+        p[0] = list
       } else {
         p[0] = p[1]
         if (p[2]) {
@@ -1811,9 +1836,9 @@ let parsedef = [
   {
     grammar: `expression_statement: SEMI
                                    | expression SEMI`,
-    func: (p) => {
+    func: (p: P<[ASTNode, string] | [ASTNode, ASTNode, string]>) => {
       if (p.length === 2) {
-        p[0] = new Node('Expr')
+        p[0] = new ExprNode()
       } else {
         p[0] = p[1]
       }
@@ -1821,68 +1846,72 @@ let parsedef = [
   },
   {
     grammar: `selection_statement: IF LPAREN expression RPAREN selection_rest_statement `,
-    func: (p) => {
-      p[0] = new Node('If')
-      p[0].push(p[3])
-      p[0].push(p[5])
+    func: (p: P<[IfNode, string, string, ASTNode, string, ASTNode]>) => {
+      const n = new IfNode()
+      n.push(p[3])
+      n.push(p[5])
+      p[0] = n
     },
   },
   {
     grammar: `selection_rest_statement: statement ELSE statement
                                        | statement `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [ElseNode, ASTNode, string, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        p[0] = new Node('Else')
-        p[0].push(p[1])
-        p[0].push(p[3])
+        const n = new ElseNode()
+        n.push(p[1])
+        n.push(p[3])
+        p[0] = n
       }
     },
   },
   {
     grammar: `condition: expression
                         | fully_specified_type ID ASSIGN initializer `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode] | [ConditionNode, ASTNode, string, string, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        p[0] = new Node('Condition')
-        p[0].push(p[1])
-
-        p[0].value = p[2]
-        p[0].push(p[4])
+        const n = new ConditionNode()
+        n.push(p[1])
+        n.value = p[2]
+        n.push(p[4])
+        p[0] = n
       }
     },
   },
   {
     grammar: `switch_statement: SWITCH LPAREN expression RPAREN LBRACE switch_statement_list RBRACE`,
-    func: (p) => {
-      p[0] = new Node('Switch')
-      p[0].push(p[3])
-      p[0].push(p[6])
+    func: (p: P<[SwitchNode, string, string, ASTNode, string, string, ASTNode, string]>) => {
+      const n = new SwitchNode()
+      n.push(p[3])
+      n.push(p[6])
+      p[0] = n
     },
   },
   {
     grammar: `switch_statement_list:
                                     | statement_list`,
-    func: (p) => {
+    func: (p: P<[ASTNode] | [ASTNode, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else if (p.length === 1) {
-        p[0] = new Node('StatementList')
+        p[0] = new StatementListNode()
       }
     },
   },
   {
     grammar: `case_label: CASE expression COLON
                          | DEFAULT COLON`,
-    func: (p) => {
+    func: (p: P<[DefaultCaseNode, string, string] | [CaseLabelNode, string, ASTNode, string]>) => {
       if (p.length === 3) {
-        p[0] = new Node('DefaultCase')
+        p[0] = new DefaultCaseNode()
       } else {
-        p[0] = new Node('CaseNode')
-        p[0].push(p[2])
+        const n = new CaseLabelNode()
+        n.push(p[2])
+        p[0] = n
       }
     },
   },
@@ -1890,20 +1919,29 @@ let parsedef = [
     grammar: `iteration_statement: WHILE LPAREN condition RPAREN statement_no_new_scope
                                   | DO statement WHILE LPAREN expression RPAREN SEMI
                                   | FOR LPAREN for_init_statement for_rest_statement RPAREN statement_no_new_scope`,
-    func: (p) => {
-      if (p[1] === 'while') {
-        p[0] = new Node('While')
-        p[0].push(p[3])
-        p[0].push(p[5])
-      } else if (p[1] === 'do') {
-        p[0] = new Node('DoWhile')
-        p[0].push(p[2])
-        p[0].push(p[5])
-      } else if (p[1] === 'for') {
-        p[0] = new Node('ForLoop')
-        p[0].push(p[3])
-        p[0].push(p[4])
-        p[0].push(p[6])
+    func: (
+      p: P<
+        | [WhileNode, string, string, ASTNode, string, ASTNode]
+        | [DoWhileNode, string, ASTNode, string, string, ASTNode, string, string]
+        | [ForLoopNode, string, string, ASTNode, ASTNode, string, ASTNode]
+      >
+    ) => {
+      if (p.length === 6) {
+        const n = new WhileNode()
+        n.push(p[3])
+        n.push(p[5])
+        p[0] = n
+      } else if (p.length === 8) {
+        const n = new DoWhileNode()
+        n.push(p[2])
+        n.push(p[5])
+        p[0] = n
+      } else {
+        const n = new ForLoopNode()
+        n.push(p[3])
+        n.push(p[4])
+        n.push(p[6])
+        p[0] = n
       }
     },
   },
@@ -1911,7 +1949,7 @@ let parsedef = [
     grammar: `for_init_statement: expression_statement
                                  | declaration_statement
               `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
@@ -1919,11 +1957,11 @@ let parsedef = [
     grammar: `conditionopt : condition
                             |
               `,
-    func: (p) => {
+    func: (p: P<[ASTNode] | [ASTNode, ASTNode]>) => {
       if (p.length === 2) {
         p[0] = p[1]
       } else {
-        p[0] = new Node('Expr')
+        p[0] = new ExprNode()
       }
     },
   },
@@ -1931,16 +1969,17 @@ let parsedef = [
     grammar: `for_rest_statement: conditionopt SEMI
                                  | conditionopt SEMI expression
               `,
-    func: (p) => {
-      p[0] = new Node('ExprList')
+    func: (p: P<[ExprListNode, ASTNode, string] | [ExprListNode, ASTNode, string, ASTNode]>) => {
+      const list = new ExprListNode()
 
       if (p.length === 3) {
-        p[0].push(p[1])
-        p[0].push(new Node('Expr'))
+        list.push(p[1])
+        list.push(new ExprNode())
       } else {
-        p[0].push(p[1])
-        p[0].push(p[3])
+        list.push(p[1])
+        list.push(p[3])
       }
+      p[0] = list
     },
   },
   {
@@ -1950,32 +1989,33 @@ let parsedef = [
                              | RETURN expression SEMI
                              | DISCARD SEMI /~ Fragment shader only ~/
                              `,
-    func: (p) => {
-      if (p[1] === 'continue') {
-        p[0] = new Node('Continue')
+    func: (p: P<[ASTNode, string, string] | [ASTNode, string, ASTNode, string]>) => {
+      if (p.length === 4) {
+        const n = new ReturnNode()
+        n.push(p[2])
+        p[0] = n
+      } else if (p[1] === 'continue') {
+        p[0] = new ContinueNode()
       } else if (p[1] === 'break') {
-        p[0] = new Node('Break')
+        p[0] = new BreakNode()
       } else if (p[1] === 'return') {
-        p[0] = new Node('Return')
-        if (p.length > 3) {
-          p[0].push(p[2])
-        }
+        p[0] = new ReturnNode()
       } else if (p[1] === 'discard') {
-        p[0] = new Node('Discard')
+        p[0] = new DiscardNode()
       }
     },
   },
   {
     grammar: `external_declaration: function_definition
-                                   | declaration 
+                                   | declaration
               `,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode]>) => {
       p[0] = p[1]
     },
   },
   {
     grammar: `function_definition: function_prototype compound_statement_no_new_scope`,
-    func: (p) => {
+    func: (p: P<[ASTNode, ASTNode, ASTNode]>) => {
       p[0] = p[1]
 
       p.lexer.popScope()
@@ -1984,17 +2024,17 @@ let parsedef = [
   },
   {
     grammar: `translation_unit: external_declaration
-                               | translation_unit external_declaration 
+                               | translation_unit external_declaration
 `,
-    func: (p) => {
+    func: (p: P<[ProgramNode, ASTNode] | [ProgramNode, ProgramNode, ASTNode]>) => {
       if (p.length === 2) {
-        p[0] = new Node('Program')
+        const prog = new ProgramNode()
         if (p[1]) {
-          p[0].push(p[1])
+          prog.push(p[1])
         }
+        p[0] = prog
       } else {
         p[0] = p[1]
-
         if (p[2]) {
           p[0].push(p[2])
         }
@@ -2011,197 +2051,46 @@ for (let tk of tokendef) {
   tokens.add(tk.name)
 }
 
-let t = []
+const tokensArr: string[] = []
 for (let token of tokens) {
-  t.push(token)
+  tokensArr.push(token)
 }
-tokens = t
 
 //export let parser = jscc_util.getParser(lex, parsedef, tokens, precedence, "glsl");
-export var parser
+let parser: ReturnType<typeof jscc_util.getParser<GLSLLexer>> | undefined
+export {parser}
 
-export function getParser() {
+export function getParser(): ReturnType<typeof jscc_util.getParser<GLSLLexer>> {
   if (!parser) {
-    parser = jscc_util.getParser(lex, parsedef, tokens, precedence, 'glsl')
+    parser = jscc_util.getParser(lex, parsedef as unknown as ParseDefItem<GLSLLexer>[], tokensArr, precedence, 'glsl')
   }
 
   return parser
 }
 
-export function initParser() {
+export function initParser(): void {
   getParser()
 }
 
-export function rebuildParser() {
-  return jscc_util.getParser(lex, parsedef, tokens, precedence, 'glsl', true)
+export function rebuildParser(): ReturnType<typeof jscc_util.getParser<GLSLLexer>> {
+  return jscc_util.getParser(lex, parsedef as unknown as ParseDefItem<GLSLLexer>[], tokensArr, precedence, 'glsl', true)
 }
 
-/*
-parser.parse(`// It's possible we should lay this out with x and do our own math.
-layout(local_size_x = 1, local_size_y = 32) in;
+type VisitCallback = (n: ASTNode) => void
+type VisitHandler = (n: ASTNode) => void
+type VisitHandlers = Map<string, VisitHandler>
+type ControlledHandler = (
+  n: ASTNode,
+  state: unknown,
+  descend: (n: ASTNode, state: unknown, do_n?: boolean) => void
+) => void
+type ControlledHandlers = Map<string, ControlledHandler>
 
-layout(set = 0, binding = 0) readonly buffer SceneBuf {
-    uint[] scene;
-};
-
-layout(set = 0, binding = 1) buffer TilegroupBuf {
-    uint[] tilegroup;
-};
-
-layout(set = 0, binding = 2) buffer AllocBuf {
-    uint alloc;
-};
-
-
-shared uint intersects[SUBGROUP_SIZE];
-
-struct StackElement {
-    PietItemRef group;
-    uint index;
-    vec2 offset;
-};
-
-void main() {
-    StackElement stack[MAX_STACK];
-    uint stack_ix = 0;
-    uint tilegroup_ix = gl_GlobalInvocationID.y * WIDTH_IN_TILEGROUPS + gl_GlobalInvocationID.x;
-    TileGroupRef tg_ref = TileGroupRef(tilegroup_ix * TILEGROUP_STRIDE);
-    uint tg_limit = tg_ref.offset + TILEGROUP_INITIAL_ALLOC - 2 * TileGroup_size;
-
-    // State for stroke references.
-    TileGroupRef stroke_start = TileGroupRef(tg_ref.offset + TILEGROUP_STROKE_START);
-    ChunkRef stroke_chunk_start = ChunkRef(stroke_start.offset + 4);
-    InstanceRef stroke_ref = InstanceRef(stroke_chunk_start.offset + Chunk_size);
-    uint stroke_limit = stroke_start.offset + TILEGROUP_INITIAL_STROKE_ALLOC - Instance_size;
-    uint stroke_chunk_n = 0;
-    uint stroke_n = 0;
-
-    // State for fill references. All this is a bit cut'n'paste, but making a
-    // proper abstraction isn't easy.
-    TileGroupRef fill_start = TileGroupRef(tg_ref.offset + TILEGROUP_FILL_START);
-    ChunkRef fill_chunk_start = ChunkRef(fill_start.offset + 4);
-    InstanceRef fill_ref = InstanceRef(fill_chunk_start.offset + Chunk_size);
-    uint fill_limit = fill_start.offset + TILEGROUP_INITIAL_FILL_ALLOC - Instance_size;
-    uint fill_chunk_n = 0;
-    uint fill_n = 0;
-
-    // Starting point of this tile
-    vec2 xy0 = vec2(gl_GlobalInvocationID.xy) * vec2(TILEGROUP_WIDTH_PX, TILEGROUP_HEIGHT_PX);
-    vec2 block0 = vec2(gl_GlobalInvocationID.x * TILEGROUP_WIDTH_PX,
-        (gl_GlobalInvocationID.y & ~(BLOCK_HEIGHT - 1)) * TILEGROUP_HEIGHT_PX);
-    PietItemRef root = PietItemRef(0);
-    SimpleGroup group = PietItem_Group_read(root);
-    StackElement tos = StackElement(root, 0, group.offset.xy);
-
-    while (true) {
-        if (tos.index < group.n_items) {
-            uint this_ix = tos.index + gl_LocalInvocationID.y;
-            vec4 bb;
-            bool hit = false;
-            bool is_group = false;
-            intersects[gl_LocalInvocationID.y] = 0;
-            barrier();
-            if (this_ix < group.n_items) {
-                Bbox bbox = Bbox_read(Bbox_index(group.bboxes, this_ix));
-                bb = vec4(bbox.bbox) + tos.offset.xyxy;
-                hit = max(bb.x, block0.x) < min(bb.z, block0.x + float(TILEGROUP_WIDTH_PX))
-                    && max(bb.y, block0.y) < min(bb.w, block0.y + float(BLOCK_HEIGHT_PX));
-            }
-
-            if (hit) {
-                // TODO: this could subsume y part of hit test above, but be careful.
-                uint ymin = uint(max(floor(bb.y - block0.y), 0.0)) / TILE_HEIGHT_PX;
-                uint ymax = (uint(clamp(ceil(bb.w - block0.y), 0.0, float(BLOCK_HEIGHT_PX))) + TILE_HEIGHT_PX - 1) / TILE_HEIGHT_PX;
-                for (uint y = ymin; y < ymax; y++) {
-                    atomicOr(intersects[y], 1 << gl_GlobalInvocationID.y);
-                }
-            }
-
-            barrier();
-            uint bitmask = intersects[gl_LocalInvocationID.y];
-            while (bitmask != 0) {
-                uint item_ix = tos.index + findLSB(bitmask);
-                PietItemRef item_ref = PietItem_index(group.items, item_ix);
-                uint tag = PietItem_tag(item_ref);
-                Instance ins = Instance(item_ref.offset, tos.offset);
-                if (tg_ref.offset > tg_limit) {
-                    // Allocation exceeded; do atomic bump alloc.
-                    uint new_tg = atomicAdd(alloc, TILEGROUP_INITIAL_ALLOC);
-                    Jump jump = Jump(TileGroupRef(new_tg));
-                    TileGroup_Jump_write(tg_ref, jump);
-                    tg_ref = TileGroupRef(new_tg);
-                    tg_limit = tg_ref.offset + TILEGROUP_INITIAL_ALLOC - 2 * TileGroup_size;
-                }
-                TileGroup_Instance_write(tg_ref, ins);
-                tg_ref.offset += TileGroup_size;
-                if (tag == PietItem_Poly) {
-                    if (stroke_ref.offset > stroke_limit) {
-                        uint new_stroke = atomicAdd(alloc, TILEGROUP_STROKE_ALLOC);
-                        Chunk_write(stroke_chunk_start, Chunk(stroke_chunk_n, ChunkRef(new_stroke)));
-                        stroke_chunk_start = ChunkRef(new_stroke);
-                        stroke_ref = InstanceRef(new_stroke + Chunk_size);
-                        stroke_n += stroke_chunk_n;
-                        stroke_chunk_n = 0;
-                        stroke_limit = new_stroke + TILEGROUP_STROKE_ALLOC - Instance_size;
-                    }
-                    Instance_write(stroke_ref, ins);
-                    stroke_chunk_n++;
-                    stroke_ref.offset += Instance_size;
-                } else if (tag == PietItem_Fill) {
-                    if (fill_ref.offset > fill_limit) {
-                        uint new_fill = atomicAdd(alloc, TILEGROUP_FILL_ALLOC);
-                        Chunk_write(fill_chunk_start, Chunk(fill_chunk_n, ChunkRef(new_fill)));
-                        fill_chunk_start = ChunkRef(new_fill);
-                        fill_ref = InstanceRef(new_fill + Chunk_size);
-                        fill_n += fill_chunk_n;
-                        fill_chunk_n = 0;
-                        fill_limit = new_fill + TILEGROUP_FILL_ALLOC - Instance_size;
-                    }
-                    Instance_write(fill_ref, ins);
-                    fill_chunk_n++;
-                    fill_ref.offset += Instance_size;
-                }
-
-                bitmask &= bitmask - 1; // clear bottom bit
-            }
-            tos.index += BLOCK_HEIGHT;
-        } else {
-            // processed all items in this group; pop the stack
-            if (stack_ix == 0) {
-                break;
-            }
-            stack_ix--;
-            // Note: writing this out is a workaround for an Nvidia shader compiler crash.
-            tos.group = stack[stack_ix].group;
-            tos.index = stack[stack_ix].index;
-            tos.offset = stack[stack_ix].offset;
-            group = PietItem_Group_read(tos.group);
-        }
-    }
-    TileGroup_End_write(tg_ref);
-
-    stroke_n += stroke_chunk_n;
-    if (stroke_n > 0) {
-        Chunk_write(stroke_chunk_start, Chunk(stroke_chunk_n, ChunkRef(0)));
-    }
-    tilegroup[stroke_start.offset >> 2] = stroke_n;
-
-    fill_n += fill_chunk_n;
-    if (fill_n > 0) {
-        Chunk_write(fill_chunk_start, Chunk(fill_chunk_n, ChunkRef(0)));
-    }
-    tilegroup[fill_start.offset >> 2] = fill_n;
-}
-
-`);
-
-//*/
-
-export function fullVisit(ast, cb) {
-  function visit(n) {
+export function fullVisit(ast: ASTNode, cb: VisitCallback): void {
+  function visit(n: ASTNode): void {
     cb(n)
 
-    for (let c of n) {
+    for (const c of n) {
       visit(c)
     }
   }
@@ -2209,62 +2098,79 @@ export function fullVisit(ast, cb) {
   visit(ast)
 }
 
-export function visit(ast, handlers) {
+export function visit(ast: ASTNode, handlers: VisitHandlers | VisitCallback): void {
   if (typeof handlers === 'function') {
-    return fullVisit(ast)
+    fullVisit(ast, handlers)
+    return
   }
 
-  function visit(n) {
+  const hs: VisitHandlers = handlers
+
+  function visitInner(n: ASTNode | string): void {
+    let node: ASTNode
     if (typeof n === 'string') {
-      let n2 = new Node('Ident')
+      const n2 = new IdentNode()
       n2.value = n
-      n = n2
+      node = n2
+    } else {
+      node = n
     }
 
-    let type = n.type
-    if (type in handlers) {
-      handlers[type](n)
-    } else if ('Default' in handlers) {
-      handlers.Default(n)
+    const type = node.type
+    const handler = hs.get(type)
+    if (handler) {
+      handler(node)
+    } else {
+      const def = hs.get('Default')
+      if (def) {
+        def(node)
+      }
     }
 
-    for (let c of n) {
-      visit(c)
+    for (const c of node) {
+      visitInner(c)
     }
   }
 
-  visit(ast)
+  visitInner(ast)
 }
 
-export function controlledVisit(ast, handlers, state) {
-  function descend(n, state, do_n = false) {
+export function controlledVisit(ast: ASTNode, handlers: ControlledHandlers, state: unknown): void {
+  function descend(n: ASTNode, state: unknown, do_n = false): void {
     if (state === undefined) {
       throw new Error('state cannot be undefined; use null if intentional')
     }
 
     if (do_n) {
-      visit(n, state)
+      visitInner(n, state)
       return
     }
 
-    for (let c of n) {
-      visit(c, state)
+    for (const c of n) {
+      visitInner(c, state)
     }
   }
 
-  function visit(n, state) {
+  function visitInner(n: ASTNode | string, state: unknown): void {
+    let node: ASTNode
     if (typeof n === 'string') {
-      let n2 = new Node('Ident')
+      const n2 = new IdentNode()
       n2.value = n
-      n = n2
+      node = n2
+    } else {
+      node = n
     }
 
-    if (n.type in handlers) {
-      handlers[n.type](n, state, descend)
-    } else if ('Default' in handlers) {
-      handlers.Default(n, state, descend)
+    const handler = handlers.get(node.type)
+    if (handler) {
+      handler(node, state, descend)
+    } else {
+      const def = handlers.get('Default')
+      if (def) {
+        def(node, state, descend)
+      }
     }
   }
 
-  visit(ast, state)
+  visitInner(ast, state)
 }

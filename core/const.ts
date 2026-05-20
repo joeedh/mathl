@@ -1,6 +1,6 @@
 export default {
-  VERSION: [0, 0, 1],
-  getVersion() {
+  VERSION: [0, 0, 1] as [number, number, number],
+  getVersion(): number {
     let v = this.VERSION
     let dimen = 16
 

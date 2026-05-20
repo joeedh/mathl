@@ -1,61 +1,63 @@
 import {CodeGenerator} from './generator_base.js'
 import {traverse} from '../core/ast.js'
+import type {ASTNode} from '../core/ast.js'
+import type {ParseState} from '../core/state.js'
+import {VarType} from '../core/types.js'
+
+interface InternalState {
+  indent: string
+}
 
 export class InternalCodeGen {
-  constructor(ctx, args = {}) {
+  ctx: ParseState | undefined
+  args: unknown
+
+  constructor(ctx?: ParseState, args: unknown = {}) {
     this.ctx = ctx
     this.args = args
   }
 
-  genCode(ast) {
+  genCode(ast: ASTNode): string {
     let out = ''
 
-    let _state = {
+    const initState: InternalState = {
       indent: '',
     }
 
-    let newState = (state) => {
+    const newState = (state: InternalState): InternalState => {
       return {
         indent: state.indent,
       }
     }
 
-    traverse(ast, _state, {
-      Number(node, state, visit) {
+    traverse<InternalState>(ast, initState, {
+      Ident(node, _state, _visit) {
         out += node.value
       },
-      Ident(node, state, visit) {
+      IntConstant(node, _state, _visit) {
         out += node.value
       },
-      IntConstant(node, state, visit) {
+      FloatConstant(node, _state, _visit) {
         out += node.value
       },
-      FloatConstant(node, state, visit) {
-        out += node.value
-      },
-      VarDecl(node, state, visit) {
-        let type = node[0]
+      VarDecl(node, _state, _visit) {
+        const type = node[0]
         let tname = '<error>'
 
-        if (type && type.value) {
+        if (type && type.value instanceof VarType) {
           tname = type.value.getTypeNameSafe()
         }
 
-        if (type) {
-          let t = type.value
-          let qual
-          if (t.qualifier) {
-            qual = t.qualifier
-          }
-
-          if (typeof qual === 'object') {
-            qual = qual.value
-          }
-
-          if (qual) {
-            tname = qual + ' ' + tname
-          }
+        const q = type ? type.qualifier : undefined
+        let qual: unknown = q
+        if (qual && typeof qual === 'object' && 'value' in qual) {
+          qual = (qual as {value: unknown}).value
         }
+
+        if (typeof qual === 'string' && qual.length > 0) {
+          tname = qual + ' ' + tname
+        }
+
         out += tname + ' ' + node.value
       },
       ArrayLookup(node, state, visit) {
@@ -90,17 +92,26 @@ export class InternalCodeGen {
         out += '--'
       },
       UnaryOp(node, state, visit) {
-        out += node.op
+        if (node.type === 'UnaryOp') {
+          out += node.op
+        }
         visit(state, node[0])
       },
       Assign(node, state, visit) {
         visit(state, node[0])
-        out += ' ' + node.op + ' '
+        if (node.type === 'Assign') {
+          out += ' ' + node.op + ' '
+        }
         visit(state, node[1])
       },
       BinOp(node, state, visit) {
+        if (node.type !== 'BinOp') {
+          visit(state, node)
+          return
+        }
         let paren = node.op !== '.'
-        paren = paren && node.parent && node.parent.type === 'BinOp' && node.parent.prec < node.prec
+        const parent = node.parent
+        paren = paren && parent !== undefined && parent.type === 'BinOp' && parent.prec < node.prec
 
         if (paren) {
           out += '('
@@ -122,10 +133,13 @@ export class InternalCodeGen {
       },
       Function(node, state, visit) {
         out += state.indent
-        out += node[0].value.getTypeName() + ' '
+        const tn = node[0].value
+        if (tn instanceof VarType) {
+          out += tn.getTypeName() + ' '
+        }
 
         out += node.value + '('
-        let args = node[1]
+        const args = node[1]
         for (let i = 0; i < args.length; i++) {
           if (i > 0) {
             out += ', '
@@ -136,10 +150,9 @@ export class InternalCodeGen {
 
         out += ') {\n'
 
-        let state2 = newState(state)
+        const state2 = newState(state)
         state2.indent += '  '
 
-        //console.log(node[2].type)
         visit(state2, node[2])
 
         out += state.indent + '}\n'
@@ -147,16 +160,17 @@ export class InternalCodeGen {
       Return(node, state, visit) {
         out += 'return'
 
-        for (let n of node) {
+        for (const n of node) {
           out += ' '
           visit(state, n)
         }
       },
       Call(node, state, visit) {
-        if (node[0].type === 'VarType') {
-          out += node[0].value.getTypeName()
+        const head = node[0]
+        if (head.type === 'VarType' && head.value instanceof VarType) {
+          out += head.value.getTypeName()
         } else {
-          visit(state, node[0])
+          visit(state, head)
         }
 
         out += '('
@@ -179,9 +193,9 @@ export class InternalCodeGen {
         }
       },
       StatementList(node, state, visit) {
-        let indent = state.indent
+        const indent = state.indent
 
-        for (let n of node) {
+        for (const n of node) {
           out += indent
           visit(state, n)
           out += ';\n'
@@ -192,12 +206,12 @@ export class InternalCodeGen {
     return out
   }
 
-  static generatorDefine() {
+  static generatorDefine(): {typeName: string} {
     return {
       typeName: 'internal',
     }
   }
 }
-CodeGenerator.register(InternalCodeGen)
+CodeGenerator.register(InternalCodeGen as unknown as Parameters<typeof CodeGenerator.register>[0])
 
 export const internalCodeGen = new InternalCodeGen()
