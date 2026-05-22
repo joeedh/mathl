@@ -1,5 +1,6499 @@
+var __create = Object.create;
 var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+
+// util/jscc.cjs
+var require_jscc = __commonJS({
+  "util/jscc.cjs"(exports, module) {
+    var jglobal;
+    if (typeof window !== "undefined") {
+      window.jscc = {};
+      jglobal = window;
+    } else if (typeof self !== "undefined") {
+      self.jscc = {};
+      jglobal = self;
+    } else if (typeof global !== "undefined") {
+      global.jscc = {};
+      jglobal = global;
+    }
+    jscc["enums"] = {};
+    jscc["classes"] = {};
+    jscc.enums = jscc["enums"];
+    jscc.classes = jscc["classes"];
+    jscc.enums.ASSOC = {
+      /**
+       * The associativity has not yet been set.
+       */
+      NONE: 0,
+      /**
+       * The symbol is left-associative.
+       */
+      LEFT: 1,
+      /**
+       * The symbol is right-associative.
+       */
+      RIGHT: 2,
+      /**
+       * The symbol is non-associative.
+       */
+      NOASSOC: 3
+    };
+    jscc.enums.EDGE = {
+      FREE: 0,
+      EPSILON: 1,
+      CHAR: 2
+    };
+    jscc.enums.EXEC = {
+      /**
+       * A console-based Javascript engine is in use.
+       */
+      CONSOLE: 0,
+      /**
+       * A web-browser-based Javascript engine is in use.
+       */
+      WEB: 1
+    };
+    jscc.enums.LOG_LEVEL = {
+      /**
+       * Log all messages.
+       */
+      TRACE: 0,
+      /**
+       * Log debug messages and higher.
+       */
+      DEBUG: 1,
+      /**
+       * Log info messages and higher.
+       */
+      INFO: 2,
+      /**
+       * Log warning messages and higher.
+       */
+      WARN: 3,
+      /**
+       * Log error and fatal messages.
+       */
+      ERROR: 4,
+      /**
+       * Log only fatal messages.
+       */
+      FATAL: 5
+    };
+    jscc.enums.LOG_LEVEL["TRACE"] = jscc.enums.LOG_LEVEL.TRACE;
+    jscc.enums.LOG_LEVEL["DEBUG"] = jscc.enums.LOG_LEVEL.DEBUG;
+    jscc.enums.LOG_LEVEL["INFO"] = jscc.enums.LOG_LEVEL.INFO;
+    jscc.enums.LOG_LEVEL["WARN"] = jscc.enums.LOG_LEVEL.WARN;
+    jscc.enums.LOG_LEVEL["ERROR"] = jscc.enums.LOG_LEVEL.ERROR;
+    jscc.enums.LOG_LEVEL["FATAL"] = jscc.enums.LOG_LEVEL.FATAL;
+    jscc.enums["LOG_LEVEL"] = jscc.enums.LOG_LEVEL;
+    jscc.enums.MODE_GEN = {
+      /**
+       * Output is plain text.
+       */
+      TEXT: 0,
+      /**
+       * Output is JavaScript code.
+       */
+      JS: 1,
+      /**
+       * Output is HTML-formatted.
+       */
+      HTML: 2
+    };
+    jscc.enums.SPECIAL = {
+      /**
+       * Identifies a non-special symbol.
+       */
+      NONE: 0,
+      /**
+       * Identifies an end-of-file symbol.
+       */
+      EOF: 1,
+      /**
+       * Identifies a whitespace symbol.
+       */
+      WHITESPACE: 2,
+      /**
+       * Identifies an error symbol.
+       */
+      ERROR: 3
+    };
+    jscc.enums.SYM = {
+      /**
+       * The symbol is nonterminating.
+       */
+      NONTERM: 0,
+      /**
+       * The symbol is terminating.
+       */
+      TERM: 1
+    };
+    var SymbolOptions;
+    var ProductionOptions;
+    var StateOptions;
+    var ItemOptions;
+    var NfaOptions;
+    var DfaOptions;
+    var mainOptions;
+    var reqParameter;
+    var almondRequire;
+    var almondRequireExtension = (
+      /**
+       * @lends {almondRequire}
+       */
+      {
+        /**
+         * @type {!Object<string, *>}
+         */
+        _defined: {},
+        /**
+         * @param {Object<string, *>} cfg
+         * @returns {almondRequire}
+         */
+        config: function(cfg) {
+        }
+      }
+    );
+    var stringWithErrorMessage;
+    var stringWithErrorMessageExtension = (
+      /**
+       * @lends {stringWithErrorMessage}
+       */
+      {
+        /**
+         * @type {string}
+         */
+        ERROR_MSG: ""
+      }
+    );
+    var hasObject;
+    var hasObjectExtension = (
+      /**
+       * @lends {hasObject}
+       */
+      {
+        /**
+         * @param {string} name
+         * @param {function(...*):boolean} test
+         * @param {boolean=} now
+         */
+        add: function(name, test2, now) {
+        },
+        /**
+         * @param {T} el
+         * @returns {T}
+         * @template T
+         */
+        clearElement: function(el) {
+        },
+        /**
+         * @param {string} name
+         * @param {*} el
+         * @returns {boolean}
+         */
+        cssprop: function(name, el) {
+        },
+        /**
+         * @param {*} obj
+         * @param {*=} property
+         * @returns {boolean}
+         */
+        isHostType: function(obj, property) {
+        },
+        /**
+         * @returns {Object<string, (boolean|stringWithErrorMessage)>}
+         */
+        all: function() {
+        }
+      }
+    );
+    var ioOptions;
+    var ioWriteOutputOptions;
+    jscc.io = function() {
+    };
+    jscc.io.prototype = {
+      /**
+       * Reads input from the specified file or from standard input.
+       * If chunkCallback and/or endCallback are specified, the operation
+       * is asynchronous, and the function returns nothing.  Otherwise,
+       * the operation is synchronous, and the function returns a string
+       * with the contents read from the file or from standard input.
+       *
+       * @param {(string|function(string):void|ioOptions)=} options -
+       *     If a string, the filename to read.  If an object, has optional filename, chunkCallback, and endCallback
+       *     properties.  If a function, the callback function to execute for each chunk read from standard input.
+       * @returns {(string|void)} When running synchronously, the text read from
+       * the file or standard input.  When running asynchronously, returns nothing.
+       */
+      read_all_input: function(options) {
+      },
+      /**
+       * Reads the template file into which the parser code is inserted.
+       * If not specified, uses the default driver specified in
+       * {@link jscc.global.DEFAULT_DRIVER}.
+       *
+       * @param {(string|function(string):void|ioOptions)=} options -
+       *     If a string, specifies the template filename.  If a function, specifies the callback function to be used
+       *     when reading a file chunk has completed.  If an object, specifies either or both.  If omitted, causes the
+       *     function to read
+       * {@link jscc.global.DEFAULT_DRIVER} synchronously.
+       * @returns {(string|void)} When running synchronously, returns the contents of
+       * the template file as a string.  When running asynchronously, returns
+       * nothing.
+       */
+      read_template: function(options) {
+      },
+      /**
+       * Writes the provided text to the specified file or to standard output.
+       *
+       * @param {(string|ioWriteOutputOptions)} options - When a string, the text
+       *     to be written to standard output.  When an object, contains text, destination, and callback properties.
+       */
+      write_output: function(options) {
+      },
+      /**
+       * Writes the provided text to a debugging output, provided that such an output
+       * exists in the implementation of this interface.
+       *
+       * @param {string} text - The text to write to the debugging output.
+       */
+      write_debug: function(text) {
+      },
+      /**
+       * Attempts to exit the entire process with the provided exit code if the
+       * platform supports doing so.  Callers should also ensure that all functions
+       * exit appropriately if the platform does not support this feature.
+       *
+       * @param {number=} exitCode - The exit code to use.
+       */
+      exit: function(exitCode) {
+      }
+    };
+    jscc.log = function() {
+    };
+    jscc.log.prototype = {
+      /**
+       * Logs a message at the fatal level.
+       * @param {string} msg - The message to log.
+       */
+      fatal: function(msg) {
+      },
+      /**
+       * Logs a message at the error level.
+       * @param {string} msg - The message to log.
+       */
+      error: function(msg) {
+      },
+      /**
+       * Logs a message at the warning level.
+       * @param {string} msg - The message to log.
+       */
+      warn: function(msg) {
+      },
+      /**
+       * Logs a message at the info level.
+       * @param {string} msg - The message to log.
+       */
+      info: function(msg) {
+      },
+      /**
+       * Logs a message at the debug level.
+       * @param {string} msg - The message to log.
+       */
+      debug: function(msg) {
+      },
+      /**
+       * Logs a message at the trace level.
+       * @param {string} msg - The message to log.
+       */
+      trace: function(msg) {
+      },
+      /**
+       * Sets the minimum level to log.  This function
+       * may not have an effect at all times with all
+       * loggers.
+       * @param {jscc.enums.LOG_LEVEL} level - The
+       * minimum level to log.
+       */
+      setLevel: function(level) {
+      }
+    };
+    jscc.bitset = function() {
+    };
+    jscc.bitset.prototype = {
+      /**
+       * Sets the specified bit to true or false.
+       * @param {!number} bit - The index of the bit to set
+       * @param {boolean=} state - Whether to set the bit to true or false
+       * @returns {!boolean} Returns the state parameter for chaining purposes
+       * @method
+       */
+      set: function(bit, state2) {
+        return false;
+      },
+      /**
+       * Gets the bit at the specified index.
+       * @param {!number} bit - The index of the bit to get
+       * @returns {!boolean} Whether the bit is currently true or false
+       * @method
+       */
+      get: function(bit) {
+        return false;
+      },
+      /**
+       * Returns the number of true values in the bitset.
+       * @returns {!number} The number of true values in the bitset
+       * @method
+       */
+      count: function() {
+        return 0;
+      }
+    };
+    var requirejs;
+    var require2;
+    var define;
+    (function(undef) {
+      var main, req, makeMap, handlers, defined2 = {}, waiting = {}, config = {}, defining = {}, hasOwn = Object.prototype.hasOwnProperty, aps = [].slice, jsSuffixRegExp = /\.js$/;
+      function hasProp(obj, prop) {
+        return hasOwn.call(obj, prop);
+      }
+      __name(hasProp, "hasProp");
+      function normalize(name, baseName) {
+        var nameParts, nameSegment, mapValue, foundMap, lastIndex, foundI, foundStarMap, starI, i2, j, part, normalizedBaseParts, baseParts = (
+          /** @type {Array<string>} */
+          baseName && baseName.split("/")
+        ), map = config.map, starMap = map && map["*"] || {};
+        if (name) {
+          nameParts = name.split("/");
+          lastIndex = nameParts.length - 1;
+          if (config.nodeIdCompat && jsSuffixRegExp.test(nameParts[lastIndex])) {
+            nameParts[lastIndex] = nameParts[lastIndex].replace(jsSuffixRegExp, "");
+          }
+          if (nameParts[0].charAt(0) === "." && baseParts) {
+            normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
+            nameParts = normalizedBaseParts.concat(nameParts);
+          }
+          for (i2 = 0; i2 < nameParts.length; i2++) {
+            part = nameParts[i2];
+            if (part === ".") {
+              nameParts.splice(i2, 1);
+              i2 -= 1;
+            } else if (part === "..") {
+              if (!(i2 === 1 && nameParts[2] === ".." || nameParts[i2 - 1] === "..") && i2 > 0) {
+                nameParts.splice(i2 - 1, 2);
+                i2 -= 2;
+              }
+            }
+          }
+          name = nameParts.join("/");
+          nameParts = null;
+        }
+        if ((baseParts || starMap) && map) {
+          nameParts = name.split("/");
+          for (i2 = nameParts.length; i2 > 0; i2 -= 1) {
+            nameSegment = nameParts.slice(0, i2).join("/");
+            if (baseParts) {
+              for (j = baseParts.length; j > 0; j -= 1) {
+                mapValue = map[baseParts.slice(0, j).join("/")];
+                if (mapValue) {
+                  mapValue = mapValue[nameSegment];
+                  if (mapValue) {
+                    foundMap = mapValue;
+                    foundI = i2;
+                    break;
+                  }
+                }
+              }
+            }
+            if (foundMap) {
+              break;
+            }
+            if (!foundStarMap && starMap && starMap[nameSegment]) {
+              foundStarMap = starMap[nameSegment];
+              starI = i2;
+            }
+          }
+          if (!foundMap && foundStarMap) {
+            foundMap = foundStarMap;
+            foundI = starI;
+          }
+          if (foundMap) {
+            nameParts.splice(0, foundI, foundMap);
+            name = nameParts.join("/");
+          }
+        }
+        return name;
+      }
+      __name(normalize, "normalize");
+      function makeRequire(relName, forceSync) {
+        return function() {
+          var args = aps.call(arguments, 0);
+          if (typeof args[0] !== "string" && args.length === 1) {
+            args.push(null);
+          }
+          return req.apply(undef, args.concat([relName, forceSync]));
+        };
+      }
+      __name(makeRequire, "makeRequire");
+      function makeNormalize(relName) {
+        return function(name) {
+          return normalize(name, relName);
+        };
+      }
+      __name(makeNormalize, "makeNormalize");
+      function makeLoad(depName) {
+        return function(value) {
+          defined2[depName] = value;
+        };
+      }
+      __name(makeLoad, "makeLoad");
+      function callDep(name) {
+        if (hasProp(waiting, name)) {
+          var args = waiting[name];
+          delete waiting[name];
+          defining[name] = true;
+          main.apply(undef, args);
+        }
+        if (!hasProp(defined2, name) && !hasProp(defining, name)) {
+          throw new Error("No " + name);
+        }
+        return defined2[name];
+      }
+      __name(callDep, "callDep");
+      function splitPrefix(name) {
+        var prefix, index = name ? name.indexOf("!") : -1;
+        if (index > -1) {
+          prefix = name.substring(0, index);
+          name = name.substring(index + 1, name.length);
+        }
+        return [prefix, name];
+      }
+      __name(splitPrefix, "splitPrefix");
+      makeMap = /* @__PURE__ */ __name(function(name, relName) {
+        var plugin, parts2 = splitPrefix(name), prefix = parts2[0];
+        name = /** @type {string} */
+        parts2[1];
+        if (prefix) {
+          prefix = normalize(prefix, relName);
+          plugin = callDep(prefix);
+        }
+        if (prefix) {
+          if (plugin && plugin.normalize) {
+            name = /** @type {{normalize: function(string, function(string):string):string}} */
+            plugin.normalize(
+              name,
+              makeNormalize(relName)
+            );
+          } else {
+            name = normalize(name, relName);
+          }
+        } else {
+          name = normalize(name, relName);
+          parts2 = splitPrefix(name);
+          prefix = parts2[0];
+          name = /** @type {string} */
+          parts2[1];
+          if (prefix) {
+            plugin = callDep(prefix);
+          }
+        }
+        return {
+          f: prefix ? prefix + "!" + name : name,
+          //fullName
+          n: name,
+          pr: prefix,
+          p: plugin
+        };
+      }, "makeMap");
+      function makeConfig(name) {
+        return function() {
+          return config && config.config && config.config[name] || {};
+        };
+      }
+      __name(makeConfig, "makeConfig");
+      handlers = {
+        require: function(name) {
+          return makeRequire(name);
+        },
+        exports: function(name) {
+          var e = defined2[name];
+          if (typeof e !== "undefined") {
+            return e;
+          } else {
+            return defined2[name] = {};
+          }
+        },
+        module: function(name) {
+          return {
+            id: name,
+            uri: "",
+            exports: defined2[name],
+            config: makeConfig(name)
+          };
+        }
+      };
+      main = /* @__PURE__ */ __name(function(name, deps, callback, relName) {
+        var cjsModule, depName, ret2, map, i2, args = [], callbackType = typeof callback, usingExports;
+        relName = /** @type {string} */
+        relName || name;
+        if (callbackType === "undefined" || callbackType === "function") {
+          deps = !deps.length && callback.length ? ["require", "exports", "module"] : deps;
+          for (i2 = 0; i2 < deps.length; i2 += 1) {
+            map = makeMap(deps[i2], relName);
+            depName = map.f;
+            if (depName === "require") {
+              args[i2] = handlers.require(name);
+            } else if (depName === "exports") {
+              args[i2] = handlers.exports(name);
+              usingExports = true;
+            } else if (depName === "module") {
+              cjsModule = args[i2] = handlers.module(name);
+            } else if (hasProp(defined2, depName) || hasProp(waiting, depName) || hasProp(defining, depName)) {
+              args[i2] = callDep(depName);
+            } else if (map.p) {
+              map.p.load(map.n, makeRequire(relName, true), makeLoad(depName), {});
+              args[i2] = defined2[depName];
+            } else {
+              throw new Error(name + " missing " + depName);
+            }
+          }
+          ret2 = callback ? callback.apply(defined2[
+            /** @type {string} */
+            name
+          ], args) : void 0;
+          if (name) {
+            if (cjsModule && cjsModule.exports !== undef && cjsModule.exports !== defined2[name]) {
+              defined2[name] = cjsModule.exports;
+            } else if (ret2 !== undef || !usingExports) {
+              defined2[name] = ret2;
+            }
+          }
+        } else if (name) {
+          defined2[name] = callback;
+        }
+      }, "main");
+      requirejs = require2 = req = /** @type {almondRequire} */
+      /* @__PURE__ */ __name(function(deps, callback, relName, forceSync, alt) {
+        if (typeof deps === "string") {
+          if (handlers[deps]) {
+            return handlers[deps](
+              /** string */
+              callback
+            );
+          }
+          return callDep(makeMap(
+            deps,
+            /** @type {string} */
+            callback
+          ).f);
+        }
+        if (!deps.splice) {
+          config = deps;
+          if (config.deps) {
+            req(config.deps, config.callback);
+          }
+          if (!callback) {
+            return;
+          }
+          if (callback.splice) {
+            deps = /** @type {Array<string>} */
+            callback;
+            callback = relName;
+            relName = null;
+          } else {
+            deps = undef;
+          }
+        }
+        callback = /** @type {!Function} */
+        callback || function() {
+        };
+        if (typeof relName === "function") {
+          relName = /** @type {string} */
+          forceSync;
+          forceSync = alt;
+        }
+        if (forceSync) {
+          main(
+            undef,
+            /** @type {(Array<string>|undefined)} */
+            deps,
+            callback,
+            /** @type {(string|undefined)} */
+            relName
+          );
+        } else {
+          setTimeout(function() {
+            main(
+              undef,
+              /** @type {(Array<string>|undefined)} */
+              deps,
+              /** @type {!Function} */
+              callback,
+              /** @type {(string|undefined)} */
+              relName
+            );
+          }, 4);
+        }
+        return req;
+      }, "req");
+      req.config = function(cfg) {
+        return req(cfg);
+      };
+      requirejs._defined = defined2;
+      define = /* @__PURE__ */ __name(function(name, deps, callback) {
+        if (typeof name !== "string") {
+          throw new Error("See almond README: incorrect module build, no module name");
+        }
+        if (!deps.splice) {
+          callback = /** @type {Function} */
+          deps;
+          deps = [];
+        }
+        if (!hasProp(defined2, name) && !hasProp(waiting, name)) {
+          waiting[name] = [name, deps, callback];
+        }
+      }, "define");
+      define.amd = {
+        jQuery: true
+      };
+    })(void 0);
+    define("bin/almond", function() {
+    });
+    define("text", {
+      load: function(id) {
+        throw new Error("Dynamic load not allowed: " + id);
+      }
+    });
+    define("text!lib/jscc/template/parser-driver-js.txt", [], function() {
+      return `/*\r
+	This is the general, platform-independent part of every parser driver;\r
+	Input-/Output and Feature-Functions are done by the particular drivers\r
+	created for the particular platform.\r
+*/\r
+##HEADER##\r
+var __parse=(function(/** number */ eof, /** number */ whitespace, /** number */ error_token){\r
+	\r
+/// there was "continue" in code, we must to replace it\r
+var Continue = function(){throw Continue;};\r
+\r
+	/**\r
+	 * @template T\r
+	 * @param {T} value\r
+	 * @constructor\r
+	 * @extends {Error}\r
+     */\r
+	var ReturnValue = function(value) {\r
+		Error.call(this);\r
+		this._value = value;\r
+	};\r
+	ReturnValue.prototype = Object.create(Error.prototype);\r
+	ReturnValue.prototype.constructor = ReturnValue;\r
+	/**\r
+	 * @type {T}\r
+	 * @private\r
+     */\r
+	ReturnValue.prototype._value = null;\r
+	/**\r
+	 * @returns {T}\r
+     */\r
+	ReturnValue.prototype.valueOf = function() {\r
+		return this._value;\r
+	};\r
+\r
+	///can return value from any place of callback\r
+	function Return(value){\r
+		throw new ReturnValue(value);\r
+	}\r
+\r
+	var TERMINAL_ACTIONS = (function(){\r
+		function emptyFn(PCB){return PCB.att;}\r
+		var actions = ##TERMINAL_ACTIONS##\r
+		return function(/** @type {!PcbClass} */ PCB, match){\r
+			try{\r
+				return (actions[match] || emptyFn)(PCB);\r
+			}catch(e){\r
+				if(e instanceof ReturnValue)return e.valueOf();\r
+				if(e == Continue)return Continue;\r
+				throw e;\r
+			}\r
+		}\r
+	})();\r
+	/**\r
+	 * @constructor\r
+     */\r
+	var DfaLex = function() {\r
+		this._dfaData = ##DFA##;\r
+	};\r
+	/**\r
+	 * @type {!Array<!{line: !Array, accept: !number}>}\r
+	 * @private\r
+     */\r
+	DfaLex.prototype._dfaData = [];\r
+	/**\r
+	 * @type {number}\r
+     */\r
+	DfaLex.prototype.match_pos = 0;\r
+	/**\r
+	 * @type {?number}\r
+     */\r
+	DfaLex.prototype.state = 0;\r
+	/**\r
+	 * @type {?number}\r
+     */\r
+	DfaLex.prototype.match = null;\r
+	/**\r
+	 * @param {number} chr\r
+	 * @param {number} pos\r
+     */\r
+	DfaLex.prototype.exec = function(chr, pos) {\r
+		if (this.state !== null) {\r
+		    if ((typeof this.state !== "number") || this.state >= this._dfaData.length) {\r
+		        this.state = null;\r
+		        throw new Error("Invalid value for DfaLex.state at chr " + chr + " and pos " + pos);\r
+		    }\r
+			var line = this._dfaData[this.state].line;\r
+			if (typeof line === "undefined" || line === null) {\r
+			    var badState = this.state;\r
+			    this.state = null;\r
+			    throw new Error("At chr " + chr + " and pos " + pos +\r
+			                    ", DfaLex._dfaData[" + badState +\r
+			                    "] appears to exist, but its line property is " +\r
+			                    (typeof line === "undefined" ? "undefined." : "null."));\r
+			}\r
+			var p, st;\r
+			for (p = 1 << 8, st = line; p; p >>= 1) {\r
+				if ((chr & p) !== 0) {\r
+					st = st[1];\r
+				} else {\r
+					st = st[0];\r
+				}\r
+				if (typeof st === "undefined") {\r
+				    st = null;\r
+				}\r
+				if (st === null)break;\r
+				if (Array.isArray(st))continue;\r
+				break;\r
+			}\r
+			var ac = this._dfaData[this.state].accept;\r
+			this.state = /** @type {?number} */ (st);\r
+			if (ac !== -1) {\r
+				this.match = /** @type{number} */ (ac);\r
+				this.match_pos = pos;\r
+			}\r
+		}\r
+	};\r
+##TABLES##\r
+##LABELS##\r
+	var ACTIONS = (function(){\r
+		var PCB = {};\r
+		var actions = ##ACTIONS##;\r
+		return function (/** number */ act, /** Array<*> */ vstack, /** !PcbClass */ pcb){\r
+			try{\r
+				PCB = pcb;\r
+				return actions[act].apply(null,vstack);\r
+			}catch(e){\r
+				if(e instanceof ReturnValue)return e.valueOf();\r
+				throw e;\r
+			}\r
+		}\r
+	})();\r
+\r
+	/**\r
+	 * @param {number} top\r
+	 * @param {?number} la\r
+	 * @returns {?number}\r
+     */\r
+	function get_act(top, la){	\r
+		for(var i = 0; i < act_tab[top].length; i+=2)\r
+			if(act_tab[top][i] === la)\r
+				return act_tab[top][i+1];\r
+		return null;\r
+	}\r
+	function get_goto(top, pop){	\r
+		for(var i = 0; i < goto_tab[top].length; i+=2)\r
+			if(goto_tab[top][i] === pop)\r
+				return goto_tab[top][i+1];\r
+		return null;\r
+	}\r
+\r
+	/**\r
+	 * @param {!string} src\r
+	 * @constructor\r
+     */\r
+	var PcbClass = function(src) {\r
+		this.src = src;\r
+	};\r
+	/**\r
+	 * @type {number}\r
+     */\r
+	PcbClass.prototype.line = 1;\r
+	/**\r
+	 * @type {number}\r
+     */\r
+	PcbClass.prototype.column = 1;\r
+	/**\r
+	 * @type {number}\r
+     */\r
+	PcbClass.prototype.offset = 0;\r
+	/**\r
+	 * @type {number}\r
+     */\r
+	PcbClass.prototype.error_step = 0;\r
+	/**\r
+	 * @type {string}\r
+     */\r
+	PcbClass.prototype.src = "";\r
+	/**\r
+	 * @type {string}\r
+     */\r
+	PcbClass.prototype.att = "";\r
+	/**\r
+	 * @type {?number}\r
+     */\r
+	PcbClass.prototype.la = null;\r
+	/**\r
+	 * @type {?number}\r
+     */\r
+	PcbClass.prototype.act = null;\r
+	/**\r
+	 * @returns {?number}\r
+     */\r
+	PcbClass.prototype.lex = function() {\r
+        var /** number */ start, /** number */ pos, /** number */ chr, actionResult;\r
+		var dfa = new DfaLex();\r
+		var loop = true;\r
+		while(loop){\r
+			dfa.match_pos = 0;\r
+			pos = this.offset + 1;\r
+			do{\r
+				pos--;\r
+				dfa.state = 0;\r
+				dfa.match = null;\r
+				start = pos;\r
+				if(this.src.length <= start) {\r
+					this.la = eof;\r
+					return eof;\r
+				}\r
+				do{\r
+					chr = this.src.charCodeAt(pos);\r
+					dfa.exec(chr,pos);\r
+					if(dfa.state !== null)\r
+						this.accountChar(chr);\r
+					pos++;\r
+				}while(dfa.state !== null);\r
+			}while(whitespace > -1 && dfa.match === whitespace);\r
+			if(dfa.match !== null){\r
+				this.att = this.src.slice(start, dfa.match_pos);\r
+				this.offset = dfa.match_pos;\r
+				actionResult = TERMINAL_ACTIONS(this,dfa.match);\r
+				if(dfa.state !== null)\r
+					this.accountChar(chr);\r
+				if(actionResult === Continue)\r
+					continue;\r
+				this.att = actionResult;\r
+			}else {\r
+				this.att = "";\r
+			}\r
+			loop = false;\r
+		}\r
+		this.la = dfa.match;\r
+		return this.la;\r
+	};\r
+	/**\r
+	 * @param {number} chr\r
+     */\r
+    PcbClass.prototype.accountChar = function(chr) {\r
+		if( chr === 10 ){\r
+			this.line++;\r
+			this.column = 0;\r
+		}\r
+		this.column++;\r
+	};\r
+	function parse(/** string */ src, err_off, err_la){\r
+		/**\r
+		 * @type {!Array<number>}\r
+         */\r
+		var		sstack			= [0];\r
+		/**\r
+		 * @type {!Array<*>}\r
+         */\r
+		var		vstack			= [0];\r
+		/**\r
+		 * @type {number}\r
+         */\r
+		var 	err_cnt			= 0;\r
+		/**\r
+		 * @type {*}\r
+		 */\r
+		var		rval;\r
+		/**\r
+		 * @type {?number}\r
+		 */\r
+		var		act;\r
+		/**\r
+		 * @type {number}\r
+		 */\r
+		var i = 0;\r
+\r
+		var PCB	= new PcbClass(src);\r
+		err_off	= err_off || [];\r
+		err_la = err_la || [];\r
+		PCB.lex();\r
+		while(true){\r
+			PCB.act = get_act(sstack[0],PCB.la);\r
+			if(PCB.act === null && defact_tab[sstack[0]] >= 0)\r
+				PCB.act = -defact_tab[sstack[0]];\r
+			if(PCB.act === null){//Parse error? Try to recover!\r
+				//Report errors only when error_step is 0, and this is not a\r
+				//subsequent error from a previous parse\r
+				if(PCB.error_step === 0){\r
+					err_cnt++;\r
+					err_off.unshift(PCB.offset - PCB.att.length);\r
+					err_la.unshift([]);\r
+					for(i = 0; i < act_tab[sstack[0]].length; i+=2)\r
+						err_la[0].push(labels[act_tab[sstack[0]][i]]);\r
+				}\r
+				//Perform error recovery			\r
+				while(sstack.length > 1 && PCB.act === null){\r
+					sstack.shift();\r
+					vstack.shift();\r
+					//Try to shift on error token\r
+					PCB.act = get_act(sstack[0],PCB.la);\r
+					if(PCB.act === error_token){\r
+						sstack.unshift(PCB.act);\r
+						vstack.unshift("");\r
+					}\r
+				}\r
+				//Is it better to leave the parser now?\r
+				if(sstack.length > 1 && PCB.act !== null){\r
+					//Ok, now try to shift on the next tokens\r
+					while(PCB.la !== eof){\r
+						PCB.act = act_tab[sstack[0]][i+1];\r
+						if(PCB.act != null)break;\r
+						while(PCB.lex() != null)PCB.offset++;\r
+					}\r
+				}\r
+				if(PCB.act === null || PCB.la === eof){\r
+					break;\r
+				}\r
+				//Try to parse the next three tokens successfully...\r
+				PCB.error_step = 3;\r
+			}\r
+			if(PCB.act > 0){//Shift\r
+				//Parse tree generation\r
+				sstack.unshift(PCB.act);\r
+				vstack.unshift(PCB.att);\r
+				PCB.lex();\r
+				//Successfull shift and right beyond error recovery?\r
+				if(PCB.error_step > 0)\r
+					PCB.error_step--;\r
+			}else{	//Reduce	\r
+				act = -PCB.act;\r
+				//vstack.unshift(vstack);\r
+				rval = ACTIONS(act,vstack,PCB);\r
+				//vstack.shift();\r
+				sstack.splice(0,pop_tab[act][1]);\r
+				vstack.splice(0,pop_tab[act][1]);\r
+				\r
+				PCB.act = get_goto(sstack[0],pop_tab[act][0]);\r
+				//Do some parse tree construction if desired\r
+				//Goal symbol match?\r
+				if(act === 0) break; //Don't use PCB.act here!\r
+			\r
+				//...and push it!\r
+				sstack.unshift(PCB.act);\r
+				vstack.unshift(rval);\r
+			}\r
+		}\r
+		return err_cnt;\r
+	}\r
+	return parse;\r
+})(##EOF##,##WHITESPACE##,##ERROR_TOKEN##);\r
+\r
+##FOOTER##\r
+`;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/bitset/BitSet32", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccbitset = factory();
+      }
+    })(exports, function() {
+      jscc.BitSet32 = function() {
+        var that = this;
+        this._data = [];
+        this.set = function(bit, state2) {
+          state2 = !!state2;
+          that._data[bit >> 5] = state2 ? that._data[bit >> 5] | 1 << (bit & 31) : that._data[bit >> 5] & ~(1 << (bit & 31));
+          return state2;
+        };
+        this.get = function(bit) {
+          return (that._data[bit >> 5] & 1 << (bit & 31)) != 0;
+        };
+        this.count = function() {
+          var i2, l2, c = 0;
+          for (i2 = 0, l2 = that._data.length * 32; i2 < l2; i2++) {
+            if (that.get(i2)) {
+              c++;
+            }
+          }
+          return c;
+        };
+      };
+      return jscc.BitSet32;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/EDGE", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccEDGE = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.EDGE;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/Nfa", ["require", "../enums/EDGE", "../bitset"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccNfa = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(new:jscc.classes.Nfa, NfaOptions=)}
+       */
+      function(require3, others) {
+        var BitSet, tmpBitSet, EDGE = require3("../enums/EDGE");
+        (function() {
+          if (false) {
+            tmpBitSet = require3("../bitset/BitSet32");
+          } else {
+            tmpBitSet = require3("../bitset");
+          }
+        })();
+        BitSet = /** @type {function(new:jscc.bitset)} */
+        tmpBitSet;
+        jscc.classes.Nfa = function(o) {
+          var p = o || {};
+          if (p.edge === EDGE.CHAR || p.edge === EDGE.FREE) {
+            this.edge = /** @type {!jscc.enums.EDGE} */
+            p.edge;
+          }
+          if (typeof p.ccl === "object" && p.ccl.hasOwnProperty("get") && p.ccl.hasOwnProperty("set") && p.ccl.hasOwnProperty("count")) {
+            this.ccl = /** @type {!jscc.bitset} */
+            p.ccl;
+          } else {
+            this.ccl = new BitSet();
+          }
+          if (typeof p.follow === "number") {
+            this.follow = /** @type {!number} */
+            p.follow;
+          }
+          if (typeof p.follow2 === "number") {
+            this.follow2 = /** @type {!number} */
+            p.follow2;
+          }
+          if (typeof p.accept === "number") {
+            this.accept = /** @type {!number} */
+            p.accept;
+          }
+          if (typeof p.weight === "number") {
+            this.weight = /** @type {!number} */
+            p.weight;
+          }
+        };
+        jscc.classes.Nfa.prototype.edge = EDGE.EPSILON;
+        jscc.classes.Nfa.prototype.ccl = new BitSet();
+        jscc.classes.Nfa.prototype.follow = -1;
+        jscc.classes.Nfa.prototype.follow2 = -1;
+        jscc.classes.Nfa.prototype.accept = -1;
+        jscc.classes.Nfa.prototype.weight = -1;
+        return jscc.classes.Nfa;
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/nfaStates", ["require", "./bitset", "./enums/EDGE", "./classes/Nfa"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccnfaStates = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(new:jscc.NFAStates)}
+       */
+      function(require3, others) {
+        var BitSet, tmpBitSet, EDGE = require3("./enums/EDGE"), Nfa = (
+          /** @type {function(new:jscc.classes.Nfa, ?NfaOptions=)} */
+          require3("./classes/Nfa")
+        );
+        (function() {
+          if (false) {
+            tmpBitSet = require3("./bitset/BitSet32");
+          } else {
+            tmpBitSet = require3("./bitset");
+          }
+        })();
+        BitSet = /** @type {function(new:jscc.bitset)} */
+        tmpBitSet;
+        jscc.NFAStates = function() {
+        };
+        jscc.NFAStates.prototype.value = [];
+        jscc.NFAStates.prototype.create = function() {
+          var nfa;
+          var i2;
+          for (i2 = 0; i2 < this.value.length; i2++) {
+            if (this.value[i2].edge === EDGE.FREE) {
+              break;
+            }
+          }
+          if (i2 == this.value.length) {
+            nfa = new Nfa();
+            this.value.push(nfa);
+          } else {
+            nfa = this.value[i2];
+          }
+          nfa.edge = EDGE.EPSILON;
+          nfa.ccl = new BitSet();
+          nfa.accept = -1;
+          nfa.follow = -1;
+          nfa.follow2 = -1;
+          nfa.weight = -1;
+          return i2;
+        };
+        return jscc.NFAStates;
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/SYM", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccSYM = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.SYM;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/ASSOC", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccASSOC = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.ASSOC;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/SPECIAL", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccSPECIAL = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.SPECIAL;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/Symbol", ["require", "../enums/SYM", "../enums/ASSOC", "../enums/SPECIAL"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccSymbol = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(new:jscc.classes.Symbol, SymbolOptions=)}
+       */
+      function(require3, others) {
+        var SYM = require3("../enums/SYM"), ASSOC = require3("../enums/ASSOC"), SPECIAL = require3("../enums/SPECIAL");
+        jscc.classes.Symbol = function(o) {
+          var p = o || {};
+          if (typeof p.id === "number") {
+            this.id = p.id;
+          }
+          if (p.kind === SYM.TERM) {
+            this.kind = p.kind;
+          }
+          if (typeof p.label === "string") {
+            this.label = p.label;
+          }
+          if (Array.isArray(p.prods)) {
+            this.prods = /** @type {!Array<number>} */
+            p.prods;
+          }
+          if (Array.isArray(p.first)) {
+            this.first = /** @type {!Array<number>} */
+            p.first;
+          }
+          if (p.associativity === ASSOC.LEFT || p.associativity === ASSOC.RIGHT || p.associativity === ASSOC.NOASSOC) {
+            this.associativity = p.associativity;
+          }
+          if (typeof p.level === "number") {
+            this.level = p.level;
+          }
+          if (typeof p.code === "string") {
+            this.code = p.code;
+          }
+          if (p.special === SPECIAL.EOF || p.special === SPECIAL.ERROR || p.special === SPECIAL.WHITESPACE) {
+            this.special = p.special;
+          }
+          if (typeof p.nullable === "boolean") {
+            this.nullable = p.nullable;
+          }
+          if (typeof p.defined === "boolean") {
+            this.defined = p.defined;
+          }
+        };
+        jscc.classes.Symbol.prototype.id = -1;
+        jscc.classes.Symbol.prototype.kind = SYM.NONTERM;
+        jscc.classes.Symbol.prototype.label = "";
+        jscc.classes.Symbol.prototype.prods = [];
+        jscc.classes.Symbol.prototype.first = [];
+        jscc.classes.Symbol.prototype.associativity = ASSOC.NONE;
+        jscc.classes.Symbol.prototype.level = 0;
+        jscc.classes.Symbol.prototype.code = "";
+        jscc.classes.Symbol.prototype.special = SPECIAL.NONE;
+        jscc.classes.Symbol.prototype.nullable = false;
+        jscc.classes.Symbol.prototype.defined = false;
+        return jscc.classes.Symbol;
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/Production", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccProduction = factory();
+      }
+    })(exports, function() {
+      jscc.classes.Production = function(o) {
+        var p = o || {};
+        if (typeof p.id === "number") {
+          this.id = /** @type {number} */
+          p.id;
+        }
+        if (typeof p.lhs === "number") {
+          this.lhs = /** @type {number} */
+          p.lhs;
+        }
+        if (typeof p.rhs !== "undefined" && Array.isArray(p.rhs)) {
+          this.rhs = /** @type {!Array<!number>} */
+          p.rhs;
+        }
+        if (typeof p.level === "number") {
+          this.level = /** @type {number} */
+          p.level;
+        }
+        if (typeof p.code === "string") {
+          this.code = /** @type {string} */
+          p.code;
+        }
+      };
+      jscc.classes.Production.prototype.id = -1;
+      jscc.classes.Production.prototype.lhs = -1;
+      jscc.classes.Production.prototype.rhs = [];
+      jscc.classes.Production.prototype.level = 0;
+      jscc.classes.Production.prototype.code = "";
+      return jscc.classes.Production;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/EXEC", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccEXEC = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.EXEC;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/global", [
+          "require",
+          "text!./template/parser-driver-js.txt",
+          "./nfaStates",
+          "./classes/Symbol",
+          "./classes/Production",
+          "./enums/SYM",
+          "./enums/SPECIAL",
+          "./enums/EXEC"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccglobal = factory(function(mod) {
+          var parts2 = mod.split("/");
+          var last = parts2[parts2.length - 1];
+          if (/js\.txt$/.test(last)) {
+            return root.jsccDEFAULT_PARSER_DRIVER;
+          }
+          return root["jscc" + last];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.global}
+       */
+      function(require3, others) {
+        var defaultParserDriver, nfaStates = (
+          /** @type {function(new:jscc.NFAStates)} */
+          require3("./nfaStates")
+        ), Symbol2 = (
+          /** @type {function(new:jscc.classes.Symbol, ?SymbolOptions=)} */
+          require3("./classes/Symbol")
+        ), Production = (
+          /** @type {function(new:jscc.classes.Production)} */
+          require3("./classes/Production")
+        ), SYM = require3("./enums/SYM"), SPECIAL = require3("./enums/SPECIAL"), EXEC = require3("./enums/EXEC");
+        (function() {
+          if (false) {
+            try {
+              defaultParserDriver = /** @type {string} */
+              require3("text!./template/parser-driver-js.txt");
+            } catch (e) {
+              if (typeof fs !== "undefined" && typeof path !== "undefined") {
+                defaultParserDriver = /** @type {string} */
+                fs.readFileSync(path.join(__dirname, "template", "parser-driver-js.txt"), "utf8");
+              } else if (typeof require3 === "function") {
+                defaultParserDriver = /** @type {string} */
+                require3("fs").readFileSync(require3("path").join(__dirname, "template", "parser-driver-js.txt"), "utf8");
+              }
+            }
+          } else {
+            defaultParserDriver = /** @type {string} */
+            require3("text!./template/parser-driver-js.txt");
+          }
+        })();
+        jscc.global = function() {
+          this.nfa_states = new nfaStates();
+          var goalSymbol = new Symbol2();
+          goalSymbol.kind = SYM.NONTERM;
+          goalSymbol.special = SPECIAL.NONE;
+          goalSymbol.label = "";
+          goalSymbol.id = 0;
+          goalSymbol.defined = true;
+          var errorResyncSymbol = new Symbol2();
+          errorResyncSymbol.kind = SYM.TERM;
+          errorResyncSymbol.special = SPECIAL.ERROR;
+          errorResyncSymbol.label = "ERROR_RESYNC";
+          errorResyncSymbol.id = 1;
+          errorResyncSymbol.defined = true;
+          this.symbols = [goalSymbol, errorResyncSymbol];
+          var p = new Production();
+          p.lhs = 0;
+          p.rhs = [];
+          p.code = "%% = %1;";
+          this.symbols[0].prods.push(0);
+          this.productions = [p];
+          this.whitespace_token = -1;
+          this.file = "";
+          this.errors = 0;
+          this.warnings = 0;
+          this.shifts = 0;
+          this.reduces = 0;
+          this.gotos = 0;
+          this.regex_weight = 0;
+          this.code_head = "";
+          this.code_foot = "";
+          this.DEFAULT_DRIVER = defaultParserDriver;
+          this.DEF_PROD_CODE = "%% = %1;";
+          this.MIN_CHAR = 0;
+          this.MAX_CHAR = 255;
+        };
+        jscc.global.prototype.symbols = [];
+        jscc.global.prototype.productions = [];
+        jscc.global.prototype.states = [];
+        jscc.global.prototype.nfa_states = null;
+        jscc.global.prototype.dfa_states = [];
+        jscc.global.prototype.whitespace_token = -1;
+        jscc.global.prototype.code_head = "";
+        jscc.global.prototype.code_foot = "";
+        jscc.global.prototype.file = "";
+        jscc.global.prototype.errors = 0;
+        jscc.global.prototype.warnings = 0;
+        jscc.global.prototype.shifts = 0;
+        jscc.global.prototype.reduces = 0;
+        jscc.global.prototype.gotos = 0;
+        jscc.global.prototype.exec_mode = EXEC.CONSOLE;
+        jscc.global.prototype.assoc_level = 1;
+        jscc.global.prototype.regex_weight = 0;
+        jscc.global.prototype.write_output_function = null;
+        jscc.global.prototype.read_all_input_function = null;
+        jscc.global.prototype.read_template_function = null;
+        jscc.global.prototype.write_debug_function = null;
+        return new jscc.global();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/io/ioBrowser", ["require", "../global"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccio = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(exports, function(require3) {
+      var global2 = (
+        /** @type {jscc.global} */
+        require3("../global")
+      );
+      jscc.ioBrowser = function() {
+      };
+      jscc.ioBrowser.prototype.read_all_input = function(options) {
+        if (typeof global2.read_all_input_function === "function") {
+          options = options || {};
+          if (typeof options.chunkCallback === "function") {
+            var chunkCallback = options.chunkCallback;
+            var endCallback = typeof options.endCallback === "function" ? options.endCallback : function() {
+            };
+            chunkCallback(global2.read_all_input_function());
+            endCallback();
+          } else {
+            return global2.read_all_input_function();
+          }
+        } else {
+          throw new Error("global.read_all_input_function was not defined");
+        }
+      };
+      jscc.ioBrowser.prototype.read_template = function(options) {
+        if (typeof global2.read_template_function === "function") {
+          options = options || {};
+          if (typeof options.chunkCallback === "function") {
+            var chunkCallback = options.chunkCallback;
+            var endCallback = typeof options.endCallback === "function" ? options.endCallback : function() {
+            };
+            chunkCallback(global2.read_template_function());
+            endCallback();
+          } else {
+            return global2.read_template_function();
+          }
+        } else {
+          throw new Error("global.read_template_function was not defined");
+        }
+      };
+      jscc.ioBrowser.prototype.write_output = function(options) {
+        if (typeof global2.write_output_function === "function") {
+          var text = "";
+          var callback = /* @__PURE__ */ __name(function() {
+          }, "callback");
+          if (typeof options === "string") {
+            text = options;
+          } else if (options && typeof options === "object") {
+            if (typeof options.text === "string") {
+              text = options.text;
+            } else {
+              throw new Error("options was not a string, and options.text was not a string");
+            }
+            if (typeof options.callback === "function") {
+              callback = options.callback;
+            }
+          }
+          global2.write_output_function(text);
+          callback();
+        } else {
+          throw new Error("global.write_output_function was not defined");
+        }
+      };
+      jscc.ioBrowser.prototype.write_debug = function(text) {
+        if (typeof global2.write_debug_function === "function") {
+          global2.write_debug_function(text);
+        }
+      };
+      jscc.ioBrowser.prototype.exit = function(exitCode) {
+      };
+      return new jscc.ioBrowser();
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/LOG_LEVEL", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccLOG_LEVEL = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.LOG_LEVEL;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/util", ["require", "./enums/LOG_LEVEL"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccutil = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.util}
+       */
+      function(require3, others) {
+        var LOG_LEVEL = require3("./enums/LOG_LEVEL");
+        jscc.util = function() {
+        };
+        jscc.util.prototype = {
+          /**
+           * Unions the content of two arrays.
+           * @template T
+           * @param {!Array<T>} dest_array - The destination array.
+           * @param {!Array<T>} src_array - The source array.  Elements
+           * that are not in dest_array but in src_array are copied
+           * to dest_array.
+           * @returns {!Array<T>} The destination array, the union of
+           * both input arrays.
+           * @author Jan Max Meyer
+           * @memberof jscc.util
+           */
+          union: function(dest_array, src_array) {
+            var i2, j;
+            for (i2 = 0; i2 < src_array.length; i2++) {
+              for (j = 0; j < dest_array.length; j++) {
+                if (src_array[i2] == dest_array[j]) {
+                  break;
+                }
+              }
+              if (j == dest_array.length) {
+                dest_array.push(src_array[i2]);
+              }
+            }
+            return dest_array;
+          },
+          /**
+           * Gets the string name (in all caps) of the
+           * {@link jscc.enums.LOG_LEVEL} value provided.
+           * @param {jscc.enums.LOG_LEVEL} level - The
+           * LOG_LEVEL value
+           * @returns {string} The name of the log level in all caps
+           * @memberof jscc.Util
+           */
+          log_level_string: function(level) {
+            switch (level) {
+              case LOG_LEVEL.FATAL:
+                return "FATAL";
+              case LOG_LEVEL.ERROR:
+                return "ERROR";
+              case LOG_LEVEL.WARN:
+                return "WARN";
+              case LOG_LEVEL.INFO:
+                return "INFO";
+              case LOG_LEVEL.DEBUG:
+                return "DEBUG";
+              case LOG_LEVEL.TRACE:
+                return "TRACE";
+              default:
+                return "";
+            }
+          },
+          /**
+           * Gets the {@link jscc.enums.LOG_LEVEL} value
+           * corresponding to the provided string.  If the string
+           * is empty or invalid, returns
+           * {@link jscc.enums.LOG_LEVEL.WARN} as a default.
+           * @param {string} levelString - The name of the log level.
+           * @returns {jscc.enums.LOG_LEVEL} The corresponding
+           * LOG_LEVEL value, defaulting to WARN.
+           */
+          log_level_value: function(levelString) {
+            switch ((levelString || "").trim().toUpperCase()) {
+              case "FATAL":
+                return LOG_LEVEL.FATAL;
+              case "ERROR":
+                return LOG_LEVEL.ERROR;
+              case "WARN":
+                return LOG_LEVEL.WARN;
+              case "INFO":
+                return LOG_LEVEL.INFO;
+              case "DEBUG":
+                return LOG_LEVEL.DEBUG;
+              case "TRACE":
+                return LOG_LEVEL.TRACE;
+              default:
+                return LOG_LEVEL.WARN;
+            }
+          }
+        };
+        return new jscc.util();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/first", ["require", "./global", "./util", "./enums/SYM"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccfirst = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.first}
+       */
+      function(require3, others) {
+        var global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), util = (
+          /** @type {jscc.util} */
+          require3("./util")
+        ), SYM = require3("./enums/SYM");
+        jscc.first = function() {
+        };
+        jscc.first.prototype.first = function() {
+          var cnt = 0, old_cnt = 0;
+          var nullable;
+          do {
+            old_cnt = cnt;
+            cnt = 0;
+            for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].kind == SYM.NONTERM) {
+                for (var j = 0; j < global2.symbols[i2].prods.length; j++) {
+                  nullable = false;
+                  for (var k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
+                    global2.symbols[i2].first = util.union(
+                      global2.symbols[i2].first,
+                      global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].first
+                    );
+                    nullable = global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].nullable;
+                    if (!nullable) {
+                      break;
+                    }
+                  }
+                  cnt += global2.symbols[i2].first.length;
+                  if (k == global2.productions[global2.symbols[i2].prods[j]].rhs.length) {
+                    nullable = true;
+                  }
+                  if (nullable) {
+                    global2.symbols[i2].nullable = true;
+                  }
+                }
+              }
+            }
+          } while (cnt != old_cnt);
+        };
+        jscc.first.prototype.rhs_first = function(item, p, begin) {
+          var i2;
+          for (i2 = begin; i2 < p.rhs.length; i2++) {
+            item.lookahead = util.union(item.lookahead, global2.symbols[p.rhs[i2]].first);
+            if (!global2.symbols[p.rhs[i2]].nullable) {
+              return false;
+            }
+          }
+          return true;
+        };
+        return new jscc.first();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/log/logBrowser", ["require", "../global", "../enums/LOG_LEVEL"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jscclog = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(exports, function(require3) {
+      var global2 = (
+        /** @type {jscc.global} */
+        require3("../global")
+      ), LOG_LEVEL = require3("../enums/LOG_LEVEL");
+      var innerConsole = console || Console || {};
+      innerConsole.log = innerConsole.log || function(msg) {
+      };
+      innerConsole.warn = innerConsole.warn || innerConsole.log || function(msg) {
+      };
+      innerConsole.error = innerConsole.error || innerConsole.log || function(msg) {
+      };
+      innerConsole.info = innerConsole.info || innerConsole.log || function(msg) {
+      };
+      innerConsole.trace = innerConsole.trace || innerConsole.log || function(msg) {
+      };
+      jscc.logBrowser = function() {
+        this._level = LOG_LEVEL.WARN;
+      };
+      jscc.logBrowser.prototype._level = LOG_LEVEL.WARN;
+      jscc.logBrowser.prototype.fatal = function(msg) {
+        if (this._level <= LOG_LEVEL.FATAL) {
+          innerConsole.error(msg);
+        }
+        global2.errors++;
+      };
+      jscc.logBrowser.prototype.error = function(msg) {
+        if (this._level <= LOG_LEVEL.ERROR) {
+          innerConsole.error(msg);
+        }
+        global2.errors++;
+      };
+      jscc.logBrowser.prototype.warn = function(msg) {
+        if (this._level <= LOG_LEVEL.WARN) {
+          innerConsole.warn(msg);
+        }
+        global2.warnings++;
+      };
+      jscc.logBrowser.prototype.info = function(msg) {
+        if (this._level <= LOG_LEVEL.INFO) {
+          innerConsole.info(msg);
+        }
+      };
+      jscc.logBrowser.prototype.debug = function(msg) {
+        if (this._level <= LOG_LEVEL.DEBUG) {
+          innerConsole.log(msg);
+        }
+      };
+      jscc.logBrowser.prototype.trace = function(msg) {
+        if (this._level <= LOG_LEVEL.TRACE) {
+          innerConsole.trace(msg);
+        }
+      };
+      jscc.logBrowser.prototype.setLevel = function(level) {
+        this._level = level;
+      };
+      return new jscc.logBrowser();
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/State", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccState = factory();
+      }
+    })(exports, function() {
+      jscc.classes.State = function(o) {
+        var p = o || {};
+        if (Array.isArray(p.kernel)) {
+          this.kernel = /** @type {!Array<!jscc.classes.Item>} */
+          p.kernel;
+        }
+        if (Array.isArray(p.epsilon)) {
+          this.epsilon = /** @type {!Array<!jscc.classes.Item>} */
+          p.epsilon;
+        }
+        if (typeof p.def_act === "number") {
+          this.def_act = /** @type {!number} */
+          p.def_act;
+        }
+        if (typeof p.done === "boolean") {
+          this.done = /** @type {!boolean} */
+          p.done;
+        }
+        if (typeof p.closed === "boolean") {
+          this.closed = /** @type {!boolean} */
+          p.closed;
+        }
+        if (Array.isArray(p.actionrow)) {
+          this.actionrow = /** @type {!Array<!jscc.classes.TableEntry>} */
+          p.actionrow;
+        }
+        if (Array.isArray(p.gotorow)) {
+          this.gotorow = /** @type {!Array<!jscc.classes.TableEntry>} */
+          p.gotorow;
+        }
+      };
+      jscc.classes.State.prototype.kernel = [];
+      jscc.classes.State.prototype.epsilon = [];
+      jscc.classes.State.prototype.def_act = 0;
+      jscc.classes.State.prototype.done = false;
+      jscc.classes.State.prototype.closed = false;
+      jscc.classes.State.prototype.actionrow = [];
+      jscc.classes.State.prototype.gotorow = [];
+      return jscc.classes.State;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/Item", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccItem = factory();
+      }
+    })(exports, function() {
+      jscc.classes.Item = function(o) {
+        var p = o || {};
+        if (typeof p.prod === "number") {
+          this.prod = /** @type {!number} */
+          p.prod;
+        }
+        if (typeof p.dot_offset === "number") {
+          this.dot_offset = /** @type {!number} */
+          p.dot_offset;
+        }
+        if (typeof p.lookahead !== "undefined" && Array.isArray(p.lookahead)) {
+          this.lookahead = /** @type {!Array<!number>} */
+          p.lookahead;
+        }
+      };
+      jscc.classes.Item.prototype.prod = -1;
+      jscc.classes.Item.prototype.dot_offset = 0;
+      jscc.classes.Item.prototype.lookahead = [];
+      return jscc.classes.Item;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/TableEntry", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccTableEntry = factory();
+      }
+    })(exports, function() {
+      jscc.classes.TableEntry = function(sym, act) {
+        this.symbol = sym;
+        this.action = act;
+      };
+      jscc.classes.TableEntry.prototype.symbol = -1;
+      jscc.classes.TableEntry.prototype.action = -1;
+      return jscc.classes.TableEntry;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/enums/MODE_GEN", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccMODE_GEN = factory();
+      }
+    })(exports, function() {
+      return jscc.enums.MODE_GEN;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/debug", [
+          "require",
+          "./global",
+          "./io/io",
+          "./enums/MODE_GEN",
+          "./enums/SYM",
+          "./enums/ASSOC"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccdebug = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.debug}
+       */
+      function(require3, others) {
+        var io, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), MODE_GEN = require3("./enums/MODE_GEN"), SYM = require3("./enums/SYM"), ASSOC = require3("./enums/ASSOC");
+        (function() {
+          if (false) {
+            io = /** @type {jscc.io} */
+            require3("./io/ioNode");
+          } else {
+            io = /** @type {jscc.io} */
+            require3("./io/io");
+          }
+        })();
+        jscc.debug = function() {
+        };
+        jscc.debug.prototype = {
+          /**
+           * Prints debugging output related to the current value of the
+           * {@link jscc.global.symbols} array.
+           * @param {jscc.enums.MODE_GEN} mode - The current output mode.
+           * @memberof jscc.debug
+           */
+          print_symbols: function(mode) {
+            if (mode == MODE_GEN.HTML) {
+              io.write_debug('<table class="debug" cellpadding="0" cellspacing="0">');
+              io.write_debug("<tr>");
+              io.write_debug('<td class="tabtitle" colspan="3">Symbols Overview</td>');
+              io.write_debug("</tr>");
+              io.write_debug("<tr>");
+              io.write_debug('<td class="coltitle">Symbol</td>');
+              io.write_debug('<td class="coltitle">Type</td>');
+              io.write_debug("</tr>");
+            } else if (mode == MODE_GEN.TEXT) {
+              io.write_debug("--- Symbol Dump ---");
+            }
+            for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (mode == MODE_GEN.HTML) {
+                io.write_debug("<tr>");
+                io.write_debug("<td>");
+                io.write_debug(global2.symbols[i2].label);
+                io.write_debug("</td>");
+                io.write_debug("<td>");
+                io.write_debug(global2.symbols[i2].kind == SYM.NONTERM ? "Non-terminal" : "Terminal");
+                io.write_debug("</td>");
+              } else if (mode == MODE_GEN.TEXT) {
+                var output = "";
+                output = global2.symbols[i2].label;
+                for (var j = output.length; j < 20; j++) {
+                  output += " ";
+                }
+                output += global2.symbols[i2].kind == SYM.NONTERM ? "Non-terminal" : "Terminal";
+                if (global2.symbols[i2].kind == SYM.TERM) {
+                  for (var j = output.length; j < 40; j++) {
+                    output += " ";
+                  }
+                  output += global2.symbols[i2].level + "/";
+                  switch (global2.symbols[i2].associativity) {
+                    case ASSOC.NONE:
+                      output += "^";
+                      break;
+                    case ASSOC.LEFT:
+                      output += "<";
+                      break;
+                    case ASSOC.RIGHT:
+                      output += ">";
+                      break;
+                  }
+                }
+                io.write_debug(output);
+              }
+            }
+            if (mode == MODE_GEN.HTML) {
+              io.write_debug("</table>");
+            } else if (mode == MODE_GEN.TEXT) {
+              io.write_debug("");
+            }
+          },
+          /**
+           * Prints debugging output related to the grammar being processed,
+           * using information from the {@link jscc.global.symbols} and
+           * {@link jscc.global.productions} arrays.
+           * @param {jscc.enums.MODE_GEN} mode - The current output mode.
+           * @memberof jscc.debug
+           */
+          print_grammar: function(mode) {
+            if (mode == MODE_GEN.HTML) {
+              io.write_debug('<table class="debug" cellpadding="0" cellspacing="0">');
+              io.write_debug("<tr>");
+              io.write_debug('<td class="tabtitle" colspan="3">Grammar Overview</td>');
+              io.write_debug("</tr>");
+              io.write_debug("<tr>");
+              io.write_debug('<td class="coltitle">Left-hand side</td>');
+              io.write_debug('<td class="coltitle">FIRST-set</td>');
+              io.write_debug('<td class="coltitle">Right-hand side</td>');
+              io.write_debug("</tr>");
+              for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+                io.write_debug("<tr>");
+                if (global2.symbols[i2].kind == SYM.NONTERM) {
+                  io.write_debug("<td>");
+                  io.write_debug(global2.symbols[i2].label);
+                  io.write_debug("</td>");
+                  io.write_debug("<td>");
+                  for (var j = 0; j < global2.symbols[i2].first.length; j++) {
+                    io.write_debug("<b>" + global2.symbols[global2.symbols[i2].first[j]].label + "</b>");
+                  }
+                  io.write_debug("</td>");
+                  io.write_debug("<td>");
+                  for (var j = 0; j < global2.symbols[i2].prods.length; j++) {
+                    for (var k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
+                      if (global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].kind == SYM.TERM) {
+                        io.write_debug(
+                          "<b>" + global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + "</b>"
+                        );
+                      } else {
+                        io.write_debug(
+                          " " + global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + " "
+                        );
+                      }
+                    }
+                    io.write_debug("<br />");
+                  }
+                  io.write_debug("</td>");
+                }
+                io.write_debug("</tr>");
+              }
+              io.write_debug("</table>");
+            } else if (mode == MODE_GEN.TEXT) {
+              var output = "";
+              for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+                if (global2.symbols[i2].kind == SYM.NONTERM) {
+                  output += global2.symbols[i2].label + " {";
+                  for (var j = 0; j < global2.symbols[i2].first.length; j++) {
+                    output += " " + global2.symbols[global2.symbols[i2].first[j]].label + " ";
+                  }
+                  output += "}\n";
+                  for (var j = 0; j < global2.symbols[i2].prods.length; j++) {
+                    output += "	";
+                    for (var k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
+                      if (global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].kind == SYM.TERM) {
+                        output += "#" + global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + " ";
+                      } else {
+                        output += global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + " ";
+                      }
+                    }
+                    output += "\n";
+                  }
+                }
+              }
+              io.write_debug(output);
+            }
+          },
+          /**
+           * Prints debugging information relating to the provided array
+           * of Item objects.
+           * @param {jscc.enums.MODE_GEN} mode - The current output mode.
+           * @param {string} label - A label for the debugging output.
+           * @param {Array<!jscc.classes.Item>} item_set - The items for which to print information.
+           * @memberof jscc.debug
+           */
+          print_item_set: function(mode, label, item_set) {
+            var i2, j;
+            if (item_set.length == 0) {
+              return;
+            }
+            if (mode == MODE_GEN.HTML) {
+              io.write_debug('<table class="debug" cellpadding="0" cellspacing="0">');
+              io.write_debug("<tr>");
+              io.write_debug('<td class="tabtitle" colspan="2">' + label + "</td>");
+              io.write_debug("</tr>");
+              io.write_debug("<tr>");
+              io.write_debug('<td class="coltitle" width="35%">Lookahead</td>');
+              io.write_debug('<td class="coltitle" width="65%">Production</td>');
+              io.write_debug("</tr>");
+            } else if (mode == MODE_GEN.TEXT) {
+              io.write_debug("--- " + label + " ---");
+            }
+            for (i2 = 0; i2 < item_set.length; i2++) {
+              if (mode == MODE_GEN.HTML) {
+                io.write_debug("<tr>");
+                io.write_debug("<td>");
+                for (j = 0; j < item_set[i2].lookahead.length; j++) {
+                  io.write_debug("<b>" + global2.symbols[item_set[i2].lookahead[j]].label + "</b> ");
+                }
+                io.write_debug("</td>");
+                io.write_debug("<td>");
+                io.write_debug(global2.symbols[global2.productions[item_set[i2].prod].lhs].label + " -&gt; ");
+                for (j = 0; j < global2.productions[item_set[i2].prod].rhs.length; j++) {
+                  if (j == item_set[i2].dot_offset) {
+                    io.write_debug(".");
+                  }
+                  if (global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].kind == SYM.TERM) {
+                    io.write_debug("<b>" + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + "</b>");
+                  } else {
+                    io.write_debug(" " + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + " ");
+                  }
+                }
+                if (j == item_set[i2].dot_offset) {
+                  io.write_debug(".");
+                }
+                io.write_debug("</td>");
+                io.write_debug("</tr>");
+              } else if (mode == MODE_GEN.TEXT) {
+                var out = "";
+                out += global2.symbols[global2.productions[item_set[i2].prod].lhs].label;
+                for (j = out.length; j < 20; j++) {
+                  out += " ";
+                }
+                out += " -> ";
+                for (j = 0; j < global2.productions[item_set[i2].prod].rhs.length; j++) {
+                  if (j == item_set[i2].dot_offset) {
+                    out += ".";
+                  }
+                  if (global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].kind == SYM.TERM) {
+                    out += " #" + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + " ";
+                  } else {
+                    out += " " + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + " ";
+                  }
+                }
+                if (j == item_set[i2].dot_offset) {
+                  out += ".";
+                }
+                for (j = out.length; j < 60; j++) {
+                  out += " ";
+                }
+                out += "{ ";
+                for (j = 0; j < item_set[i2].lookahead.length; j++) {
+                  out += "#" + global2.symbols[item_set[i2].lookahead[j]].label + " ";
+                }
+                out += "}";
+                io.write_debug(out);
+              }
+            }
+            if (mode == MODE_GEN.HTML) {
+              io.write_debug("</table>");
+            }
+          }
+        };
+        return new jscc.debug();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/tabgen", [
+          "require",
+          "./global",
+          "./first",
+          "./util",
+          "./log/log",
+          "./classes/State",
+          "./classes/Item",
+          "./classes/TableEntry",
+          "./classes/Symbol",
+          "./enums/SPECIAL",
+          "./enums/ASSOC",
+          "./enums/SYM",
+          "./enums/MODE_GEN",
+          "./enums/EXEC",
+          "./debug"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jscctabgen = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.tabgen}
+       */
+      function(require3, others) {
+        var log3;
+        var global2 = require3("./global");
+        var first = require3("./first");
+        var util = require3("./util");
+        (function() {
+          if (false) {
+            log3 = require3("./log/logNode");
+          } else {
+            log3 = require3("./log/log");
+          }
+        })();
+        var State = (
+          /** @type {function(new:jscc.classes.State, StateOptions=)} */
+          require3("./classes/State")
+        );
+        var Item = (
+          /** @type {function(new:jscc.classes.Item, ItemOptions=)} */
+          require3("./classes/Item")
+        );
+        var TableEntry = (
+          /** @type {function(new:jscc.classes.TableEntry, number, number)} */
+          require3("./classes/TableEntry")
+        );
+        var Symbol2 = (
+          /** @type {function(new:jscc.classes.Symbol, SymbolOptions=)} */
+          require3("./classes/Symbol")
+        );
+        var SPECIAL = require3("./enums/SPECIAL");
+        var ASSOC = require3("./enums/ASSOC");
+        var SYM = require3("./enums/SYM");
+        var EXEC = require3("./enums/EXEC");
+        var MODE_GEN = require3("./enums/MODE_GEN");
+        var debugFunctions = require3("./debug");
+        jscc.tabgen = function() {
+        };
+        jscc.tabgen.prototype.create_state = function() {
+          var state2 = new State({
+            kernel: [],
+            epsilon: [],
+            actionrow: [],
+            gotorow: [],
+            done: false,
+            closed: false,
+            def_act: 0
+          });
+          global2.states.push(state2);
+          return state2;
+        };
+        jscc.tabgen.prototype.create_item = function(p) {
+          return new Item({
+            prod: p,
+            dot_offset: 0,
+            lookahead: []
+          });
+        };
+        jscc.tabgen.prototype.add_table_entry = function(row, sym, act) {
+          for (var i2 = 0; i2 < row.length; i2++) {
+            if (row[i2].symbol == sym) {
+              return row;
+            }
+          }
+          row.push(new TableEntry(sym, act));
+          return row;
+        };
+        jscc.tabgen.prototype.update_table_entry = function(row, sym, act) {
+          var i2;
+          for (i2 = 0; i2 < row.length; i2++) {
+            if (row[i2].symbol == sym) {
+              row[i2].action = act;
+              return row;
+            }
+          }
+          return row;
+        };
+        jscc.tabgen.prototype.remove_table_entry = function(row, sym) {
+          for (var i2 = 0; i2 < row.length; i2++) {
+            if (row[i2].symbol == sym) {
+              row.splice(i2, 1);
+              return row;
+            }
+          }
+          return row;
+        };
+        jscc.tabgen.prototype.get_table_entry = function(row, sym) {
+          for (var i2 = 0; i2 < row.length; i2++) {
+            if (row[i2].symbol == sym) {
+              return row[i2].action;
+            }
+          }
+          return void 0;
+        };
+        jscc.tabgen.prototype.get_undone_state = function() {
+          for (var i2 = 0; i2 < global2.states.length; i2++) {
+            if (global2.states[i2].done == false) {
+              return i2;
+            }
+          }
+          return -1;
+        };
+        jscc.tabgen.prototype.sort_partition = function(a, b) {
+          return a.prod - b.prod;
+        };
+        jscc.tabgen.prototype.find_symbol = function(label, kind, special) {
+          if (!special) {
+            special = SPECIAL.NONE;
+          }
+          for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+            if (global2.symbols[i2].label.toString() == label.toString() && global2.symbols[i2].kind == kind && global2.symbols[i2].special == special) {
+              return i2;
+            }
+          }
+          return -1;
+        };
+        jscc.tabgen.prototype.create_symbol = function(label, kind, special) {
+          var exists;
+          if ((exists = this.find_symbol(label, kind, special)) > -1) {
+            return global2.symbols[exists].id;
+          }
+          var sym = new Symbol2({
+            label,
+            kind,
+            prods: [],
+            nullable: false,
+            id: global2.symbols.length,
+            code: "",
+            associativity: ASSOC.NONE,
+            level: 0,
+            special,
+            defined: false,
+            first: []
+          });
+          if (kind == SYM.TERM) {
+            sym.first.push(sym.id);
+          }
+          global2.symbols.push(sym);
+          return sym.id;
+        };
+        jscc.tabgen.prototype.item_set_equal = function(set1, set2) {
+          var i2, j, cnt = 0;
+          if (set1.length != set2.length) {
+            return false;
+          }
+          for (i2 = 0; i2 < set1.length; i2++) {
+            for (j = 0; j < set2.length; j++) {
+              if (set1[i2].prod == set2[j].prod && set1[i2].dot_offset == set2[j].dot_offset) {
+                cnt++;
+                break;
+              }
+            }
+          }
+          return cnt == set1.length;
+        };
+        jscc.tabgen.prototype.close_items = function(seed, closure) {
+          var i2, j, k;
+          var cnt = 0, tmp_cnt = 0;
+          var item;
+          for (i2 = 0; i2 < seed.length; i2++) {
+            if (seed[i2].dot_offset < global2.productions[seed[i2].prod].rhs.length) {
+              if (global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].kind == SYM.NONTERM) {
+                for (j = 0; j < global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].prods.length; j++) {
+                  for (k = 0; k < closure.length; k++) {
+                    if (closure[k].prod == global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].prods[j]) {
+                      break;
+                    }
+                  }
+                  if (k == closure.length) {
+                    item = this.create_item(
+                      global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].prods[j]
+                    );
+                    closure.push(item);
+                    cnt++;
+                  }
+                  tmp_cnt = closure[k].lookahead.length;
+                  if (first.rhs_first(closure[k], global2.productions[seed[i2].prod], seed[i2].dot_offset + 1)) {
+                    closure[k].lookahead = util.union(closure[k].lookahead, seed[i2].lookahead);
+                  }
+                  cnt += closure[k].lookahead.length - tmp_cnt;
+                }
+              }
+            }
+          }
+          return cnt;
+        };
+        jscc.tabgen.prototype.lalr1_closure = function(s) {
+          var closure = [], nclosure, partition;
+          var partition_sym;
+          var i2, j, cnt = 0, old_cnt = 0, tmp_cnt, ns;
+          do {
+            old_cnt = cnt;
+            cnt = this.close_items(old_cnt == 0 ? global2.states[s].kernel : closure, closure);
+          } while (cnt != old_cnt);
+          for (i2 = 0; i2 < global2.states[s].kernel.length; i2++) {
+            if (global2.states[s].kernel[i2].dot_offset < global2.productions[global2.states[s].kernel[i2].prod].rhs.length) {
+              closure.unshift(
+                new Item({
+                  prod: global2.states[s].kernel[i2].prod,
+                  dot_offset: global2.states[s].kernel[i2].dot_offset,
+                  lookahead: []
+                })
+              );
+              for (j = 0; j < global2.states[s].kernel[i2].lookahead.length; j++) {
+                closure[0].lookahead[j] = global2.states[s].kernel[i2].lookahead[j];
+              }
+            }
+          }
+          for (i2 = 0; i2 < closure.length; i2++) {
+            if (global2.productions[closure[i2].prod].rhs.length == 0) {
+              for (j = 0; j < global2.states[s].epsilon.length; j++) {
+                if (global2.states[s].epsilon[j].prod == closure[i2].prod && global2.states[s].epsilon[j].dot_offset == closure[i2].dot_offset) {
+                  break;
+                }
+              }
+              if (j == global2.states[s].epsilon.length) {
+                global2.states[s].epsilon.push(closure[i2]);
+              }
+              closure.splice(i2, 1);
+            }
+          }
+          while (closure.length > 0) {
+            partition = [];
+            nclosure = [];
+            partition_sym = -1;
+            for (i2 = 0; i2 < closure.length; i2++) {
+              if (partition.length == 0) {
+                partition_sym = global2.productions[closure[i2].prod].rhs[closure[i2].dot_offset];
+              }
+              if (closure[i2].dot_offset < global2.productions[closure[i2].prod].rhs.length) {
+                if (global2.productions[closure[i2].prod].rhs[closure[i2].dot_offset] == partition_sym) {
+                  closure[i2].dot_offset++;
+                  partition.push(closure[i2]);
+                } else {
+                  nclosure.push(closure[i2]);
+                }
+              }
+            }
+            if (partition.length > 0) {
+              partition.sort(this.sort_partition);
+              for (i2 = 0; i2 < global2.states.length; i2++) {
+                if (this.item_set_equal(global2.states[i2].kernel, partition)) {
+                  break;
+                }
+              }
+              if (i2 == global2.states.length) {
+                ns = this.create_state();
+                ns.kernel = partition;
+              }
+              tmp_cnt = 0;
+              cnt = 0;
+              for (j = 0; j < partition.length; j++) {
+                tmp_cnt += global2.states[i2].kernel[j].lookahead.length;
+                global2.states[i2].kernel[j].lookahead = util.union(
+                  global2.states[i2].kernel[j].lookahead,
+                  partition[j].lookahead
+                );
+                cnt += global2.states[i2].kernel[j].lookahead.length;
+              }
+              if (tmp_cnt != cnt) {
+                global2.states[i2].done = false;
+              }
+              if (!global2.states[s].closed) {
+                for (j = 0; j < partition.length; j++) {
+                  if (partition[j].dot_offset - 1 < global2.productions[partition[j].prod].rhs.length) {
+                    if (global2.symbols[global2.productions[partition[j].prod].rhs[partition[j].dot_offset - 1]].kind == SYM.TERM) {
+                      global2.states[s].actionrow = this.add_table_entry(
+                        global2.states[s].actionrow,
+                        global2.productions[partition[j].prod].rhs[partition[j].dot_offset - 1],
+                        i2
+                      );
+                      global2.shifts++;
+                    } else {
+                      global2.states[s].gotorow = this.add_table_entry(
+                        global2.states[s].gotorow,
+                        global2.productions[partition[j].prod].rhs[partition[j].dot_offset - 1],
+                        i2
+                      );
+                      global2.gotos++;
+                    }
+                  }
+                }
+              }
+            }
+            closure = nclosure;
+          }
+          global2.states[s].closed = true;
+        };
+        jscc.tabgen.prototype.do_reductions = function(s) {
+          var n, i2, j, ex, act, output_warning, item_set;
+          var reds = [];
+          var max = 0, count3;
+          for (n = 0; n < 2; n++) {
+            if (!n) {
+              item_set = global2.states[s].kernel;
+            } else {
+              item_set = global2.states[s].epsilon;
+            }
+            for (i2 = 0; i2 < item_set.length; i2++) {
+              if (item_set[i2].dot_offset == global2.productions[item_set[i2].prod].rhs.length) {
+                for (j = 0; j < item_set[i2].lookahead.length; j++) {
+                  output_warning = true;
+                  ex = this.get_table_entry(global2.states[s].actionrow, item_set[i2].lookahead[j]);
+                  if (ex == void 0) {
+                    act = -1 * item_set[i2].prod;
+                    global2.states[s].actionrow = this.add_table_entry(
+                      global2.states[s].actionrow,
+                      item_set[i2].lookahead[j],
+                      act
+                    );
+                    global2.reduces++;
+                  } else {
+                    act = ex;
+                    var warning = "";
+                    if (ex > 0) {
+                      if (global2.symbols[item_set[i2].lookahead[j]].level > 0 || global2.productions[item_set[i2].prod].level > 0) {
+                        if (global2.symbols[item_set[i2].lookahead[j]].level == global2.productions[item_set[i2].prod].level) {
+                          if (global2.symbols[item_set[i2].lookahead[j]].associativity == ASSOC.LEFT) {
+                            act = -1 * item_set[i2].prod;
+                          } else if (global2.symbols[item_set[i2].lookahead[j]].associativity == ASSOC.NOASSOC) {
+                            this.remove_table_entry(global2.states[s].actionrow, item_set[i2].lookahead[j]);
+                            log3.warn(
+                              "Removing nonassociative symbol '" + global2.symbols[item_set[i2].lookahead[j]].label + "' in state " + s
+                            );
+                            output_warning = false;
+                          }
+                        } else {
+                          if (global2.symbols[item_set[i2].lookahead[j]].level < global2.productions[item_set[i2].prod].level) {
+                            act = -1 * item_set[i2].prod;
+                          }
+                        }
+                      }
+                      warning = "Shift";
+                    } else {
+                      act = act * -1 < item_set[i2].prod ? act : -1 * item_set[i2].prod;
+                      warning = "Reduce";
+                    }
+                    warning += "-reduce conflict on symbol '" + global2.symbols[item_set[i2].lookahead[j]].label + "' in state " + s;
+                    warning += "\n         Conflict resolved by " + (act <= 0 ? "reducing with production" : "shifting to state") + " " + (act <= 0 ? act * -1 : act);
+                    if (output_warning) {
+                      log3.warn(warning);
+                    }
+                    if (act != ex) {
+                      this.update_table_entry(global2.states[s].actionrow, item_set[i2].lookahead[j], act);
+                    }
+                  }
+                }
+              }
+            }
+          }
+          global2.states[s].def_act = -1;
+          for (i2 = 0; i2 < reds.length; i2++) {
+            for (j = 0, count3 = 0; j < reds.length; j++) {
+              if (reds[j] == reds[i2]) {
+                count3++;
+              }
+            }
+            if (max < count3) {
+              max = count3;
+              global2.states[s].def_act = reds[i2];
+            }
+          }
+          if (global2.states[s].def_act >= 0) {
+            do {
+              count3 = global2.states[s].actionrow.length;
+              for (i2 = 0; i2 < global2.states[s].actionrow.length; i2++) {
+                if (global2.states[s].actionrow[i2][1] == global2.states[s].def_act * -1) {
+                  global2.states[s].actionrow.splice(i2, 1);
+                }
+              }
+            } while (count3 != global2.states[s].actionrow.length);
+          }
+        };
+        jscc.tabgen.prototype.lalr1_parse_table = function(debug3) {
+          var i2, item, s;
+          item = this.create_item(0);
+          s = this.create_symbol("$", SYM.TERM, SPECIAL.EOF);
+          item.lookahead.push(s);
+          s = this.create_state();
+          s.kernel.push(item);
+          while ((i2 = this.get_undone_state()) >= 0) {
+            global2.states[i2].done = true;
+            this.lalr1_closure(i2);
+          }
+          for (i2 = 0; i2 < global2.states.length; i2++) {
+            this.do_reductions(i2);
+          }
+          if (debug3) {
+            for (i2 = 0; i2 < global2.states.length; i2++) {
+              debugFunctions.print_item_set(
+                global2.exec_mode == EXEC.CONSOLE ? MODE_GEN.TEXT : MODE_GEN.HTML,
+                "states[" + i2 + "].kernel",
+                global2.states[i2].kernel
+              );
+              debugFunctions.print_item_set(
+                global2.exec_mode == EXEC.CONSOLE ? MODE_GEN.TEXT : MODE_GEN.HTML,
+                "states[" + i2 + "].epsilon",
+                global2.states[i2].epsilon
+              );
+            }
+            log3.debug(global2.states.length + " States created.");
+          }
+        };
+        return new jscc.tabgen();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/printtab", [
+          "require",
+          "./global",
+          "./tabgen",
+          "./log/log",
+          "./enums/MODE_GEN",
+          "./enums/SYM",
+          "./enums/SPECIAL"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccprinttab = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.printtab}
+       */
+      function(require3, others) {
+        var log3, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), tabgen = (
+          /** @type {jscc.tabgen} */
+          require3("./tabgen")
+        ), MODE_GEN = require3("./enums/MODE_GEN"), SYM = require3("./enums/SYM"), SPECIAL = require3("./enums/SPECIAL");
+        (function() {
+          if (false) {
+            log3 = /** @type {jscc.log} */
+            require3("./log/logNode");
+          } else {
+            log3 = /** @type {jscc.log} */
+            require3("./log/log");
+          }
+        })();
+        jscc.printtab = function() {
+        };
+        jscc.printtab.prototype = {
+          /**
+           * Prints the parse tables in a desired format.
+           * @param {(jscc.enums.MODE_GEN|string)} mode - The output mode.
+           * This can be either {@link jscc.enums.MODE_GEN.JS} to create JavaScript/
+           * JScript code as output or {@link jscc.enums.MODE_GEN.HTML} to create
+           * HTML-tables as output (the HTML-tables are formatted to
+           * look nice with the JS/CC Web Environment).
+           * @returns {string} The code to be printed to a file or
+           * website.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          print_parse_tables: function(mode) {
+            var code3 = "";
+            var i2, j, deepest = 0, val2;
+            switch (mode) {
+              case MODE_GEN.HTML:
+              case "html":
+                code3 += '<table class="print" cellpadding="0" cellspacing="0">';
+                code3 += "<tr>";
+                code3 += '<td class="tabtitle" colspan="2">Pop-Table</td>';
+                code3 += "</tr>";
+                code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">Left-hand side</td>';
+                code3 += '<td class="coltitle">Number of symbols to pop</td>';
+                code3 += "</tr>";
+                for (i2 = 0; i2 < global2.productions.length; i2++) {
+                  code3 += "<tr>";
+                  code3 += '<td style="border-right: 1px solid lightgray;">' + global2.productions[i2].lhs + "</td>";
+                  code3 += "<td>" + global2.productions[i2].rhs.length + "</td>";
+                  code3 += "</tr>";
+                }
+                code3 += "</table>";
+                for (i2 = 0; i2 < global2.symbols.length; i2++) {
+                  if (global2.symbols[i2].kind == SYM.TERM) {
+                    deepest++;
+                  }
+                }
+                code3 += '<table class="print" cellpadding="0" cellspacing="0">';
+                code3 += "<tr>";
+                code3 += '<td class="tabtitle" colspan="' + (deepest + 1) + '">Action-Table</td>';
+                code3 += "</tr>";
+                code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">State</td>';
+                for (i2 = 0; i2 < global2.symbols.length; i2++) {
+                  if (global2.symbols[i2].kind == SYM.TERM) {
+                    code3 += "<td><b>" + global2.symbols[i2].label + "</b></td>";
+                  }
+                }
+                code3 += "</tr>";
+                for (i2 = 0; i2 < global2.states.length; i2++) {
+                  code3 += "<tr>";
+                  code3 += '<td class="coltitle" style="border-right: 1px solid lightgray;">' + i2 + "</td>";
+                  for (j = 0; j < global2.symbols.length; j++) {
+                    if (global2.symbols[j].kind == SYM.TERM) {
+                      code3 += "<td>";
+                      if ((val2 = tabgen.get_table_entry(global2.states[i2].actionrow, j)) != void 0) {
+                        if (val2 <= 0) {
+                          code3 += "r" + val2 * -1;
+                        } else {
+                          code3 += "s" + val2;
+                        }
+                      }
+                      code3 += "</td>";
+                    }
+                  }
+                  code3 += "</tr>";
+                }
+                code3 += "</table>";
+                for (i2 = 0; i2 < global2.symbols.length; i2++) {
+                  if (global2.symbols[i2].kind == SYM.NONTERM) {
+                    deepest++;
+                  }
+                }
+                code3 += '<table class="print" cellpadding="0" cellspacing="0">';
+                code3 += "<tr>";
+                code3 += '<td class="tabtitle" colspan="' + (deepest + 1) + '">Goto-Table</td>';
+                code3 += "</tr>";
+                code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">State</td>';
+                for (i2 = 0; i2 < global2.symbols.length; i2++) {
+                  if (global2.symbols[i2].kind == SYM.NONTERM) {
+                    code3 += "<td>" + global2.symbols[i2].label + "</td>";
+                  }
+                }
+                code3 += "</tr>";
+                for (i2 = 0; i2 < global2.states.length; i2++) {
+                  code3 += "<tr>";
+                  code3 += '<td class="coltitle" style="border-right: 1px solid lightgray;">' + i2 + "</td>";
+                  for (j = 0; j < global2.symbols.length; j++) {
+                    if (global2.symbols[j].kind == SYM.NONTERM) {
+                      code3 += "<td>";
+                      if ((val2 = tabgen.get_table_entry(global2.states[i2].gotorow, j)) != void 0) {
+                        code3 += val2;
+                      }
+                      code3 += "</td>";
+                    }
+                  }
+                  code3 += "</tr>";
+                }
+                code3 += "</table>";
+                code3 += '<table class="print" cellpadding="0" cellspacing="0">';
+                code3 += "<tr>";
+                code3 += '<td class="tabtitle" colspan="2">Default Actions Table</td>';
+                code3 += "</tr>";
+                code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">Left-hand side</td>';
+                code3 += '<td class="coltitle">Number of symbols to pop</td>';
+                code3 += "</tr>";
+                for (i2 = 0; i2 < global2.states.length; i2++) {
+                  code3 += "<tr>";
+                  code3 += '<td style="border-right: 1px solid lightgray;">State ' + i2 + "</td>";
+                  code3 += "<td>" + (global2.states[i2].def_act < 0 ? "(none)" : global2.states[i2].def_act) + "</td>";
+                  code3 += "</tr>";
+                }
+                code3 += "</table>";
+                break;
+              case MODE_GEN.JS:
+              case "js":
+                var pop_tab_json = [];
+                for (i2 = 0; i2 < global2.productions.length; i2++) {
+                  pop_tab_json.push([global2.productions[i2].lhs, global2.productions[i2].rhs.length]);
+                }
+                code3 += "\nvar pop_tab = " + JSON.stringify(pop_tab_json) + ";\n";
+                var act_tab_json = [];
+                for (i2 = 0; i2 < global2.states.length; i2++) {
+                  var act_tab_json_item = [];
+                  for (j = 0; j < global2.states[i2].actionrow.length; j++) {
+                    act_tab_json_item.push(global2.states[i2].actionrow[j].symbol, global2.states[i2].actionrow[j].action);
+                  }
+                  act_tab_json.push(act_tab_json_item);
+                }
+                code3 += "\n/** @type {!Array<!Array<number>>} */\nvar act_tab =" + JSON.stringify(act_tab_json) + ";\n";
+                var goto_tab_json = [];
+                for (i2 = 0; i2 < global2.states.length; i2++) {
+                  var goto_tab_json_item = [];
+                  for (j = 0; j < global2.states[i2].gotorow.length; j++) {
+                    goto_tab_json_item.push(global2.states[i2].gotorow[j].symbol, global2.states[i2].gotorow[j].action);
+                  }
+                  goto_tab_json.push(goto_tab_json_item);
+                }
+                code3 += "\nvar goto_tab =" + JSON.stringify(goto_tab_json) + ";\n";
+                var defact_tab_json = [];
+                for (i2 = 0; i2 < global2.states.length; i2++) {
+                  defact_tab_json.push(global2.states[i2].def_act);
+                }
+                code3 += "\nvar defect_tab =" + JSON.stringify(defact_tab_json) + ";\n";
+                break;
+            }
+            return code3;
+          },
+          /**
+           *
+           * @param {Array<jscc.classes.Dfa>} dfa_states
+           * @returns {Array}
+           * @memberof jscc.printtab
+           */
+          pack_dfa: function(dfa_states) {
+            var PL = /* @__PURE__ */ __name(function(line) {
+              var out = [];
+              while (line.length) {
+                var first = line.shift();
+                var second = line.shift();
+                if (first == second) {
+                  out.push(first);
+                } else {
+                  out.push([first, second]);
+                }
+              }
+              return out;
+            }, "PL");
+            var json = [];
+            for (var i2 = 0; i2 < dfa_states.length; i2++) {
+              ;
+              (function(i3) {
+                var line = [];
+                for (var j = 0; j < dfa_states[i3].line.length; j++) {
+                  if (dfa_states[i3].line[j] != -1) {
+                    line[j] = dfa_states[i3].line[j];
+                  }
+                }
+                line = PL(PL(PL(PL(PL(PL(PL(PL(line))))))));
+                json.push({
+                  line,
+                  accept: dfa_states[i3].accept
+                });
+              })(i2);
+            }
+            return json;
+          },
+          /**
+           * Generates a state-machine construction from the deterministic
+           * finite automata.
+           * @param {Array<jscc.classes.Dfa>} dfa_states - The dfa state machine for
+           * the lexing function.
+           * @returns {string} The code to be inserted into the static
+           * parser driver framework.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          print_dfa_table: function(dfa_states) {
+            var json = [], code3;
+            for (var i2 = 0; i2 < dfa_states.length; i2++) {
+              ;
+              (function(i3) {
+                var line = {};
+                for (var j = 0; j < dfa_states[i3].line.length; j++) {
+                  if (dfa_states[i3].line[j] != -1) {
+                    line[j] = dfa_states[i3].line[j];
+                  }
+                }
+                json.push({
+                  line,
+                  accept: dfa_states[i3].accept
+                });
+              })(i2);
+            }
+            code3 = JSON.stringify(this.pack_dfa(dfa_states));
+            return code3.replace(/"([A-Za-z_][A-Za-z0-9_]*)"\s*:/g, "$1:").replace(/,/g, ",\n	");
+          },
+          /**
+           * Prints all symbol labels into an array; this is used for
+           * error reporting purposes only in the resulting parser.
+           * @returns {string} The code to be inserted into the
+           * static parser driver framework.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          print_symbol_labels: function() {
+            for (var i2 = 0, arr = []; i2 < global2.symbols.length; i2++) {
+              arr.push(global2.symbols[i2].label);
+            }
+            return "var labels = " + JSON.stringify(global2.symbols) + ";\n\n";
+          },
+          /**
+           * Prints the terminal symbol actions to be associated with a
+           * terminal definition into a switch-case-construct.
+           * @returns {string} The code to be inserted into the static
+           * parser driver framework.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          print_term_actions: function() {
+            var code3 = "({\n";
+            var re = /%match|%offset|%source/;
+            var i2, j, k;
+            var semcode;
+            var strmatch;
+            for (i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].kind == SYM.TERM && global2.symbols[i2].code != "") {
+                code3 += '   "' + i2 + '":';
+                code3 += " /** @suppress {uselessCode} */ function(PCB){";
+                semcode = "";
+                for (j = 0, k = 0; j < global2.symbols[i2].code.length; j++, k++) {
+                  strmatch = re.exec(global2.symbols[i2].code.substr(j, global2.symbols[i2].code.length));
+                  if (strmatch && strmatch.index == 0) {
+                    if (strmatch[0] == "%match") {
+                      semcode += "PCB.att";
+                    } else if (strmatch[0] == "%offset") {
+                      semcode += "( PCB.offset - PCB.att.length )";
+                    } else if (strmatch[0] == "%source") {
+                      semcode += "PCB.src";
+                    }
+                    j += strmatch[0].length - 1;
+                    k = semcode.length;
+                  } else {
+                    semcode += global2.symbols[i2].code.charAt(j);
+                  }
+                }
+                code3 += "       " + semcode + "\n";
+                code3 += "       return PCB.att;},\n";
+              }
+            }
+            code3 += "\n})";
+            return code3;
+          },
+          /**
+           * Generates a switch-case-construction that contains all
+           * the semantic actions.  This construction should then be
+           * generated into the static parser driver template.
+           * @returns {string} The code to be inserted into the static
+           * parser driver framework.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          print_actions: function() {
+            var code3 = "";
+            var re = /%[0-9]+|%%/;
+            var semcode, strmatch;
+            var i2, j, k, idx, src;
+            code3 += "[";
+            for (i2 = 0; i2 < global2.productions.length; i2++) {
+              src = global2.productions[i2].code;
+              semcode = "function(){\n";
+              semcode += "var rval;";
+              for (j = 0, k = 0; j < src.length; j++, k++) {
+                strmatch = re.exec(src.substr(j, src.length));
+                if (strmatch && strmatch.index == 0) {
+                  if (strmatch[0] == "%%") {
+                    semcode += "rval";
+                  } else {
+                    idx = parseInt(strmatch[0].substr(1, strmatch[0].length), 10);
+                    idx = global2.productions[i2].rhs.length - idx;
+                    if (idx < 0) {
+                      var badProduction = global2.productions[i2], badLeftSymbol = global2.symbols[badProduction.lhs];
+                      if (global2.productions[i2].rhs.length == 0) {
+                        log3.error(
+                          "Default code was used for an empty right-hand side of a production, or a wildcard " + strmatch[0] + " was used explicitly.  The faulty left-hand side symbol label is '" + badLeftSymbol.label + "'."
+                        );
+                      } else {
+                        log3.error(
+                          "The wildcard " + strmatch[0] + " was used, but there are only " + global2.productions[i2].rhs.length + " symbols on the right-hand side of the production.  The faulty left-hand side symbol label is '" + badLeftSymbol.label + "'."
+                        );
+                      }
+                      semcode += ' "" ';
+                    } else {
+                      semcode += " arguments[" + idx + "] ";
+                    }
+                  }
+                  j += strmatch[0].length - 1;
+                  k = semcode.length;
+                } else {
+                  semcode += src.charAt(j);
+                }
+              }
+              code3 += "       " + semcode + "\nreturn rval;},\n";
+            }
+            code3 += "]";
+            return code3;
+          },
+          /**
+           * Returns the value of the eof-symbol.
+           * @returns {number} The id of the EOF-symbol.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          get_eof_symbol_id: function() {
+            var eof_id = -1;
+            for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].special == SPECIAL.EOF) {
+                eof_id = i2;
+                break;
+              }
+            }
+            if (eof_id == -1) {
+              log3.error("No EOF-symbol defined - This might not be possible (bug!)");
+            }
+            return eof_id;
+          },
+          /**
+           * Returns the value of the error-symbol.
+           * @returns {number} The id of the error-symbol.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          get_error_symbol_id: function() {
+            var error_id = -1;
+            for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].special == SPECIAL.ERROR) {
+                error_id = i2;
+                break;
+              }
+            }
+            if (error_id == -1) {
+              log3.error("No ERROR-symbol defined - This might not be possible (bug!)");
+            }
+            return error_id;
+          },
+          /**
+           * Returns the ID of the whitespace-symbol.
+           * @returns {number} The id of the whitespace-symbol.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          get_whitespace_symbol_id: function() {
+            return global2.whitespace_token;
+          },
+          /**
+           * Returns the ID of a non-existing state.
+           * @returns {number} One greater than the length of the
+           * states array.
+           * @author Jan Max Meyer
+           * @memberof jscc.printtab
+           */
+          get_error_state: function() {
+            return global2.states.length + 1;
+          }
+        };
+        return new jscc.printtab();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/integrity", ["require", "./global", "./log/log", "./enums/SYM"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccintegrity = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.integrity}
+       */
+      function(require3, others) {
+        var log3, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), SYM = require3("./enums/SYM");
+        (function() {
+          if (false) {
+            log3 = /** @type {jscc.log} */
+            require3("./log/logNode");
+          } else {
+            log3 = /** @type {jscc.log} */
+            require3("./log/log");
+          }
+        })();
+        jscc.integrity = function() {
+        };
+        jscc.integrity.prototype = {
+          /**
+           * Checks the {@link jscc.global.symbols} array for
+           * nonterminating, undefined symbols.  Logs an error if
+           * any such symbols are found.
+           */
+          undef: function() {
+            for (var i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].kind == SYM.NONTERM && global2.symbols[i2].defined == false) {
+                log3.error('Call to undefined non-terminal "' + global2.symbols[i2].label + '"');
+              }
+            }
+          },
+          /**
+           * Checks the {@link jscc.global.symbols} and
+           * {@link jscc.global.productions} arrays for
+           * unreachable, nonterminating symbols.  Logs a warning
+           * if any such symbols are found.
+           */
+          unreachable: function() {
+            var stack = [];
+            var reachable = [];
+            var i2, j, k, l2;
+            for (i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].kind == SYM.NONTERM) {
+                break;
+              }
+            }
+            if (i2 == global2.symbols.length) {
+              return;
+            }
+            stack.push(i2);
+            reachable.push(i2);
+            while (stack.length > 0) {
+              i2 = stack.pop();
+              for (j = 0; j < global2.symbols[i2].prods.length; j++) {
+                for (k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
+                  if (global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].kind == SYM.NONTERM) {
+                    for (l2 = 0; l2 < reachable.length; l2++) {
+                      if (reachable[l2] == global2.productions[global2.symbols[i2].prods[j]].rhs[k]) {
+                        break;
+                      }
+                    }
+                    if (l2 == reachable.length) {
+                      stack.push(global2.productions[global2.symbols[i2].prods[j]].rhs[k]);
+                      reachable.push(global2.productions[global2.symbols[i2].prods[j]].rhs[k]);
+                    }
+                  }
+                }
+              }
+            }
+            for (i2 = 0; i2 < global2.symbols.length; i2++) {
+              if (global2.symbols[i2].kind == SYM.NONTERM) {
+                for (j = 0; j < reachable.length; j++) {
+                  if (reachable[j] == i2) {
+                    break;
+                  }
+                }
+                if (j == reachable.length) {
+                  log3.warn('Unreachable non-terminal "' + global2.symbols[i2].label + '"');
+                }
+              }
+            }
+          },
+          /**
+           * Checks the {@link jscc.global.states} array for
+           * states with no lookahead information.  Logs an error
+           * if any such states are found.
+           */
+          check_empty_states: function() {
+            for (var i2 = 0; i2 < global2.states.length; i2++) {
+              if (global2.states[i2].actionrow.length == 0 && global2.states[i2].def_act == -1) {
+                log3.error("No lookaheads in state " + i2 + ", watch for endless list definitions");
+              }
+            }
+          }
+        };
+        return new jscc.integrity();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/lexdbg", ["require", "./global", "./io/io", "./enums/EDGE"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jscclexdbg = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.lexdbg}
+       */
+      function(require3, others) {
+        var io, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), EDGE = require3("./enums/EDGE");
+        (function() {
+          if (false) {
+            io = /** @type {jscc.io} */
+            require3("./io/ioNode");
+          } else {
+            io = /** @type {jscc.io} */
+            require3("./io/io");
+          }
+        })();
+        jscc.lexdbg = function() {
+        };
+        jscc.lexdbg.prototype = {
+          /**
+           * Prints debugging information about the contents of the
+           * {@link jscc.global.nfa_states.value} array.
+           * @memberof jscc.lexdbg
+           */
+          print_nfa: function() {
+            io.write_debug("Pos	Type		follow		follow2		accept");
+            io.write_debug("-----------------------------------------------------------------------");
+            for (var i2 = 0; i2 < global2.nfa_states.value.length; i2++) {
+              io.write_debug(
+                i2 + "	" + (global2.nfa_states.value[i2].edge == EDGE.FREE ? "FREE" : global2.nfa_states.value[i2].edge == EDGE.EPSILON ? "EPSILON" : "CHAR") + "		" + (global2.nfa_states.value[i2].edge != EDGE.FREE && global2.nfa_states.value[i2].follow > -1 ? global2.nfa_states.value[i2].follow : "") + "		" + (global2.nfa_states.value[i2].edge != EDGE.FREE && global2.nfa_states.value[i2].follow2 > -1 ? global2.nfa_states.value[i2].follow2 : "") + "		" + (global2.nfa_states.value[i2].edge != EDGE.FREE && global2.nfa_states.value[i2].accept > -1 ? global2.nfa_states.value[i2].accept : "")
+              );
+              if (global2.nfa_states.value[i2].edge == EDGE.CHAR) {
+                var chars = "";
+                for (var j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++) {
+                  if (global2.nfa_states.value[i2].ccl.get(j)) {
+                    chars += String.fromCharCode(j);
+                    if (chars.length == 10) {
+                      io.write_debug("	" + chars);
+                      chars = "";
+                    }
+                  }
+                }
+                if (chars.length > 0) {
+                  io.write_debug("	" + chars);
+                }
+              }
+            }
+            io.write_debug("");
+          },
+          /**
+           * Prints debugging information about the provided array of
+           * Dfa objects.
+           * @param {Array<jscc.classes.Dfa>} dfa_states - The states for which to
+           * print debugging information.
+           * @memberof jscc.lexdbg
+           */
+          print_dfa: function(dfa_states) {
+            var str = "";
+            var chr_cnt = 0;
+            for (var i2 = 0; i2 < dfa_states.length; i2++) {
+              str = i2 + " => (";
+              chr_cnt = 0;
+              for (var j = 0; j < dfa_states[i2].line.length; j++) {
+                if (dfa_states[i2].line[j] > -1) {
+                  str += " >" + String.fromCharCode(j) + "<," + dfa_states[i2].line[j] + " ";
+                  chr_cnt++;
+                  if (chr_cnt % 5 == 0) {
+                    str += "\n       ";
+                  }
+                }
+              }
+              str += ") " + dfa_states[i2].accept;
+              io.write_debug(str);
+            }
+          }
+        };
+        return new jscc.lexdbg();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/Param", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccParam = factory();
+      }
+    })(exports, function() {
+      jscc.classes.Param = function(start, end) {
+        if (typeof start === "number") {
+          this.start = start;
+        }
+        if (typeof end === "number") {
+          this.end = end;
+        }
+      };
+      jscc.classes.Param.prototype.start = -1;
+      jscc.classes.Param.prototype.end = -1;
+      return jscc.classes.Param;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/regex", [
+          "require",
+          "./global",
+          "./log/log",
+          "./classes/Param",
+          "./classes/Nfa",
+          "./enums/EDGE"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccregex = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(string, number, boolean, number)}
+       */
+      function(require3, others) {
+        var first_nfa;
+        var last_nfa;
+        var log3, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), Param = (
+          /** @type {function(new:jscc.classes.Param, number=, number=)} */
+          require3("./classes/Param")
+        ), Nfa = (
+          /** @type {function(new:jscc.classes.Nfa, ?NfaOptions=)} */
+          require3("./classes/Nfa")
+        ), EDGE = require3("./enums/EDGE");
+        (function() {
+          if (false) {
+            log3 = /** @type {jscc.log} */
+            require3("./log/logNode");
+          } else {
+            log3 = /** @type {jscc.log} */
+            require3("./log/log");
+          }
+        })();
+        var __parse = function(eof, whitespace, error_token) {
+          var Continue = /* @__PURE__ */ __name(function() {
+            throw Continue;
+          }, "Continue");
+          var ReturnValue = /* @__PURE__ */ __name(function(value) {
+            Error.call(this);
+            this._value = value;
+          }, "ReturnValue");
+          ReturnValue.prototype = Object.create(Error.prototype);
+          ReturnValue.prototype.constructor = ReturnValue;
+          ReturnValue.prototype._value = null;
+          ReturnValue.prototype.valueOf = function() {
+            return this._value;
+          };
+          function Return(value) {
+            throw new ReturnValue(value);
+          }
+          __name(Return, "Return");
+          var TERMINAL_ACTIONS = /* @__PURE__ */ function() {
+            function emptyFn(PCB2) {
+              return PCB2.att;
+            }
+            __name(emptyFn, "emptyFn");
+            var actions = {};
+            return function(PCB2, match) {
+              try {
+                return (actions[match] || emptyFn)(PCB2);
+              } catch (e) {
+                if (e instanceof ReturnValue)
+                  return e.valueOf();
+                if (e == Continue)
+                  return Continue;
+                throw e;
+              }
+            };
+          }();
+          var DfaLex = /* @__PURE__ */ __name(function() {
+            this._dfaData = [
+              {
+                line: [
+                  [
+                    [
+                      [
+                        1,
+                        [
+                          [
+                            1,
+                            [
+                              [
+                                [2, 3],
+                                [4, 5]
+                              ],
+                              [1, [6, 1]]
+                            ]
+                          ],
+                          [1, [1, [1, [1, 7]]]]
+                        ]
+                      ],
+                      [
+                        [
+                          1,
+                          [
+                            1,
+                            [
+                              [1, [1, 8]],
+                              [[13, 9], 1]
+                            ]
+                          ]
+                        ],
+                        [1, [1, [1, [[10, 1], 1]]]]
+                      ]
+                    ],
+                    [1, [1, [1, [1, [1, [1, [1, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              { line: [], accept: 13 },
+              { line: [], accept: 6 },
+              { line: [], accept: 7 },
+              { line: [], accept: 3 },
+              { line: [], accept: 4 },
+              { line: [], accept: 10 },
+              { line: [], accept: 5 },
+              { line: [], accept: 8 },
+              { line: [], accept: 9 },
+              { line: [], accept: 2 },
+              { line: [], accept: 12 },
+              { line: [[[[null, [null, [12, [[12, null], null]]]], null], null]], accept: 11 },
+              {
+                line: [
+                  [
+                    [[11, [11, [12, [[12, 11], 11]]]], 11],
+                    [11, [11, [11, [11, [11, [11, [11, null]]]]]]]
+                  ]
+                ],
+                accept: 13
+              }
+            ];
+          }, "DfaLex");
+          DfaLex.prototype._dfaData = [];
+          DfaLex.prototype.match_pos = 0;
+          DfaLex.prototype.state = 0;
+          DfaLex.prototype.match = null;
+          DfaLex.prototype.exec = function(chr, pos) {
+            if (this.state !== null) {
+              if (typeof this.state !== "number" || this.state >= this._dfaData.length) {
+                this.state = null;
+                throw new Error("Invalid value for DfaLex.state at chr " + chr + " and pos " + pos);
+              }
+              var line = this._dfaData[this.state].line;
+              if (typeof line === "undefined" || line === null) {
+                var badState = this.state;
+                this.state = null;
+                throw new Error(
+                  "At chr " + chr + " and pos " + pos + ", DfaLex._dfaData[" + badState + "] appears to exist, but its line property is " + (typeof line === "undefined" ? "undefined." : "null.")
+                );
+              }
+              var p, st;
+              for (p = 1 << 8, st = line; p; p >>= 1) {
+                if ((chr & p) !== 0) {
+                  st = st[1];
+                } else {
+                  st = st[0];
+                }
+                if (typeof st === "undefined") {
+                  st = null;
+                }
+                if (st === null)
+                  break;
+                if (Array.isArray(st))
+                  continue;
+                break;
+              }
+              var ac = this._dfaData[this.state].accept;
+              this.state = /** @type {?number} */
+              st;
+              if (ac !== -1) {
+                this.match = /** @type{number} */
+                ac;
+                this.match_pos = pos;
+              }
+            }
+          };
+          var pop_tab = [
+            [0, 1],
+            [15, 1],
+            [14, 3],
+            [14, 1],
+            [16, 2],
+            [16, 1],
+            [17, 2],
+            [17, 2],
+            [17, 2],
+            [17, 1],
+            [18, 1],
+            [18, 1],
+            [18, 3],
+            [20, 3],
+            [20, 1],
+            [21, 2],
+            [21, 0],
+            [19, 1],
+            [19, 1],
+            [19, 1]
+          ];
+          var act_tab = [
+            [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
+            [],
+            [2, 14],
+            [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
+            [],
+            [5, 16, 4, 17, 3, 18],
+            [],
+            [],
+            [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
+            [],
+            [],
+            [],
+            [],
+            [7, 22, 2, 14],
+            [9, 24, 11, 9, 12, 10, 13, 11],
+            [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
+            [],
+            [],
+            []
+          ];
+          var goto_tab = [
+            [15, 1, 14, 2, 16, 3, 17, 4, 18, 5, 19, 6, 20, 7],
+            [],
+            [],
+            [17, 15, 18, 5, 19, 6, 20, 7],
+            [],
+            [],
+            [],
+            [],
+            [14, 19, 16, 3, 17, 4, 18, 5, 19, 6, 20, 7],
+            [],
+            [],
+            [],
+            [21, 20],
+            [],
+            [16, 21, 17, 4, 18, 5, 19, 6, 20, 7],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [19, 23],
+            [17, 15, 18, 5, 19, 6, 20, 7],
+            [],
+            [],
+            []
+          ];
+          var defact_tab = [-1, 0, 1, 3, 5, 9, 10, 11, -1, 17, 18, 19, 16, 14, -1, 4, 8, 7, 6, -1, -1, 2, 12, 15, 13];
+          var labels = [
+            {
+              label: "RegEx'",
+              kind: {},
+              prods: [0],
+              nullable: 0,
+              id: 0,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [6, 11, 12, 13, 8, 10]
+            },
+            {
+              label: "ERROR_RESYNC",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 1,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [1]
+            },
+            {
+              label: "|",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 2,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [2]
+            },
+            {
+              label: "*",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 3,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [3]
+            },
+            {
+              label: "+",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 4,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [4]
+            },
+            {
+              label: "?",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 5,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [5]
+            },
+            {
+              label: "(",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 6,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [6]
+            },
+            {
+              label: ")",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 7,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [7]
+            },
+            {
+              label: "[",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 8,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [8]
+            },
+            {
+              label: "]",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 9,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [9]
+            },
+            {
+              label: "ANY_CHAR",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 10,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [10]
+            },
+            {
+              label: "ASCII_CODE",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 11,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [11]
+            },
+            {
+              label: "ESCAPED_CHAR",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 12,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [12]
+            },
+            {
+              label: "ANY",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 13,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [13]
+            },
+            {
+              label: "Expression",
+              kind: {},
+              prods: [2, 3],
+              nullable: 0,
+              id: 14,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [6, 11, 12, 13, 8, 10]
+            },
+            {
+              label: "RegEx",
+              kind: {},
+              prods: [1],
+              nullable: 0,
+              id: 15,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [6, 11, 12, 13, 8, 10]
+            },
+            {
+              label: "Catenation",
+              kind: {},
+              prods: [4, 5],
+              nullable: 0,
+              id: 16,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [6, 11, 12, 13, 8, 10]
+            },
+            {
+              label: "Factor",
+              kind: {},
+              prods: [6, 7, 8, 9],
+              nullable: 0,
+              id: 17,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [6, 11, 12, 13, 8, 10]
+            },
+            {
+              label: "Term",
+              kind: {},
+              prods: [10, 11, 12],
+              nullable: 0,
+              id: 18,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [6, 11, 12, 13, 8, 10]
+            },
+            {
+              label: "Character",
+              kind: {},
+              prods: [17, 18, 19],
+              nullable: 0,
+              id: 19,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [11, 12, 13]
+            },
+            {
+              label: "CharacterSet",
+              kind: {},
+              prods: [13, 14],
+              nullable: 0,
+              id: 20,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [8, 10]
+            },
+            {
+              label: "CharClass",
+              kind: {},
+              prods: [15, 16],
+              nullable: 1,
+              id: 21,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [11, 12, 13]
+            },
+            {
+              label: "$",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 22,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [22]
+            }
+          ];
+          var ACTIONS = /* @__PURE__ */ function() {
+            var PCB2 = {};
+            var actions = [
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param();
+                global2.nfa_states.value[first_nfa].follow = arguments[0].start;
+                last_nfa = arguments[0].end;
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
+                global2.nfa_states.value[rval.start].follow = arguments[2].start;
+                global2.nfa_states.value[rval.start].follow2 = arguments[0].start;
+                global2.nfa_states.value[arguments[2].end].follow = rval.end;
+                global2.nfa_states.value[arguments[0].end].follow = rval.end;
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                var weight = global2.nfa_states.value[arguments[1].end].weight;
+                global2.nfa_states.value[arguments[1].end] = new Nfa(global2.nfa_states.value[arguments[0].start]);
+                global2.nfa_states.value[arguments[1].end].weight = weight;
+                global2.nfa_states.value[arguments[0].start].edge = EDGE.FREE;
+                arguments[1].end = arguments[0].end;
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
+                global2.nfa_states.value[rval.start].follow = arguments[1].start;
+                global2.nfa_states.value[arguments[1].end].follow = rval.end;
+                global2.nfa_states.value[rval.start].follow2 = rval.end;
+                global2.nfa_states.value[arguments[1].end].follow2 = arguments[1].start;
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
+                global2.nfa_states.value[rval.start].follow = arguments[1].start;
+                global2.nfa_states.value[arguments[1].end].follow = rval.end;
+                global2.nfa_states.value[arguments[1].end].follow2 = arguments[1].start;
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
+                global2.nfa_states.value[rval.start].follow = arguments[1].start;
+                global2.nfa_states.value[rval.start].follow2 = rval.end;
+                global2.nfa_states.value[arguments[1].end].follow = rval.end;
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param();
+                rval.start = global2.nfa_states.create();
+                rval.end = global2.nfa_states.value[rval.start].follow = global2.nfa_states.create();
+                global2.nfa_states.value[rval.start].edge = EDGE.CHAR;
+                global2.nfa_states.value[rval.start].ccl.set(arguments[0].charCodeAt(0), true);
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                var negate = false;
+                var i2 = 0, j, start;
+                rval = new Param();
+                rval.start = global2.nfa_states.create();
+                rval.end = global2.nfa_states.value[rval.start].follow = global2.nfa_states.create();
+                global2.nfa_states.value[rval.start].edge = EDGE.CHAR;
+                if (arguments[1].charAt(i2) == "^") {
+                  negate = true;
+                  for (j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++)
+                    global2.nfa_states.value[rval.start].ccl.set(j, true);
+                  i2++;
+                }
+                for (; i2 < arguments[1].length; i2++) {
+                  if (arguments[1].charAt(i2 + 1) == "-" && i2 + 2 < arguments[1].length) {
+                    i2++;
+                    for (j = arguments[1].charCodeAt(i2 - 1); j < arguments[1].charCodeAt(i2 + 1); j++)
+                      global2.nfa_states.value[rval.start].ccl.set(j, !negate);
+                  } else
+                    global2.nfa_states.value[rval.start].ccl.set(arguments[1].charCodeAt(i2), !negate);
+                }
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = new Param();
+                rval.start = global2.nfa_states.create();
+                rval.end = global2.nfa_states.value[rval.start].follow = global2.nfa_states.create();
+                global2.nfa_states.value[rval.start].edge = EDGE.CHAR;
+                for (var i2 = global2.MIN_CHAR; i2 < global2.MAX_CHAR; i2++)
+                  global2.nfa_states.value[rval.start].ccl.set(i2, true);
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1] + arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = "";
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = String.fromCharCode(arguments[0].substr(1));
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = { n: "\n", r: "\r", t: "	", a: "a" }[arguments[0].substr(1)] || arguments[0].substr(1);
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              }
+            ];
+            return function(act, vstack, pcb) {
+              try {
+                PCB2 = pcb;
+                return actions[act].apply(null, vstack);
+              } catch (e) {
+                if (e instanceof ReturnValue)
+                  return e.valueOf();
+                throw e;
+              }
+            };
+          }();
+          function get_act(top, la) {
+            for (var i2 = 0; i2 < act_tab[top].length; i2 += 2)
+              if (act_tab[top][i2] === la)
+                return act_tab[top][i2 + 1];
+            return null;
+          }
+          __name(get_act, "get_act");
+          function get_goto(top, pop) {
+            for (var i2 = 0; i2 < goto_tab[top].length; i2 += 2)
+              if (goto_tab[top][i2] === pop)
+                return goto_tab[top][i2 + 1];
+            return null;
+          }
+          __name(get_goto, "get_goto");
+          var PcbClass = /* @__PURE__ */ __name(function(src) {
+            this.src = src;
+          }, "PcbClass");
+          PcbClass.prototype.line = 1;
+          PcbClass.prototype.column = 1;
+          PcbClass.prototype.offset = 0;
+          PcbClass.prototype.error_step = 0;
+          PcbClass.prototype.src = "";
+          PcbClass.prototype.att = "";
+          PcbClass.prototype.la = null;
+          PcbClass.prototype.act = null;
+          PcbClass.prototype.lex = function() {
+            var start, pos, chr, actionResult;
+            var dfa = new DfaLex();
+            var loop = true;
+            while (loop) {
+              dfa.match_pos = 0;
+              pos = this.offset + 1;
+              do {
+                pos--;
+                dfa.state = 0;
+                dfa.match = null;
+                start = pos;
+                if (this.src.length <= start) {
+                  this.la = eof;
+                  return eof;
+                }
+                do {
+                  chr = this.src.charCodeAt(pos);
+                  dfa.exec(chr, pos);
+                  if (dfa.state !== null)
+                    this.accountChar(chr);
+                  pos++;
+                } while (dfa.state !== null);
+              } while (whitespace > -1 && dfa.match === whitespace);
+              if (dfa.match !== null) {
+                this.att = this.src.slice(start, dfa.match_pos);
+                this.offset = dfa.match_pos;
+                actionResult = TERMINAL_ACTIONS(this, dfa.match);
+                if (dfa.state !== null)
+                  this.accountChar(chr);
+                if (actionResult === Continue)
+                  continue;
+                this.att = actionResult;
+              } else {
+                this.att = "";
+              }
+              loop = false;
+            }
+            this.la = dfa.match;
+            return this.la;
+          };
+          PcbClass.prototype.accountChar = function(chr) {
+            if (chr === 10) {
+              this.line++;
+              this.column = 0;
+            }
+            this.column++;
+          };
+          function parse3(src, err_off, err_la) {
+            var sstack = [0];
+            var vstack = [0];
+            var err_cnt = 0;
+            var rval;
+            var act;
+            var i2 = 0;
+            var PCB2 = new PcbClass(src);
+            err_off = err_off || [];
+            err_la = err_la || [];
+            PCB2.lex();
+            while (true) {
+              PCB2.act = get_act(sstack[0], PCB2.la);
+              if (PCB2.act === null && defact_tab[sstack[0]] >= 0)
+                PCB2.act = -defact_tab[sstack[0]];
+              if (PCB2.act === null) {
+                if (PCB2.error_step === 0) {
+                  err_cnt++;
+                  err_off.unshift(PCB2.offset - PCB2.att.length);
+                  err_la.unshift([]);
+                  for (i2 = 0; i2 < act_tab[sstack[0]].length; i2 += 2)
+                    err_la[0].push(labels[act_tab[sstack[0]][i2]]);
+                }
+                while (sstack.length > 1 && PCB2.act === null) {
+                  sstack.shift();
+                  vstack.shift();
+                  PCB2.act = get_act(sstack[0], PCB2.la);
+                  if (PCB2.act === error_token) {
+                    sstack.unshift(PCB2.act);
+                    vstack.unshift("");
+                  }
+                }
+                if (sstack.length > 1 && PCB2.act !== null) {
+                  while (PCB2.la !== eof) {
+                    PCB2.act = act_tab[sstack[0]][i2 + 1];
+                    if (PCB2.act != null)
+                      break;
+                    while (PCB2.lex() != null)
+                      PCB2.offset++;
+                  }
+                }
+                if (PCB2.act === null || PCB2.la === eof) {
+                  break;
+                }
+                PCB2.error_step = 3;
+              }
+              if (PCB2.act > 0) {
+                sstack.unshift(PCB2.act);
+                vstack.unshift(PCB2.att);
+                PCB2.lex();
+                if (PCB2.error_step > 0)
+                  PCB2.error_step--;
+              } else {
+                act = -PCB2.act;
+                rval = ACTIONS(act, vstack, PCB2);
+                sstack.splice(0, pop_tab[act][1]);
+                vstack.splice(0, pop_tab[act][1]);
+                PCB2.act = get_goto(sstack[0], pop_tab[act][0]);
+                if (act === 0)
+                  break;
+                sstack.unshift(PCB2.act);
+                vstack.unshift(rval);
+              }
+            }
+            return err_cnt;
+          }
+          __name(parse3, "parse");
+          return parse3;
+        }(22, -1, 1);
+        function compile_regex(str, accept, case_insensitive, cur_line) {
+          var i2, j;
+          var weight = 0;
+          var true_edges = 0;
+          var error_offsets = [];
+          var error_expects = [];
+          var error_count = 0;
+          if (str == "")
+            return;
+          cur_line = cur_line || 0;
+          first_nfa = global2.nfa_states.create();
+          if ((error_count = __parse(str, error_offsets, error_expects)) == 0) {
+            if (case_insensitive) {
+              for (i2 = 0; i2 < global2.nfa_states.value.length; i2++) {
+                if (global2.nfa_states.value[i2].edge == EDGE.CHAR) {
+                  for (j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++) {
+                    if (global2.nfa_states.value[i2].ccl.get(j)) {
+                      global2.nfa_states.value[i2].ccl.set(String.fromCharCode(j).toUpperCase().charCodeAt(0), true);
+                      global2.nfa_states.value[i2].ccl.set(String.fromCharCode(j).toLowerCase().charCodeAt(0), true);
+                    }
+                  }
+                }
+              }
+            }
+            global2.nfa_states.value[last_nfa].accept = accept;
+            global2.nfa_states.value[last_nfa].weight = global2.regex_weight++;
+            if (first_nfa > 0) {
+              i2 = 0;
+              while (global2.nfa_states.value[i2].follow2 != -1)
+                i2 = global2.nfa_states.value[i2].follow2;
+              global2.nfa_states.value[i2].follow2 = first_nfa;
+            }
+          } else {
+            for (i2 = 0; i2 < error_count; i2++) {
+              var spaces = "";
+              for (j = 0; j < error_offsets[i2]; j++)
+                spaces += " ";
+              log3.error(
+                "Regular expression:\n	" + str + "\n	" + spaces + "^ expecting " + error_expects[i2].join() + " on line " + cur_line
+              );
+            }
+          }
+        }
+        __name(compile_regex, "compile_regex");
+        return compile_regex;
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/parse", [
+          "require",
+          "./global",
+          "./regex",
+          "./tabgen",
+          "./log/log",
+          "./classes/Production",
+          "./enums/ASSOC",
+          "./enums/SYM",
+          "./enums/SPECIAL"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccparse = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(string, string=):number}
+       */
+      function(require3, others) {
+        var log3, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), compile_regex = (
+          /** @type {function(string, number, boolean, number)} */
+          require3("./regex")
+        ), tabgen = (
+          /** @type {jscc.tabgen} */
+          require3("./tabgen")
+        ), Production = (
+          /** @type {function(new:jscc.classes.Production, ?ProductionOptions=)} */
+          require3("./classes/Production")
+        ), ASSOC = require3("./enums/ASSOC"), SYM = require3("./enums/SYM"), SPECIAL = require3("./enums/SPECIAL");
+        (function() {
+          if (false) {
+            log3 = /** @type {jscc.log} */
+            require3("./log/logNode");
+          } else {
+            log3 = /** @type {jscc.log} */
+            require3("./log/log");
+          }
+        })();
+        var first_lhs;
+        var cur_line;
+        function line_error(line, txt) {
+          log3.error("line " + line + ": " + txt);
+        }
+        __name(line_error, "line_error");
+        var __parse = function(eof, whitespace, error_token) {
+          var Continue = /* @__PURE__ */ __name(function() {
+            throw Continue;
+          }, "Continue");
+          var ReturnValue = /* @__PURE__ */ __name(function(value) {
+            Error.call(this);
+            this._value = value;
+          }, "ReturnValue");
+          ReturnValue.prototype = Object.create(Error.prototype);
+          ReturnValue.prototype.constructor = ReturnValue;
+          ReturnValue.prototype._value = null;
+          ReturnValue.prototype.valueOf = function() {
+            return this._value;
+          };
+          function Return(value) {
+            throw new ReturnValue(value);
+          }
+          __name(Return, "Return");
+          var TERMINAL_ACTIONS = /* @__PURE__ */ function() {
+            function emptyFn(PCB2) {
+              return PCB2.att;
+            }
+            __name(emptyFn, "emptyFn");
+            var actions = {
+              13: (
+                /** @suppress {uselessCode} */
+                function(PCB2) {
+                  return PCB2.att.substr(2, PCB2.att.length - 4);
+                  return PCB2.att;
+                }
+              ),
+              17: (
+                /** @suppress {uselessCode} */
+                function(PCB2) {
+                  return Continue.apply(null, arguments);
+                  return PCB2.att;
+                }
+              ),
+              18: (
+                /** @suppress {uselessCode} */
+                function(PCB2) {
+                  return Continue.apply(null, arguments);
+                  return PCB2.att;
+                }
+              ),
+              19: (
+                /** @suppress {uselessCode} */
+                function(PCB2) {
+                  return Continue.apply(null, arguments);
+                  return PCB2.att;
+                }
+              )
+            };
+            return function(PCB2, match) {
+              try {
+                return (actions[match] || emptyFn)(PCB2);
+              } catch (e) {
+                if (e instanceof ReturnValue)
+                  return e.valueOf();
+                if (e == Continue)
+                  return Continue;
+                throw e;
+              }
+            };
+          }();
+          var DfaLex = /* @__PURE__ */ __name(function() {
+            this._dfaData = [
+              {
+                line: [
+                  [
+                    [
+                      [
+                        [
+                          [
+                            null,
+                            [
+                              [
+                                [null, 1],
+                                [2, null]
+                              ],
+                              [[null, 1], null]
+                            ]
+                          ],
+                          null
+                        ],
+                        [
+                          [
+                            [
+                              [
+                                [1, 3],
+                                [19, 22]
+                              ],
+                              [null, [4, 23]]
+                            ],
+                            [
+                              null,
+                              [
+                                [null, 5],
+                                [null, 24]
+                              ]
+                            ]
+                          ],
+                          [
+                            5,
+                            [
+                              [5, [6, 7]],
+                              [
+                                [8, 25],
+                                [9, null]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ],
+                      [
+                        [
+                          [[[[null, 5], 5], 5], 5],
+                          [
+                            5,
+                            [
+                              [5, [5, 26]],
+                              [null, [10, 5]]
+                            ]
+                          ]
+                        ],
+                        [
+                          [[[[null, 5], 5], 5], 5],
+                          [
+                            5,
+                            [
+                              [5, [5, null]],
+                              [
+                                [11, null],
+                                [12, null]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ],
+                    null
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [
+                        [
+                          [
+                            null,
+                            [
+                              [[null, 1], null],
+                              [[null, 1], null]
+                            ]
+                          ],
+                          null
+                        ],
+                        [[[[[1, null], null], null], null], null]
+                      ],
+                      null
+                    ],
+                    null
+                  ]
+                ],
+                accept: 19
+              },
+              { line: [], accept: 17 },
+              { line: [], accept: 6 },
+              { line: [], accept: 10 },
+              {
+                line: [
+                  [
+                    [
+                      [
+                        null,
+                        [
+                          [null, [null, [[null, 5], null]]],
+                          [5, [[5, null], null]]
+                        ]
+                      ],
+                      [
+                        [
+                          [[[[null, 5], 5], 5], 5],
+                          [
+                            5,
+                            [
+                              [5, [5, null]],
+                              [null, [null, 5]]
+                            ]
+                          ]
+                        ],
+                        [
+                          [[[[null, 5], 5], 5], 5],
+                          [5, [[5, [5, null]], null]]
+                        ]
+                      ]
+                    ],
+                    null
+                  ]
+                ],
+                accept: 16
+              },
+              { line: [], accept: 8 },
+              { line: [], accept: 7 },
+              { line: [], accept: 3 },
+              { line: [], accept: 4 },
+              { line: [], accept: 5 },
+              { line: [], accept: 9 },
+              { line: [], accept: 11 },
+              { line: [], accept: 15 },
+              { line: [], accept: 2 },
+              { line: [], accept: 14 },
+              { line: [], accept: 12 },
+              { line: [], accept: 18 },
+              { line: [], accept: 13 },
+              {
+                line: [
+                  [
+                    [
+                      [19, [[[[19, [13, 19]], 19], 19], 19]],
+                      [[19, [19, [19, [[27, 19], 19]]]], 19]
+                    ],
+                    [19, [19, [19, [19, [19, [19, [19, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [19, [[[[19, [13, 19]], 19], 19], 19]],
+                      [[19, [19, [19, [[27, 19], 19]]]], 19]
+                    ],
+                    [19, [19, [19, [19, [19, [19, [19, null]]]]]]]
+                  ]
+                ],
+                accept: 15
+              },
+              {
+                line: [
+                  [
+                    [
+                      [23, [[[23, [23, [23, 15]]], 23], 23]],
+                      [[23, [23, [23, [[28, 23], 23]]]], 23]
+                    ],
+                    [23, [23, [23, [23, [23, [23, [23, null]]]]]]]
+                  ]
+                ],
+                accept: 14
+              },
+              { line: [[[[null, [[[[null, [null, 14]], null], null], null]], null], null]], accept: -1 },
+              {
+                line: [
+                  [
+                    [
+                      [23, [[[23, [23, [23, 15]]], 23], 23]],
+                      [[23, [23, [23, [[28, 23], 23]]]], 23]
+                    ],
+                    [23, [23, [23, [23, [23, [23, [23, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              { line: [[[null, [null, [null, [null, [null, [null, [29, null]]]]]]], null]], accept: -1 },
+              { line: [[[[null, [null, [null, [null, [null, [16, null]]]]]], null], null]], accept: -1 },
+              { line: [[[[null, [[null, [[null, [37, null]], null]], null]], null], null]], accept: -1 },
+              {
+                line: [
+                  [
+                    [
+                      [19, [[[[19, [20, 19]], 19], 19], 19]],
+                      [[19, [19, [19, [[27, 19], 19]]]], 19]
+                    ],
+                    [19, [19, [19, [19, [19, [19, [19, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [23, [[[23, [23, [23, 21]]], 23], 23]],
+                      [[23, [23, [23, [[28, 23], 23]]]], 23]
+                    ],
+                    [23, [23, [23, [23, [23, [23, [23, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [38, [[38, [38, [38, [38, 30]]]], 38]],
+                      [38, [38, [38, [38, [38, [31, 38]]]]]]
+                    ],
+                    [38, [38, [38, [38, [38, [38, [38, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              { line: [[[[null, [[null, [null, [null, [null, 29]]]], null]], null], null]], accept: -1 },
+              {
+                line: [
+                  [
+                    [[29, [[29, [29, [29, [29, 17]]]], 29]], 29],
+                    [29, [29, [29, [29, [29, [29, [29, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [[32, [[32, [[32, [33, 32]], 32]], 32]], 32],
+                    [32, [32, [32, [32, [32, [32, [32, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [36, [[36, [36, [36, [[36, 18], 36]]]], 36]],
+                    [36, [36, [36, [36, [36, [36, [36, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              { line: [[[null, [[null, [null, [null, [[null, 36], null]]]], null]], null]], accept: -1 },
+              {
+                line: [
+                  [
+                    [
+                      [38, [[38, [38, [38, [38, 35]]]], 38]],
+                      [38, [38, [38, [38, [38, [31, 38]]]]]]
+                    ],
+                    [38, [38, [38, [38, [38, [38, [38, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [32, [[32, [[32, [33, 32]], 32]], 32]],
+                      [[32, [32, [32, [[32, 34], 32]]]], 32]
+                    ],
+                    [32, [32, [32, [32, [32, [32, [32, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [32, [[32, [[32, [33, 32]], 32]], 32]],
+                      [[32, [32, [32, [[32, 34], 32]]]], 32]
+                    ],
+                    [32, [32, [32, [32, [32, [32, [32, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              },
+              {
+                line: [
+                  [
+                    [
+                      [38, [[38, [38, [38, [38, 35]]]], 38]],
+                      [38, [38, [38, [38, [38, [31, 38]]]]]]
+                    ],
+                    [38, [38, [38, [38, [38, [38, [38, null]]]]]]]
+                  ]
+                ],
+                accept: -1
+              }
+            ];
+          }, "DfaLex");
+          DfaLex.prototype._dfaData = [];
+          DfaLex.prototype.match_pos = 0;
+          DfaLex.prototype.state = 0;
+          DfaLex.prototype.match = null;
+          DfaLex.prototype.exec = function(chr, pos) {
+            if (this.state !== null) {
+              if (typeof this.state !== "number" || this.state >= this._dfaData.length) {
+                this.state = null;
+                throw new Error("Invalid value for DfaLex.state at chr " + chr + " and pos " + pos);
+              }
+              var line = this._dfaData[this.state].line;
+              if (typeof line === "undefined" || line === null) {
+                var badState = this.state;
+                this.state = null;
+                throw new Error(
+                  "At chr " + chr + " and pos " + pos + ", DfaLex._dfaData[" + badState + "] appears to exist, but its line property is " + (typeof line === "undefined" ? "undefined." : "null.")
+                );
+              }
+              var p, st;
+              for (p = 1 << 8, st = line; p; p >>= 1) {
+                if ((chr & p) !== 0) {
+                  st = st[1];
+                } else {
+                  st = st[0];
+                }
+                if (typeof st === "undefined") {
+                  st = null;
+                }
+                if (st === null)
+                  break;
+                if (Array.isArray(st))
+                  continue;
+                break;
+              }
+              var ac = this._dfaData[this.state].accept;
+              this.state = /** @type {?number} */
+              st;
+              if (ac !== -1) {
+                this.match = /** @type{number} */
+                ac;
+                this.match_pos = pos;
+              }
+            }
+          };
+          var pop_tab = [
+            [0, 1],
+            [24, 5],
+            [20, 1],
+            [23, 1],
+            [21, 2],
+            [21, 1],
+            [26, 3],
+            [26, 3],
+            [26, 3],
+            [26, 2],
+            [26, 3],
+            [27, 2],
+            [27, 1],
+            [30, 3],
+            [30, 2],
+            [22, 2],
+            [22, 1],
+            [32, 4],
+            [32, 2],
+            [33, 3],
+            [33, 1],
+            [34, 3],
+            [36, 2],
+            [36, 2],
+            [36, 0],
+            [35, 1],
+            [35, 0],
+            [37, 2],
+            [37, 1],
+            [38, 1],
+            [38, 1],
+            [38, 1],
+            [25, 1],
+            [25, 2],
+            [25, 2],
+            [25, 0],
+            [39, 2],
+            [39, 1],
+            [28, 1],
+            [28, 1],
+            [31, 1],
+            [29, 1],
+            [29, 0]
+          ];
+          var act_tab = [
+            [12, 5, 13, 6],
+            [],
+            [3, 9, 4, 10, 5, 11, 6, 13, 14, 16, 15, 17],
+            [],
+            [13, 18],
+            [13, 19, 16, 21],
+            [],
+            [2, 23, 3, 9, 4, 10, 5, 11, 6, 13, 14, 16, 15, 17],
+            [],
+            [14, 16, 15, 17],
+            [14, 16, 15, 17],
+            [14, 16, 15, 17],
+            [7, 28, 14, 16, 15, 17],
+            [14, 16, 15, 17],
+            [],
+            [16, 21, 12, 5, 13, 6],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [1, 35, 16, 21],
+            [7, 36, 14, 16, 15, 17],
+            [7, 37, 14, 16, 15, 17],
+            [7, 38, 14, 16, 15, 17],
+            [],
+            [],
+            [7, 40],
+            [],
+            [12, 5, 13, 6],
+            [1, 35, 12, 5, 16, 21, 13, 6],
+            [],
+            [8, 45],
+            [7, 46],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [11, 54, 16, 21, 14, 16, 15, 17],
+            [],
+            [9, 55, 7, 56],
+            [],
+            [10, 58],
+            [11, 54, 16, 21, 14, 16, 15, 17],
+            [],
+            [],
+            [],
+            [],
+            [11, 54, 16, 21, 14, 16, 15, 17],
+            [],
+            [12, 5, 13, 6],
+            [16, 21, 14, 16, 15, 17],
+            [],
+            [],
+            [],
+            [],
+            []
+          ];
+          var goto_tab = [
+            [24, 1, 20, 2, 25, 3, 39, 4],
+            [],
+            [21, 7, 26, 8, 27, 12, 30, 14, 28, 15],
+            [],
+            [],
+            [31, 20],
+            [],
+            [26, 22, 27, 12, 30, 14, 28, 15],
+            [],
+            [27, 24, 30, 14, 28, 15],
+            [27, 25, 30, 14, 28, 15],
+            [27, 26, 30, 14, 28, 15],
+            [30, 27, 28, 15],
+            [28, 29],
+            [],
+            [25, 30, 31, 31, 39, 4],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [22, 32, 32, 33, 31, 34],
+            [30, 27, 28, 15],
+            [30, 27, 28, 15],
+            [30, 27, 28, 15],
+            [],
+            [],
+            [29, 39],
+            [],
+            [25, 41, 39, 4],
+            [32, 42, 23, 43, 25, 44, 31, 34, 39, 4],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [33, 47, 34, 48, 35, 49, 37, 50, 38, 51, 31, 52, 28, 53],
+            [],
+            [],
+            [],
+            [36, 57],
+            [38, 59, 31, 52, 28, 53],
+            [],
+            [],
+            [],
+            [],
+            [34, 60, 35, 49, 37, 50, 38, 51, 31, 52, 28, 53],
+            [],
+            [25, 61, 39, 4],
+            [28, 62, 31, 63],
+            [],
+            [],
+            [],
+            [],
+            []
+          ];
+          var defact_tab = [
+            35,
+            0,
+            -1,
+            2,
+            32,
+            -1,
+            37,
+            -1,
+            5,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            12,
+            35,
+            38,
+            39,
+            36,
+            34,
+            33,
+            40,
+            4,
+            -1,
+            -1,
+            -1,
+            -1,
+            11,
+            9,
+            42,
+            14,
+            35,
+            35,
+            16,
+            -1,
+            -1,
+            6,
+            7,
+            8,
+            10,
+            41,
+            13,
+            15,
+            1,
+            3,
+            26,
+            18,
+            -1,
+            20,
+            24,
+            25,
+            28,
+            29,
+            30,
+            31,
+            26,
+            17,
+            35,
+            -1,
+            27,
+            19,
+            21,
+            23,
+            22
+          ];
+          var labels = [
+            {
+              label: "def'",
+              kind: {},
+              prods: [0],
+              nullable: 0,
+              id: 0,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [12, 3, 4, 5, 6, 13, 14, 15]
+            },
+            {
+              label: "ERROR_RESYNC",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 1,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [1]
+            },
+            {
+              label: "##",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 2,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [2]
+            },
+            {
+              label: "<",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 3,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [3]
+            },
+            {
+              label: ">",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 4,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [4]
+            },
+            {
+              label: "^",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 5,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [5]
+            },
+            {
+              label: "!",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 6,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [6]
+            },
+            {
+              label: ";",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 7,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [7]
+            },
+            {
+              label: ":",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 8,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [8]
+            },
+            {
+              label: "|",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 9,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [9]
+            },
+            {
+              label: "&",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 10,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [10]
+            },
+            {
+              label: "~",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 11,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [11]
+            },
+            {
+              label: "=>",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 12,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [12]
+            },
+            {
+              label: "CODE",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 13,
+              code: "	return %match.substr(2, %match.length - 4 ); ",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [13]
+            },
+            {
+              label: "STRING_SINGLE",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 14,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [14]
+            },
+            {
+              label: "STRING_DOUBLE",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 15,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [15]
+            },
+            {
+              label: "IDENT",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 16,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [16]
+            },
+            {
+              label: "n",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 17,
+              code: "return Continue.apply(null, arguments);",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [17]
+            },
+            {
+              label: "/~([^~]/|~[^/]|[^~/])*~/",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 18,
+              code: "return Continue.apply(null, arguments);",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [18]
+            },
+            {
+              label: "[tr ]+",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 19,
+              code: "return Continue.apply(null, arguments);",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [19]
+            },
+            {
+              label: "header_code",
+              kind: {},
+              prods: [2],
+              nullable: 1,
+              id: 20,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [12, 13]
+            },
+            {
+              label: "token_assocs",
+              kind: {},
+              prods: [4, 5],
+              nullable: 0,
+              id: 21,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [3, 4, 5, 6, 14, 15]
+            },
+            {
+              label: "grammar_defs",
+              kind: {},
+              prods: [15, 16],
+              nullable: 0,
+              id: 22,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [16, 1]
+            },
+            {
+              label: "footer_code",
+              kind: {},
+              prods: [3],
+              nullable: 1,
+              id: 23,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [12, 13]
+            },
+            {
+              label: "def",
+              kind: {},
+              prods: [1],
+              nullable: 0,
+              id: 24,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [12, 3, 4, 5, 6, 13, 14, 15]
+            },
+            {
+              label: "code_opt",
+              kind: {},
+              prods: [32, 33, 34, 35],
+              nullable: 1,
+              id: 25,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [12, 13]
+            },
+            {
+              label: "token_assoc",
+              kind: {},
+              prods: [6, 7, 8, 9, 10],
+              nullable: 0,
+              id: 26,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [3, 4, 5, 6, 14, 15]
+            },
+            {
+              label: "token_defs",
+              kind: {},
+              prods: [11, 12],
+              nullable: 0,
+              id: 27,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [14, 15]
+            },
+            {
+              label: "string",
+              kind: {},
+              prods: [38, 39],
+              nullable: 0,
+              id: 28,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [14, 15]
+            },
+            {
+              label: "opt_semicolon",
+              kind: {},
+              prods: [41, 42],
+              nullable: 1,
+              id: 29,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [7]
+            },
+            {
+              label: "token_def",
+              kind: {},
+              prods: [13, 14],
+              nullable: 0,
+              id: 30,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [14, 15]
+            },
+            {
+              label: "identifier",
+              kind: {},
+              prods: [40],
+              nullable: 0,
+              id: 31,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [16]
+            },
+            {
+              label: "grammar_def",
+              kind: {},
+              prods: [17, 18],
+              nullable: 0,
+              id: 32,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [16, 1]
+            },
+            {
+              label: "productions",
+              kind: {},
+              prods: [19, 20],
+              nullable: 1,
+              id: 33,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [10, 12, 13, 9, 16, 14, 15, 11]
+            },
+            {
+              label: "rhs",
+              kind: {},
+              prods: [21],
+              nullable: 1,
+              id: 34,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [10, 12, 13, 16, 14, 15, 11]
+            },
+            {
+              label: "sequence_opt",
+              kind: {},
+              prods: [25, 26],
+              nullable: 1,
+              id: 35,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [16, 14, 15, 11]
+            },
+            {
+              label: "rhs_prec",
+              kind: {},
+              prods: [22, 23, 24],
+              nullable: 1,
+              id: 36,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [10]
+            },
+            {
+              label: "sequence",
+              kind: {},
+              prods: [27, 28],
+              nullable: 0,
+              id: 37,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [16, 14, 15, 11]
+            },
+            {
+              label: "symbol",
+              kind: {},
+              prods: [29, 30, 31],
+              nullable: 0,
+              id: 38,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [16, 14, 15, 11]
+            },
+            {
+              label: "code",
+              kind: {},
+              prods: [36, 37],
+              nullable: 0,
+              id: 39,
+              code: "",
+              level: 0,
+              special: {},
+              defined: true,
+              first: [13]
+            },
+            {
+              label: "$",
+              kind: {},
+              prods: [],
+              nullable: false,
+              id: 40,
+              code: "",
+              level: 0,
+              special: {},
+              defined: false,
+              first: [40]
+            }
+          ];
+          var ACTIONS = /* @__PURE__ */ function() {
+            var PCB2 = {};
+            var actions = [
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[4];
+                return rval;
+              },
+              function() {
+                var rval;
+                global2.code_head += arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                global2.code_foot += arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                global2.assoc_level++;
+                for (var i2 = 0; i2 < arguments[1].length; i2++) {
+                  global2.symbols[arguments[1][i2]].level = global2.assoc_level;
+                  global2.symbols[arguments[1][i2]].assoc = ASSOC.LEFT;
+                }
+                return rval;
+              },
+              function() {
+                var rval;
+                global2.assoc_level++;
+                for (var i2 = 0; i2 < arguments[1].length; i2++) {
+                  global2.symbols[arguments[1][i2]].level = global2.assoc_level;
+                  global2.symbols[arguments[1][i2]].assoc = ASSOC.RIGHT;
+                }
+                return rval;
+              },
+              function() {
+                var rval;
+                global2.assoc_level++;
+                for (var i2 = 0; i2 < arguments[1].length; i2++) {
+                  global2.symbols[arguments[1][i2]].level = global2.assoc_level;
+                  global2.symbols[arguments[1][i2]].assoc = ASSOC.NOASSOC;
+                }
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                if (global2.whitespace_token == -1) {
+                  var regex = arguments[1].substr(1, arguments[1].length - 2);
+                  global2.whitespace_token = tabgen.create_symbol("WHITESPACE", SYM.TERM, SPECIAL.WHITESPACE);
+                  compile_regex(regex, global2.whitespace_token, arguments[1][0] != "'", cur_line);
+                } else
+                  line_error(PCB2.line, "Multiple whitespace definition");
+                return rval;
+              },
+              function() {
+                var rval;
+                arguments[1].push(arguments[0]);
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = [arguments[0]];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = tabgen.create_symbol(arguments[1], SYM.TERM, SPECIAL.NONE);
+                var regex = arguments[2].substr(1, arguments[2].length - 2);
+                global2.symbols[rval].code = arguments[0];
+                compile_regex(regex, global2.symbols[rval].id, arguments[2].charAt(0) != "'", cur_line);
+                return rval;
+              },
+              function() {
+                var rval;
+                var regex = arguments[1].substr(1, arguments[1].length - 2);
+                rval = tabgen.create_symbol(regex.replace(/\\/g, ""), SYM.TERM, SPECIAL.NONE);
+                global2.symbols[rval].code = arguments[0];
+                compile_regex(regex, global2.symbols[rval].id, arguments[1].charAt(0) != "'", cur_line);
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                var nonterm = tabgen.create_symbol(arguments[3], SYM.NONTERM, SPECIAL.NONE);
+                global2.symbols[nonterm].defined = true;
+                for (var i2 = 0; i2 < arguments[1].length; i2++) {
+                  global2.productions[arguments[1][i2]].lhs = nonterm;
+                  global2.symbols[nonterm].prods.push(arguments[1][i2]);
+                }
+                if (first_lhs) {
+                  first_lhs = false;
+                  global2.symbols[0].label = global2.symbols[nonterm].label + "'";
+                  global2.productions[0].rhs.push(nonterm);
+                }
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                arguments[2].push(arguments[0]);
+                rval = arguments[2];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = [arguments[0]];
+                return rval;
+              },
+              function() {
+                var rval;
+                var prod = new Production({
+                  id: global2.productions.length,
+                  lhs: null,
+                  rhs: (
+                    /** @type {Array<number>} */
+                    arguments[2]
+                  ),
+                  level: (
+                    /** @type {number} */
+                    arguments[1]
+                  ),
+                  code: arguments[0] == "" ? global2.DEF_PROD_CODE : (
+                    /** @type {string} */
+                    arguments[0]
+                  )
+                });
+                if (prod.level == 0) {
+                  if (prod.rhs.length > 0) {
+                    for (var i2 = prod.rhs.length - 1; i2 >= 0; i2--)
+                      if (global2.symbols[prod.rhs[i2]] && global2.symbols[prod.rhs[i2]].kind == SYM.TERM) {
+                        prod.level = global2.symbols[prod.rhs[i2]].level;
+                        break;
+                      }
+                  }
+                }
+                global2.productions.push(prod);
+                rval = prod.id;
+                return rval;
+              },
+              function() {
+                var rval;
+                var index;
+                if ((index = tabgen.find_symbol(arguments[0], SYM.TERM, SPECIAL.NONE)) > -1)
+                  rval = global2.symbols[index].level;
+                else
+                  line_error(PCB2.line, 'Call to undefined terminal "' + arguments[0] + '"');
+                return rval;
+              },
+              function() {
+                var rval;
+                var index;
+                if ((index = tabgen.find_symbol(
+                  arguments[0].substr(1, arguments[0].length - 2).replace(/\\/g, ""),
+                  SYM.TERM,
+                  SPECIAL.NONE
+                )) > -1)
+                  rval = global2.symbols[index].level;
+                else
+                  line_error(PCB2.line, 'Call to undefined terminal "' + arguments[0] + '"');
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = 0;
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = [];
+                return rval;
+              },
+              function() {
+                var rval;
+                arguments[1].push(arguments[0]);
+                rval = arguments[1];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = [arguments[0]];
+                return rval;
+              },
+              function() {
+                var rval;
+                if ((rval = tabgen.find_symbol(arguments[0], SYM.TERM, SPECIAL.NONE)) <= -1)
+                  rval = tabgen.create_symbol(arguments[0], SYM.NONTERM, SPECIAL.NONE);
+                return rval;
+              },
+              function() {
+                var rval;
+                if ((rval = tabgen.find_symbol(
+                  arguments[0].substr(1, arguments[0].length - 2).replace(/\\/g, ""),
+                  SYM.TERM,
+                  SPECIAL.NONE
+                )) <= -1)
+                  line_error(PCB2.line, "Call to undefined terminal " + arguments[0]);
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = tabgen.find_symbol("ERROR_RESYNC", SYM.TERM, SPECIAL.ERROR);
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = "return " + arguments[0] + ".apply(null, arguments);";
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = "(" + arguments[0] + ").apply(null, arguments);";
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = "";
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[1] + arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = arguments[0];
+                return rval;
+              },
+              function() {
+                var rval;
+                rval = "";
+                return rval;
+              }
+            ];
+            return function(act, vstack, pcb) {
+              try {
+                PCB2 = pcb;
+                return actions[act].apply(null, vstack);
+              } catch (e) {
+                if (e instanceof ReturnValue)
+                  return e.valueOf();
+                throw e;
+              }
+            };
+          }();
+          function get_act(top, la) {
+            for (var i2 = 0; i2 < act_tab[top].length; i2 += 2)
+              if (act_tab[top][i2] === la)
+                return act_tab[top][i2 + 1];
+            return null;
+          }
+          __name(get_act, "get_act");
+          function get_goto(top, pop) {
+            for (var i2 = 0; i2 < goto_tab[top].length; i2 += 2)
+              if (goto_tab[top][i2] === pop)
+                return goto_tab[top][i2 + 1];
+            return null;
+          }
+          __name(get_goto, "get_goto");
+          var PcbClass = /* @__PURE__ */ __name(function(src) {
+            this.src = src;
+          }, "PcbClass");
+          PcbClass.prototype.line = 1;
+          PcbClass.prototype.column = 1;
+          PcbClass.prototype.offset = 0;
+          PcbClass.prototype.error_step = 0;
+          PcbClass.prototype.src = "";
+          PcbClass.prototype.att = "";
+          PcbClass.prototype.la = null;
+          PcbClass.prototype.act = null;
+          PcbClass.prototype.lex = function() {
+            var start, pos, chr, actionResult;
+            var dfa = new DfaLex();
+            var loop = true;
+            while (loop) {
+              dfa.match_pos = 0;
+              pos = this.offset + 1;
+              do {
+                pos--;
+                dfa.state = 0;
+                dfa.match = null;
+                start = pos;
+                if (this.src.length <= start) {
+                  this.la = eof;
+                  return eof;
+                }
+                do {
+                  chr = this.src.charCodeAt(pos);
+                  dfa.exec(chr, pos);
+                  if (dfa.state !== null)
+                    this.accountChar(chr);
+                  pos++;
+                } while (dfa.state !== null);
+              } while (whitespace > -1 && dfa.match === whitespace);
+              if (dfa.match !== null) {
+                this.att = this.src.slice(start, dfa.match_pos);
+                this.offset = dfa.match_pos;
+                actionResult = TERMINAL_ACTIONS(this, dfa.match);
+                if (dfa.state !== null)
+                  this.accountChar(chr);
+                if (actionResult === Continue)
+                  continue;
+                this.att = actionResult;
+              } else {
+                this.att = "";
+              }
+              loop = false;
+            }
+            this.la = dfa.match;
+            return this.la;
+          };
+          PcbClass.prototype.accountChar = function(chr) {
+            if (chr === 10) {
+              this.line++;
+              this.column = 0;
+            }
+            this.column++;
+          };
+          function parse3(src, err_off, err_la) {
+            var sstack = [0];
+            var vstack = [0];
+            var err_cnt = 0;
+            var rval;
+            var act;
+            var i2 = 0;
+            var PCB2 = new PcbClass(src);
+            err_off = err_off || [];
+            err_la = err_la || [];
+            PCB2.lex();
+            while (true) {
+              PCB2.act = get_act(sstack[0], PCB2.la);
+              if (PCB2.act === null && defact_tab[sstack[0]] >= 0)
+                PCB2.act = -defact_tab[sstack[0]];
+              if (PCB2.act === null) {
+                if (PCB2.error_step === 0) {
+                  err_cnt++;
+                  err_off.unshift(PCB2.offset - PCB2.att.length);
+                  err_la.unshift([]);
+                  for (i2 = 0; i2 < act_tab[sstack[0]].length; i2 += 2)
+                    err_la[0].push(labels[act_tab[sstack[0]][i2]]);
+                }
+                while (sstack.length > 1 && PCB2.act === null) {
+                  sstack.shift();
+                  vstack.shift();
+                  PCB2.act = get_act(sstack[0], PCB2.la);
+                  if (PCB2.act === error_token) {
+                    sstack.unshift(PCB2.act);
+                    vstack.unshift("");
+                  }
+                }
+                if (sstack.length > 1 && PCB2.act !== null) {
+                  while (PCB2.la !== eof) {
+                    PCB2.act = act_tab[sstack[0]][i2 + 1];
+                    if (PCB2.act != null)
+                      break;
+                    while (PCB2.lex() != null)
+                      PCB2.offset++;
+                  }
+                }
+                if (PCB2.act === null || PCB2.la === eof) {
+                  break;
+                }
+                PCB2.error_step = 3;
+              }
+              if (PCB2.act > 0) {
+                sstack.unshift(PCB2.act);
+                vstack.unshift(PCB2.att);
+                PCB2.lex();
+                if (PCB2.error_step > 0)
+                  PCB2.error_step--;
+              } else {
+                act = -PCB2.act;
+                rval = ACTIONS(act, vstack, PCB2);
+                sstack.splice(0, pop_tab[act][1]);
+                vstack.splice(0, pop_tab[act][1]);
+                PCB2.act = get_goto(sstack[0], pop_tab[act][0]);
+                if (act === 0)
+                  break;
+                sstack.unshift(PCB2.act);
+                vstack.unshift(rval);
+              }
+            }
+            return err_cnt;
+          }
+          __name(parse3, "parse");
+          return parse3;
+        }(40, -1, 1);
+        function parse_grammar(str, filename2) {
+          var error_offsets = [];
+          var error_expects = [];
+          var parse_error = 0;
+          first_lhs = true;
+          cur_line = 1;
+          if ((parse_error += __parse(str, error_offsets, error_expects)) > 0) {
+            for (var i2 = 0; i2 < parse_error; i2++)
+              line_error(
+                str.substr(0, error_offsets[i2]).match(/\n/g) ? str.substr(0, error_offsets[i2]).match(/\n/g).length : 1,
+                "Parse error near\n	" + str.substr(error_offsets[i2], 30) + (error_offsets[i2] + 30 < str.substr(error_offsets[i2]).length ? "..." : "") + "\n	" + error_expects[i2].join() + " expected"
+              );
+          }
+          return parse_error;
+        }
+        __name(parse_grammar, "parse_grammar");
+        return parse_grammar;
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/classes/Dfa", factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory();
+      } else {
+        root.jsccDfa = factory();
+      }
+    })(exports, function() {
+      jscc.classes.Dfa = function(o) {
+        var p = o || {};
+        if (typeof p.line !== "undefined" && Array.isArray(p.line)) {
+          this.line = /** @type {!Array} */
+          p.line;
+        }
+        if (typeof p.nfa_set !== "undefined" && Array.isArray(p.nfa_set)) {
+          this.nfa_set = /** @type {!Array<!number>} */
+          p.nfa_set;
+        }
+        if (typeof p.accept === "number") {
+          this.accept = /** @type {!number} */
+          p.accept;
+        }
+        if (typeof p.done === "boolean") {
+          this.done = /** @type {!boolean} */
+          p.done;
+        }
+        if (typeof p.group === "number") {
+          this.group = /** @type {!number} */
+          p.group;
+        }
+      };
+      jscc.classes.Dfa.prototype.line = [];
+      jscc.classes.Dfa.prototype.nfa_set = [];
+      jscc.classes.Dfa.prototype.accept = -1;
+      jscc.classes.Dfa.prototype.done = false;
+      jscc.classes.Dfa.prototype.group = -1;
+      return jscc.classes.Dfa;
+    });
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/lexdfa", ["require", "./global", "./log/log", "./enums/EDGE", "./classes/Dfa"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jscclexdfa = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {jscc.lexdfa}
+       */
+      function(require3, others) {
+        var log3, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), EDGE = require3("./enums/EDGE"), Dfa = (
+          /** @type {function(new:jscc.classes.Dfa, ?DfaOptions=)} */
+          require3("./classes/Dfa")
+        );
+        (function() {
+          if (false) {
+            log3 = /** @type {jscc.log} */
+            require3("./log/logNode");
+          } else {
+            log3 = /** @type {jscc.log} */
+            require3("./log/log");
+          }
+        })();
+        jscc.lexdfa = function() {
+        };
+        jscc.lexdfa.prototype = {
+          /**
+           * Creates a new {@link jscc.global.Dfa} object and
+           * adds it to the provided array.
+           * @param {Array<!jscc.classes.Dfa>} where - The array to which to add the
+           * new Dfa object.
+           * @returns {number} The prior length of the provided array.
+           * @memberof jscc.lexdfa
+           */
+          create_dfa: function(where) {
+            var dfa = new Dfa({
+              line: new Array(global2.MAX_CHAR),
+              accept: -1,
+              nfa_set: [],
+              done: false,
+              group: -1
+            });
+            where.push(dfa);
+            return where.length - 1;
+          },
+          /**
+           * Determines whether the dfa_states array has a
+           * Dfa object whose {@link jscc.global.Dfa#nfa_set}
+           * property contains the same values as those in the
+           * items parameter.
+           * @param {Array<!jscc.classes.Dfa>} dfa_states - The array of Dfa
+           * objects to check.
+           * @param {Array<number>} items - The set to match.
+           * @returns {number} The index in dfa_states of the first
+           * matching item, or -1 if no match exists.
+           * @memberof jscc.lexdfa
+           */
+          same_nfa_items: function(dfa_states, items) {
+            var i2, j;
+            for (i2 = 0; i2 < dfa_states.length; i2++) {
+              if (dfa_states[i2].nfa_set.length == items.length) {
+                for (j = 0; j < dfa_states[i2].nfa_set.length; j++) {
+                  if (dfa_states[i2].nfa_set[j] != items[j]) {
+                    break;
+                  }
+                }
+                if (j == dfa_states[i2].nfa_set.length) {
+                  return i2;
+                }
+              }
+            }
+            return -1;
+          },
+          /**
+           * Determines the next Dfa object in the provided array
+           * whose {@link jscc.classes.Dfa#done} value is false.
+           * @param {Array<!jscc.classes.Dfa>} dfa_states - The array to check.
+           * @returns {number} The index of the first array element for
+           * which done is false, or -1 if no such element exists.
+           * @memberof jscc.lexdfa
+           */
+          get_undone_dfa: function(dfa_states) {
+            for (var i2 = 0; i2 < dfa_states.length; i2++) {
+              if (!dfa_states[i2].done) {
+                return i2;
+              }
+            }
+            return -1;
+          },
+          /**
+           * Performs a move operation on a given input character from a
+           * set of NFA states.
+           * @param {Array<!number>} state_set - The set of epsilon-closure
+           * states on which base the move should be performed.
+           * @param {Array<!jscc.classes.Nfa>} machine - The NFA state machine.
+           * @param {number} ch - A character code to be moved on.
+           * @returns {Array<!number>} If there is a possible move, a new
+           * set of NFA-states is returned, else the returned array has a
+           * length of 0.
+           * @author Jan Max Meyer
+           * @memberof jscc.lexdfa
+           */
+          move: function(state_set, machine, ch) {
+            var hits = [];
+            var tos = -1;
+            try {
+              do {
+                tos = state_set.pop();
+                if (machine[tos].edge == EDGE.CHAR) {
+                  if (machine[tos].ccl.get(ch)) {
+                    hits.push(machine[tos].follow);
+                  }
+                }
+              } while (state_set.length > 0);
+            } catch (e) {
+              log3.error("\n state_set= " + state_set + " machine= " + machine + " ch= " + ch);
+              throw e;
+            }
+            return hits;
+          },
+          /**
+           * Performs an epsilon closure from a set of NFA states.
+           * @param {Array<!number>} state_set - The set of states on which
+           * base the closure is started.  The whole epsilon closure will
+           * be appended to this parameter, so this parameter acts as
+           * input/output value.
+           * @param {Array<!jscc.classes.Nfa>} machine - The NFA state machine.
+           * @returns {Array<!number>} An array of accepting states, if
+           * available.
+           * @author Jan Max Meyer
+           * @memberof jscc.lexdfa
+           */
+          epsilon_closure: function(state_set, machine) {
+            var stack = [];
+            var accept = [];
+            var tos = -1;
+            for (var i2 = 0; i2 < state_set.length; i2++) {
+              stack.push(state_set[i2]);
+            }
+            do {
+              tos = stack.pop();
+              if (machine[tos].accept >= 0) {
+                accept.push(machine[tos].accept);
+              }
+              if (machine[tos].edge == EDGE.EPSILON) {
+                if (machine[tos].follow > -1) {
+                  for (var i2 = 0; i2 < state_set.length; i2++) {
+                    if (state_set[i2] == machine[tos].follow) {
+                      break;
+                    }
+                  }
+                  if (i2 == state_set.length) {
+                    state_set.push(machine[tos].follow);
+                    stack.push(machine[tos].follow);
+                  }
+                }
+                if (machine[tos].follow2 > -1) {
+                  for (var i2 = 0; i2 < state_set.length; i2++) {
+                    if (state_set[i2] == machine[tos].follow2) {
+                      break;
+                    }
+                  }
+                  if (i2 == state_set.length) {
+                    state_set.push(machine[tos].follow2);
+                    stack.push(machine[tos].follow2);
+                  }
+                }
+              }
+            } while (stack.length > 0);
+            return accept.sort();
+          },
+          /**
+           * Constructs a deterministic finite automata (DFA) from a
+           * nondeterministic finite automata, by using the subset
+           * construction algorithm.
+           * @param {!Array<!jscc.classes.Nfa>} nfa_states - The NFA-state machine
+           * on which base the DFA will be constructed.
+           * @returns {!Array<!jscc.classes.Dfa>} An array of DFA-objects forming the
+           * new DFA-state machine.  This machine is not minimized here.
+           * @author Jan Max Meyer
+           * @memberof jscc.lexdfa
+           */
+          create_subset: function(nfa_states) {
+            var dfa_states = [];
+            var stack = [0];
+            var current = this.create_dfa(dfa_states);
+            var trans;
+            var next = -1;
+            var lowest_weight;
+            if (nfa_states.length == 0) {
+              return dfa_states;
+            }
+            this.epsilon_closure(stack, nfa_states);
+            dfa_states[current].nfa_set = dfa_states[current].nfa_set.concat(stack);
+            while ((current = this.get_undone_dfa(dfa_states)) > -1) {
+              dfa_states[current].done = true;
+              lowest_weight = -1;
+              for (var i2 = 0; i2 < dfa_states[current].nfa_set.length; i2++) {
+                if (nfa_states[dfa_states[current].nfa_set[i2]].accept > -1 && nfa_states[dfa_states[current].nfa_set[i2]].weight < lowest_weight || lowest_weight == -1) {
+                  dfa_states[current].accept = nfa_states[dfa_states[current].nfa_set[i2]].accept;
+                  lowest_weight = nfa_states[dfa_states[current].nfa_set[i2]].weight;
+                }
+              }
+              for (var i2 = global2.MIN_CHAR; i2 < global2.MAX_CHAR; i2++) {
+                trans = [].concat(dfa_states[current].nfa_set);
+                trans = this.move(trans, nfa_states, i2);
+                if (trans.length > 0) {
+                  this.epsilon_closure(trans, nfa_states);
+                }
+                if (trans.length == 0) {
+                  next = -1;
+                } else if ((next = this.same_nfa_items(dfa_states, trans)) == -1) {
+                  next = this.create_dfa(dfa_states);
+                  dfa_states[next].nfa_set = trans;
+                }
+                dfa_states[current].line[i2] = next;
+              }
+            }
+            return dfa_states;
+          },
+          /**
+           * Minimizes a DFA, by grouping equivalent states together.
+           * These groups form the new, minimized dfa-states.
+           * @param {!Array<!jscc.classes.Dfa>} dfa_states - The DFA-state machine on
+           * which base the minimized DFA is constructed.
+           * @returns {!Array<!jscc.classes.Dfa>} An array of DFA-objects forming the
+           * minimized DFA-state machine.
+           * @author Jan Max Meyer
+           * @memberof jscc.lexdfa
+           */
+          minimize_dfa: function(dfa_states) {
+            var groups = [[]];
+            var accept_groups = [];
+            var min_dfa_states = [];
+            var old_cnt = 0;
+            var cnt = 0;
+            var new_group;
+            var i2, j, k;
+            if (dfa_states.length == 0) {
+              return min_dfa_states;
+            }
+            for (i2 = 0; i2 < dfa_states.length; i2++) {
+              if (dfa_states[i2].accept > -1) {
+                for (j = 0; j < accept_groups.length; j++) {
+                  if (accept_groups[j] == dfa_states[i2].accept) {
+                    break;
+                  }
+                }
+                if (j == accept_groups.length) {
+                  accept_groups.push(dfa_states[i2].accept);
+                  groups.push([]);
+                }
+                groups[j + 1].push(i2);
+                dfa_states[i2].group = j + 1;
+              } else {
+                groups[0].push(i2);
+                dfa_states[i2].group = 0;
+              }
+            }
+            do {
+              old_cnt = cnt;
+              for (i2 = 0; i2 < groups.length; i2++) {
+                new_group = [];
+                if (groups[i2].length > 0) {
+                  for (j = 1; j < groups[i2].length; j++) {
+                    for (k = global2.MIN_CHAR; k < global2.MAX_CHAR; k++) {
+                      var groupZeroLineK = dfa_states[groups[i2][0]].line[k];
+                      var groupJLineK = dfa_states[groups[i2][j]].line[k];
+                      if (groupZeroLineK != groupJLineK && (groupZeroLineK == -1 || groupJLineK == -1) || groupZeroLineK > -1 && groupJLineK > -1 && dfa_states[groupZeroLineK].group != dfa_states[groupJLineK].group) {
+                        dfa_states[groups[i2][j]].group = groups.length;
+                        new_group = new_group.concat(groups[i2].splice(j, 1));
+                        j--;
+                        break;
+                      }
+                    }
+                  }
+                }
+                if (new_group.length > 0) {
+                  groups[groups.length] = [];
+                  groups[groups.length - 1] = groups[groups.length - 1].concat(new_group);
+                  cnt += new_group.length;
+                }
+              }
+            } while (old_cnt != cnt);
+            for (i2 = 0; i2 < dfa_states.length; i2++) {
+              for (j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++) {
+                if (dfa_states[i2].line[j] > -1) {
+                  dfa_states[i2].line[j] = dfa_states[dfa_states[i2].line[j]].group;
+                }
+              }
+            }
+            for (i2 = 0; i2 < groups.length; i2++) {
+              min_dfa_states.push(dfa_states[groups[i2][0]]);
+            }
+            return min_dfa_states;
+          }
+        };
+        return new jscc.lexdfa();
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("lib/jscc/main", [
+          "require",
+          "./global",
+          "./io/io",
+          "./first",
+          "./printtab",
+          "./tabgen",
+          "./util",
+          "./integrity",
+          "./lexdbg",
+          "./parse",
+          "./log/log",
+          "./enums/LOG_LEVEL",
+          "./enums/EXEC",
+          "./lexdfa",
+          "./enums/MODE_GEN"
+        ], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jscc = factory(function(mod) {
+          return root["jscc" + mod.split("/").pop()];
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(?mainOptions=)}
+       */
+      function(require3, others) {
+        var io, log3, global2 = (
+          /** @type {jscc.global} */
+          require3("./global")
+        ), first = (
+          /** @type {jscc.first} */
+          require3("./first")
+        ), printtab = (
+          /** @type {jscc.printtab} */
+          require3("./printtab")
+        ), tabgen = (
+          /** @type {jscc.tabgen} */
+          require3("./tabgen")
+        ), util = (
+          /** @type {jscc.util} */
+          require3("./util")
+        ), integrity = (
+          /** @type {jscc.integrity} */
+          require3("./integrity")
+        ), lexdbg = (
+          /** @type {jscc.lexdbg} */
+          require3("./lexdbg")
+        ), parse3 = (
+          /** @type {function(string, string=):number} */
+          require3("./parse")
+        ), LOG_LEVEL = require3("./enums/LOG_LEVEL"), EXEC = require3("./enums/EXEC"), lexdfa = (
+          /** @type {jscc.lexdfa} */
+          require3("./lexdfa")
+        ), MODE_GEN = require3("./enums/MODE_GEN");
+        (function() {
+          if (false) {
+            io = /** @type {jscc.io} */
+            require3("./io/ioNode");
+            log3 = /** @type {jscc.log} */
+            require3("./log/logNode");
+          } else {
+            io = /** @type {jscc.io} */
+            require3("./io/io");
+            log3 = /** @type {jscc.log} */
+            require3("./log/log");
+          }
+        })();
+        var main = /* @__PURE__ */ __name(function(options) {
+          var opt = options || {};
+          var logLevel = (
+            /** jscc.enums.LOG_LEVEL */
+            LOG_LEVEL.WARN
+          );
+          if (typeof opt["logLevel"] === "string") {
+            logLevel = util.log_level_value(opt["logLevel"]);
+          } else if (opt["logLevel"]) {
+            logLevel = /** jscc.enums.LOG_LEVEL */
+            opt["logLevel"];
+          }
+          log3.setLevel(logLevel);
+          log3.trace("jscc main: processing options");
+          var out_file = typeof opt["out_file"] === "string" ? opt["out_file"] : "";
+          var src_file = typeof opt["src_file"] === "string" ? opt["src_file"] : "";
+          var tpl_file = typeof opt["tpl_file"] === "string" ? opt["tpl_file"] : "";
+          var dump_nfa = typeof opt["dump_nfa"] === "boolean" ? opt["dump_nfa"] : false;
+          var dump_dfa = typeof opt["dump_dfa"] === "boolean" ? opt["dump_dfa"] : false;
+          var verbose = typeof opt["verbose"] === "boolean" ? opt["verbose"] : false;
+          var inputString = (
+            /** @type {string} */
+            typeof opt["input"] === "string" ? opt["input"] : ""
+          );
+          var inputFunction = typeof opt["input"] === "function" ? opt["input"] : null;
+          var templateString = typeof opt["template"] === "string" ? opt["template"] : global2.DEFAULT_DRIVER;
+          var templateFunction = typeof opt["template"] === "function" ? opt["template"] : null;
+          var outputCallback = typeof opt["outputCallback"] === "function" ? opt["outputCallback"] : null;
+          var throwIfErrors = typeof opt["throwIfErrors"] === "boolean" ? opt["throwIfErrors"] : false;
+          var exitIfErrors = typeof opt["exitIfErrors"] === "boolean" ? opt["exitIfErrors"] : false;
+          if (inputString !== "") {
+            global2.read_all_input_function = function() {
+              return inputString;
+            };
+          } else if (inputFunction) {
+            global2.read_all_input_function = inputFunction;
+          }
+          if (templateString !== "") {
+            global2.read_template_function = function() {
+              return templateString;
+            };
+          } else if (templateFunction) {
+            global2.read_template_function = templateFunction;
+          }
+          if (outputCallback) {
+            global2.write_output_function = outputCallback;
+          }
+          global2.file = (src_file || "") === "" ? "[input]" : src_file;
+          global2.dump_nfa = dump_nfa;
+          global2.dump_dfa = dump_dfa;
+          log3.trace("jscc main: reading source");
+          var src = inputString;
+          if (src === "") {
+            if (inputFunction) {
+              src = inputFunction();
+            } else if (src_file !== "") {
+              src = /** @type {string} */
+              io.read_all_input(src_file);
+            } else {
+              log3.error("No input.  Specify input or src_file in the options parameter.");
+            }
+          }
+          if (src !== "") {
+            log3.trace("jscc main: parse");
+            parse3(src, global2.file);
+            if (global2.errors == 0) {
+              log3.trace("jscc main: integrity.undef()");
+              integrity.undef();
+              log3.trace("jscc main: integrity.unreachable()");
+              integrity.unreachable();
+              if (global2.errors == 0) {
+                log3.trace("jscc main: first.first()");
+                first.first();
+                log3.trace("jscc main: tabgen.lalr1_parse_table(false)");
+                tabgen.lalr1_parse_table(false);
+                log3.trace("jscc main: integrity.check_empty_states()");
+                integrity.check_empty_states();
+                if (global2.errors == 0) {
+                  if (global2.dump_dfa) {
+                    lexdbg.print_dfa(global2.dfa_states);
+                  }
+                  log3.trace("jscc main: lexdfa.create_subset(global.nfa_states.value)");
+                  global2.dfa_states = lexdfa.create_subset(global2.nfa_states.value);
+                  log3.trace("jscc main: lexdfa.minimize_dfa(global.dfa_states)");
+                  global2.dfa_states = lexdfa.minimize_dfa(global2.dfa_states);
+                  log3.trace("jscc main: read template");
+                  var driver = templateString;
+                  if (templateFunction) {
+                    driver = templateFunction();
+                  } else if (tpl_file !== "") {
+                    driver = /** @type {string} */
+                    io.read_template(tpl_file);
+                  }
+                  log3.trace("jscc main: replace template strings");
+                  driver = driver.replace(/##HEADER##/gi, global2.code_head);
+                  driver = driver.replace(/##TABLES##/gi, printtab.print_parse_tables(MODE_GEN.JS));
+                  driver = driver.replace(/##DFA##/gi, printtab.print_dfa_table(global2.dfa_states));
+                  driver = driver.replace(/##TERMINAL_ACTIONS##/gi, printtab.print_term_actions());
+                  driver = driver.replace(/##LABELS##/gi, printtab.print_symbol_labels());
+                  driver = driver.replace(/##ACTIONS##/gi, printtab.print_actions());
+                  driver = driver.replace(/##FOOTER##/gi, global2.code_foot);
+                  driver = driver.replace(/##ERROR_TOKEN##/gi, printtab.get_error_symbol_id().toString());
+                  driver = driver.replace(/##EOF##/gi, printtab.get_eof_symbol_id().toString());
+                  driver = /** @type {string} */
+                  driver.replace(/##WHITESPACE##/gi, printtab.get_whitespace_symbol_id().toString());
+                  log3.trace("jscc main: output");
+                  if (global2.errors == 0) {
+                    if (outputCallback) {
+                      outputCallback(driver);
+                    } else if (out_file != "") {
+                      io.write_output({
+                        text: driver,
+                        destination: out_file
+                      });
+                    } else {
+                      io.write_output(driver);
+                    }
+                  }
+                  if (verbose) {
+                    log3.info(
+                      '"' + src_file + '" produced ' + global2.states.length + " states (" + global2.shifts + " shifts," + global2.reduces + " reductions, " + global2.gotos + " gotos)"
+                    );
+                  }
+                }
+              }
+            }
+            if (verbose) {
+              log3.info(
+                global2.warnings + " warning" + (global2.warnings > 1 ? "s" : "") + ", " + global2.errors + " error" + (global2.errors > 1 ? "s" : "")
+              );
+            }
+          }
+          if (exitIfErrors && global2.errors > 0) {
+            io.exit(1);
+          }
+          if (throwIfErrors && global2.errors > 0) {
+            throw new Error("There were one or more compilation errors.  See the log output for more information.");
+          }
+        }, "main");
+        return main;
+      }
+    );
+    (function(root, factory) {
+      if (typeof define === "function" && define.amd) {
+        define("main", ["require", "./lib/jscc/main"], factory);
+      } else if (typeof module === "object" && module.exports) {
+        module.exports = factory(require2);
+      } else {
+        root.jsccmain = factory(function() {
+          return root.jscc;
+        });
+      }
+    })(
+      exports,
+      /**
+       * @param {reqParameter} require
+       * @param {...*} others
+       * @returns {function(?mainOptions=)}
+       */
+      function(require3, others) {
+        var main = (
+          /** @type {function(?mainOptions=)} */
+          require3("./lib/jscc/main")
+        );
+        return main;
+      }
+    );
+    jscc["enums"] = jscc.enums;
+    jglobal.requireLib = require2;
+    jscc.require = require2;
+    requirejs.config({
+      baseUrl: ".",
+      paths: {
+        text: "bin/text",
+        requireLib: "node_modules/requirejs/require",
+        has: "volo/has"
+      },
+      map: {
+        "*": {
+          "lib/jscc/io/io": "lib/jscc/io/ioBrowser",
+          "lib/jscc/log/log": "lib/jscc/log/logBrowser",
+          "lib/jscc/bitset": "lib/jscc/bitset/BitSet32"
+        }
+      },
+      nodeRequire: require2,
+      config: {
+        "lib/jscc/global": {
+          version: "0.40.1"
+        }
+      }
+    });
+    require2(["main"]);
+  }
+});
 
 // util/localStorage.ts
 var Cmds = {
@@ -7256,6473 +13750,8 @@ var LZString = function() {
 }();
 var lzstring_default = LZString;
 
-// util/jscc.js
-var jglobal;
-if (typeof window !== "undefined") {
-  window.jscc = {};
-  jglobal = window;
-} else if (typeof self !== "undefined") {
-  self.jscc = {};
-  jglobal = self;
-} else if (typeof global !== "undefined") {
-  global.jscc = {};
-  jglobal = global;
-}
-jscc["enums"] = {};
-jscc["classes"] = {};
-jscc.enums = jscc["enums"];
-jscc.classes = jscc["classes"];
-jscc.enums.ASSOC = {
-  /**
-   * The associativity has not yet been set.
-   */
-  NONE: 0,
-  /**
-   * The symbol is left-associative.
-   */
-  LEFT: 1,
-  /**
-   * The symbol is right-associative.
-   */
-  RIGHT: 2,
-  /**
-   * The symbol is non-associative.
-   */
-  NOASSOC: 3
-};
-jscc.enums.EDGE = {
-  FREE: 0,
-  EPSILON: 1,
-  CHAR: 2
-};
-jscc.enums.EXEC = {
-  /**
-   * A console-based Javascript engine is in use.
-   */
-  CONSOLE: 0,
-  /**
-   * A web-browser-based Javascript engine is in use.
-   */
-  WEB: 1
-};
-jscc.enums.LOG_LEVEL = {
-  /**
-   * Log all messages.
-   */
-  TRACE: 0,
-  /**
-   * Log debug messages and higher.
-   */
-  DEBUG: 1,
-  /**
-   * Log info messages and higher.
-   */
-  INFO: 2,
-  /**
-   * Log warning messages and higher.
-   */
-  WARN: 3,
-  /**
-   * Log error and fatal messages.
-   */
-  ERROR: 4,
-  /**
-   * Log only fatal messages.
-   */
-  FATAL: 5
-};
-jscc.enums.LOG_LEVEL["TRACE"] = jscc.enums.LOG_LEVEL.TRACE;
-jscc.enums.LOG_LEVEL["DEBUG"] = jscc.enums.LOG_LEVEL.DEBUG;
-jscc.enums.LOG_LEVEL["INFO"] = jscc.enums.LOG_LEVEL.INFO;
-jscc.enums.LOG_LEVEL["WARN"] = jscc.enums.LOG_LEVEL.WARN;
-jscc.enums.LOG_LEVEL["ERROR"] = jscc.enums.LOG_LEVEL.ERROR;
-jscc.enums.LOG_LEVEL["FATAL"] = jscc.enums.LOG_LEVEL.FATAL;
-jscc.enums["LOG_LEVEL"] = jscc.enums.LOG_LEVEL;
-jscc.enums.MODE_GEN = {
-  /**
-   * Output is plain text.
-   */
-  TEXT: 0,
-  /**
-   * Output is JavaScript code.
-   */
-  JS: 1,
-  /**
-   * Output is HTML-formatted.
-   */
-  HTML: 2
-};
-jscc.enums.SPECIAL = {
-  /**
-   * Identifies a non-special symbol.
-   */
-  NONE: 0,
-  /**
-   * Identifies an end-of-file symbol.
-   */
-  EOF: 1,
-  /**
-   * Identifies a whitespace symbol.
-   */
-  WHITESPACE: 2,
-  /**
-   * Identifies an error symbol.
-   */
-  ERROR: 3
-};
-jscc.enums.SYM = {
-  /**
-   * The symbol is nonterminating.
-   */
-  NONTERM: 0,
-  /**
-   * The symbol is terminating.
-   */
-  TERM: 1
-};
-var SymbolOptions;
-var ProductionOptions;
-var StateOptions;
-var ItemOptions;
-var NfaOptions;
-var DfaOptions;
-var mainOptions;
-var reqParameter;
-var almondRequire;
-var almondRequireExtension = (
-  /**
-   * @lends {almondRequire}
-   */
-  {
-    /**
-     * @type {!Object<string, *>}
-     */
-    _defined: {},
-    /**
-     * @param {Object<string, *>} cfg
-     * @returns {almondRequire}
-     */
-    config: function(cfg) {
-    }
-  }
-);
-var stringWithErrorMessage;
-var stringWithErrorMessageExtension = (
-  /**
-   * @lends {stringWithErrorMessage}
-   */
-  {
-    /**
-     * @type {string}
-     */
-    ERROR_MSG: ""
-  }
-);
-var hasObject;
-var hasObjectExtension = (
-  /**
-   * @lends {hasObject}
-   */
-  {
-    /**
-     * @param {string} name
-     * @param {function(...*):boolean} test
-     * @param {boolean=} now
-     */
-    add: function(name, test2, now) {
-    },
-    /**
-     * @param {T} el
-     * @returns {T}
-     * @template T
-     */
-    clearElement: function(el) {
-    },
-    /**
-     * @param {string} name
-     * @param {*} el
-     * @returns {boolean}
-     */
-    cssprop: function(name, el) {
-    },
-    /**
-     * @param {*} obj
-     * @param {*=} property
-     * @returns {boolean}
-     */
-    isHostType: function(obj, property) {
-    },
-    /**
-     * @returns {Object<string, (boolean|stringWithErrorMessage)>}
-     */
-    all: function() {
-    }
-  }
-);
-var ioOptions;
-var ioWriteOutputOptions;
-jscc.io = function() {
-};
-jscc.io.prototype = {
-  /**
-   * Reads input from the specified file or from standard input.
-   * If chunkCallback and/or endCallback are specified, the operation
-   * is asynchronous, and the function returns nothing.  Otherwise,
-   * the operation is synchronous, and the function returns a string
-   * with the contents read from the file or from standard input.
-   *
-   * @param {(string|function(string):void|ioOptions)=} options -
-   *     If a string, the filename to read.  If an object, has optional filename, chunkCallback, and endCallback
-   *     properties.  If a function, the callback function to execute for each chunk read from standard input.
-   * @returns {(string|void)} When running synchronously, the text read from
-   * the file or standard input.  When running asynchronously, returns nothing.
-   */
-  read_all_input: function(options) {
-  },
-  /**
-   * Reads the template file into which the parser code is inserted.
-   * If not specified, uses the default driver specified in
-   * {@link jscc.global.DEFAULT_DRIVER}.
-   *
-   * @param {(string|function(string):void|ioOptions)=} options -
-   *     If a string, specifies the template filename.  If a function, specifies the callback function to be used
-   *     when reading a file chunk has completed.  If an object, specifies either or both.  If omitted, causes the
-   *     function to read
-   * {@link jscc.global.DEFAULT_DRIVER} synchronously.
-   * @returns {(string|void)} When running synchronously, returns the contents of
-   * the template file as a string.  When running asynchronously, returns
-   * nothing.
-   */
-  read_template: function(options) {
-  },
-  /**
-   * Writes the provided text to the specified file or to standard output.
-   *
-   * @param {(string|ioWriteOutputOptions)} options - When a string, the text
-   *     to be written to standard output.  When an object, contains text, destination, and callback properties.
-   */
-  write_output: function(options) {
-  },
-  /**
-   * Writes the provided text to a debugging output, provided that such an output
-   * exists in the implementation of this interface.
-   *
-   * @param {string} text - The text to write to the debugging output.
-   */
-  write_debug: function(text) {
-  },
-  /**
-   * Attempts to exit the entire process with the provided exit code if the
-   * platform supports doing so.  Callers should also ensure that all functions
-   * exit appropriately if the platform does not support this feature.
-   *
-   * @param {number=} exitCode - The exit code to use.
-   */
-  exit: function(exitCode) {
-  }
-};
-jscc.log = function() {
-};
-jscc.log.prototype = {
-  /**
-   * Logs a message at the fatal level.
-   * @param {string} msg - The message to log.
-   */
-  fatal: function(msg) {
-  },
-  /**
-   * Logs a message at the error level.
-   * @param {string} msg - The message to log.
-   */
-  error: function(msg) {
-  },
-  /**
-   * Logs a message at the warning level.
-   * @param {string} msg - The message to log.
-   */
-  warn: function(msg) {
-  },
-  /**
-   * Logs a message at the info level.
-   * @param {string} msg - The message to log.
-   */
-  info: function(msg) {
-  },
-  /**
-   * Logs a message at the debug level.
-   * @param {string} msg - The message to log.
-   */
-  debug: function(msg) {
-  },
-  /**
-   * Logs a message at the trace level.
-   * @param {string} msg - The message to log.
-   */
-  trace: function(msg) {
-  },
-  /**
-   * Sets the minimum level to log.  This function
-   * may not have an effect at all times with all
-   * loggers.
-   * @param {jscc.enums.LOG_LEVEL} level - The
-   * minimum level to log.
-   */
-  setLevel: function(level) {
-  }
-};
-jscc.bitset = function() {
-};
-jscc.bitset.prototype = {
-  /**
-   * Sets the specified bit to true or false.
-   * @param {!number} bit - The index of the bit to set
-   * @param {boolean=} state - Whether to set the bit to true or false
-   * @returns {!boolean} Returns the state parameter for chaining purposes
-   * @method
-   */
-  set: function(bit, state2) {
-    return false;
-  },
-  /**
-   * Gets the bit at the specified index.
-   * @param {!number} bit - The index of the bit to get
-   * @returns {!boolean} Whether the bit is currently true or false
-   * @method
-   */
-  get: function(bit) {
-    return false;
-  },
-  /**
-   * Returns the number of true values in the bitset.
-   * @returns {!number} The number of true values in the bitset
-   * @method
-   */
-  count: function() {
-    return 0;
-  }
-};
-var requirejs;
-var require2;
-var define;
-(function(undef) {
-  var main, req, makeMap, handlers, defined2 = {}, waiting = {}, config = {}, defining = {}, hasOwn = Object.prototype.hasOwnProperty, aps = [].slice, jsSuffixRegExp = /\.js$/;
-  function hasProp(obj, prop) {
-    return hasOwn.call(obj, prop);
-  }
-  __name(hasProp, "hasProp");
-  function normalize(name, baseName) {
-    var nameParts, nameSegment, mapValue, foundMap, lastIndex, foundI, foundStarMap, starI, i2, j, part, normalizedBaseParts, baseParts = (
-      /** @type {Array<string>} */
-      baseName && baseName.split("/")
-    ), map = config.map, starMap = map && map["*"] || {};
-    if (name) {
-      nameParts = name.split("/");
-      lastIndex = nameParts.length - 1;
-      if (config.nodeIdCompat && jsSuffixRegExp.test(nameParts[lastIndex])) {
-        nameParts[lastIndex] = nameParts[lastIndex].replace(jsSuffixRegExp, "");
-      }
-      if (nameParts[0].charAt(0) === "." && baseParts) {
-        normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
-        nameParts = normalizedBaseParts.concat(nameParts);
-      }
-      for (i2 = 0; i2 < nameParts.length; i2++) {
-        part = nameParts[i2];
-        if (part === ".") {
-          nameParts.splice(i2, 1);
-          i2 -= 1;
-        } else if (part === "..") {
-          if (!(i2 === 1 && nameParts[2] === ".." || nameParts[i2 - 1] === "..") && i2 > 0) {
-            nameParts.splice(i2 - 1, 2);
-            i2 -= 2;
-          }
-        }
-      }
-      name = nameParts.join("/");
-      nameParts = null;
-    }
-    if ((baseParts || starMap) && map) {
-      nameParts = name.split("/");
-      for (i2 = nameParts.length; i2 > 0; i2 -= 1) {
-        nameSegment = nameParts.slice(0, i2).join("/");
-        if (baseParts) {
-          for (j = baseParts.length; j > 0; j -= 1) {
-            mapValue = map[baseParts.slice(0, j).join("/")];
-            if (mapValue) {
-              mapValue = mapValue[nameSegment];
-              if (mapValue) {
-                foundMap = mapValue;
-                foundI = i2;
-                break;
-              }
-            }
-          }
-        }
-        if (foundMap) {
-          break;
-        }
-        if (!foundStarMap && starMap && starMap[nameSegment]) {
-          foundStarMap = starMap[nameSegment];
-          starI = i2;
-        }
-      }
-      if (!foundMap && foundStarMap) {
-        foundMap = foundStarMap;
-        foundI = starI;
-      }
-      if (foundMap) {
-        nameParts.splice(0, foundI, foundMap);
-        name = nameParts.join("/");
-      }
-    }
-    return name;
-  }
-  __name(normalize, "normalize");
-  function makeRequire(relName, forceSync) {
-    return function() {
-      var args = aps.call(arguments, 0);
-      if (typeof args[0] !== "string" && args.length === 1) {
-        args.push(null);
-      }
-      return req.apply(undef, args.concat([relName, forceSync]));
-    };
-  }
-  __name(makeRequire, "makeRequire");
-  function makeNormalize(relName) {
-    return function(name) {
-      return normalize(name, relName);
-    };
-  }
-  __name(makeNormalize, "makeNormalize");
-  function makeLoad(depName) {
-    return function(value) {
-      defined2[depName] = value;
-    };
-  }
-  __name(makeLoad, "makeLoad");
-  function callDep(name) {
-    if (hasProp(waiting, name)) {
-      var args = waiting[name];
-      delete waiting[name];
-      defining[name] = true;
-      main.apply(undef, args);
-    }
-    if (!hasProp(defined2, name) && !hasProp(defining, name)) {
-      throw new Error("No " + name);
-    }
-    return defined2[name];
-  }
-  __name(callDep, "callDep");
-  function splitPrefix(name) {
-    var prefix, index = name ? name.indexOf("!") : -1;
-    if (index > -1) {
-      prefix = name.substring(0, index);
-      name = name.substring(index + 1, name.length);
-    }
-    return [prefix, name];
-  }
-  __name(splitPrefix, "splitPrefix");
-  makeMap = /* @__PURE__ */ __name(function(name, relName) {
-    var plugin, parts2 = splitPrefix(name), prefix = parts2[0];
-    name = /** @type {string} */
-    parts2[1];
-    if (prefix) {
-      prefix = normalize(prefix, relName);
-      plugin = callDep(prefix);
-    }
-    if (prefix) {
-      if (plugin && plugin.normalize) {
-        name = /** @type {{normalize: function(string, function(string):string):string}} */
-        plugin.normalize(
-          name,
-          makeNormalize(relName)
-        );
-      } else {
-        name = normalize(name, relName);
-      }
-    } else {
-      name = normalize(name, relName);
-      parts2 = splitPrefix(name);
-      prefix = parts2[0];
-      name = /** @type {string} */
-      parts2[1];
-      if (prefix) {
-        plugin = callDep(prefix);
-      }
-    }
-    return {
-      f: prefix ? prefix + "!" + name : name,
-      //fullName
-      n: name,
-      pr: prefix,
-      p: plugin
-    };
-  }, "makeMap");
-  function makeConfig(name) {
-    return function() {
-      return config && config.config && config.config[name] || {};
-    };
-  }
-  __name(makeConfig, "makeConfig");
-  handlers = {
-    require: function(name) {
-      return makeRequire(name);
-    },
-    exports: function(name) {
-      var e = defined2[name];
-      if (typeof e !== "undefined") {
-        return e;
-      } else {
-        return defined2[name] = {};
-      }
-    },
-    module: function(name) {
-      return {
-        id: name,
-        uri: "",
-        exports: defined2[name],
-        config: makeConfig(name)
-      };
-    }
-  };
-  main = /* @__PURE__ */ __name(function(name, deps, callback, relName) {
-    var cjsModule, depName, ret2, map, i2, args = [], callbackType = typeof callback, usingExports;
-    relName = /** @type {string} */
-    relName || name;
-    if (callbackType === "undefined" || callbackType === "function") {
-      deps = !deps.length && callback.length ? ["require", "exports", "module"] : deps;
-      for (i2 = 0; i2 < deps.length; i2 += 1) {
-        map = makeMap(deps[i2], relName);
-        depName = map.f;
-        if (depName === "require") {
-          args[i2] = handlers.require(name);
-        } else if (depName === "exports") {
-          args[i2] = handlers.exports(name);
-          usingExports = true;
-        } else if (depName === "module") {
-          cjsModule = args[i2] = handlers.module(name);
-        } else if (hasProp(defined2, depName) || hasProp(waiting, depName) || hasProp(defining, depName)) {
-          args[i2] = callDep(depName);
-        } else if (map.p) {
-          map.p.load(map.n, makeRequire(relName, true), makeLoad(depName), {});
-          args[i2] = defined2[depName];
-        } else {
-          throw new Error(name + " missing " + depName);
-        }
-      }
-      ret2 = callback ? callback.apply(defined2[
-        /** @type {string} */
-        name
-      ], args) : void 0;
-      if (name) {
-        if (cjsModule && cjsModule.exports !== undef && cjsModule.exports !== defined2[name]) {
-          defined2[name] = cjsModule.exports;
-        } else if (ret2 !== undef || !usingExports) {
-          defined2[name] = ret2;
-        }
-      }
-    } else if (name) {
-      defined2[name] = callback;
-    }
-  }, "main");
-  requirejs = require2 = req = /** @type {almondRequire} */
-  /* @__PURE__ */ __name(function(deps, callback, relName, forceSync, alt) {
-    if (typeof deps === "string") {
-      if (handlers[deps]) {
-        return handlers[deps](
-          /** string */
-          callback
-        );
-      }
-      return callDep(makeMap(
-        deps,
-        /** @type {string} */
-        callback
-      ).f);
-    }
-    if (!deps.splice) {
-      config = deps;
-      if (config.deps) {
-        req(config.deps, config.callback);
-      }
-      if (!callback) {
-        return;
-      }
-      if (callback.splice) {
-        deps = /** @type {Array<string>} */
-        callback;
-        callback = relName;
-        relName = null;
-      } else {
-        deps = undef;
-      }
-    }
-    callback = /** @type {!Function} */
-    callback || function() {
-    };
-    if (typeof relName === "function") {
-      relName = /** @type {string} */
-      forceSync;
-      forceSync = alt;
-    }
-    if (forceSync) {
-      main(
-        undef,
-        /** @type {(Array<string>|undefined)} */
-        deps,
-        callback,
-        /** @type {(string|undefined)} */
-        relName
-      );
-    } else {
-      setTimeout(function() {
-        main(
-          undef,
-          /** @type {(Array<string>|undefined)} */
-          deps,
-          /** @type {!Function} */
-          callback,
-          /** @type {(string|undefined)} */
-          relName
-        );
-      }, 4);
-    }
-    return req;
-  }, "req");
-  req.config = function(cfg) {
-    return req(cfg);
-  };
-  requirejs._defined = defined2;
-  define = /* @__PURE__ */ __name(function(name, deps, callback) {
-    if (typeof name !== "string") {
-      throw new Error("See almond README: incorrect module build, no module name");
-    }
-    if (!deps.splice) {
-      callback = /** @type {Function} */
-      deps;
-      deps = [];
-    }
-    if (!hasProp(defined2, name) && !hasProp(waiting, name)) {
-      waiting[name] = [name, deps, callback];
-    }
-  }, "define");
-  define.amd = {
-    jQuery: true
-  };
-})(void 0);
-define("bin/almond", function() {
-});
-define("text", {
-  load: function(id) {
-    throw new Error("Dynamic load not allowed: " + id);
-  }
-});
-define("text!lib/jscc/template/parser-driver-js.txt", [], function() {
-  return `/*\r
-	This is the general, platform-independent part of every parser driver;\r
-	Input-/Output and Feature-Functions are done by the particular drivers\r
-	created for the particular platform.\r
-*/\r
-##HEADER##\r
-var __parse=(function(/** number */ eof, /** number */ whitespace, /** number */ error_token){\r
-	\r
-/// there was "continue" in code, we must to replace it\r
-var Continue = function(){throw Continue;};\r
-\r
-	/**\r
-	 * @template T\r
-	 * @param {T} value\r
-	 * @constructor\r
-	 * @extends {Error}\r
-     */\r
-	var ReturnValue = function(value) {\r
-		Error.call(this);\r
-		this._value = value;\r
-	};\r
-	ReturnValue.prototype = Object.create(Error.prototype);\r
-	ReturnValue.prototype.constructor = ReturnValue;\r
-	/**\r
-	 * @type {T}\r
-	 * @private\r
-     */\r
-	ReturnValue.prototype._value = null;\r
-	/**\r
-	 * @returns {T}\r
-     */\r
-	ReturnValue.prototype.valueOf = function() {\r
-		return this._value;\r
-	};\r
-\r
-	///can return value from any place of callback\r
-	function Return(value){\r
-		throw new ReturnValue(value);\r
-	}\r
-\r
-	var TERMINAL_ACTIONS = (function(){\r
-		function emptyFn(PCB){return PCB.att;}\r
-		var actions = ##TERMINAL_ACTIONS##\r
-		return function(/** @type {!PcbClass} */ PCB, match){\r
-			try{\r
-				return (actions[match] || emptyFn)(PCB);\r
-			}catch(e){\r
-				if(e instanceof ReturnValue)return e.valueOf();\r
-				if(e == Continue)return Continue;\r
-				throw e;\r
-			}\r
-		}\r
-	})();\r
-	/**\r
-	 * @constructor\r
-     */\r
-	var DfaLex = function() {\r
-		this._dfaData = ##DFA##;\r
-	};\r
-	/**\r
-	 * @type {!Array<!{line: !Array, accept: !number}>}\r
-	 * @private\r
-     */\r
-	DfaLex.prototype._dfaData = [];\r
-	/**\r
-	 * @type {number}\r
-     */\r
-	DfaLex.prototype.match_pos = 0;\r
-	/**\r
-	 * @type {?number}\r
-     */\r
-	DfaLex.prototype.state = 0;\r
-	/**\r
-	 * @type {?number}\r
-     */\r
-	DfaLex.prototype.match = null;\r
-	/**\r
-	 * @param {number} chr\r
-	 * @param {number} pos\r
-     */\r
-	DfaLex.prototype.exec = function(chr, pos) {\r
-		if (this.state !== null) {\r
-		    if ((typeof this.state !== "number") || this.state >= this._dfaData.length) {\r
-		        this.state = null;\r
-		        throw new Error("Invalid value for DfaLex.state at chr " + chr + " and pos " + pos);\r
-		    }\r
-			var line = this._dfaData[this.state].line;\r
-			if (typeof line === "undefined" || line === null) {\r
-			    var badState = this.state;\r
-			    this.state = null;\r
-			    throw new Error("At chr " + chr + " and pos " + pos +\r
-			                    ", DfaLex._dfaData[" + badState +\r
-			                    "] appears to exist, but its line property is " +\r
-			                    (typeof line === "undefined" ? "undefined." : "null."));\r
-			}\r
-			var p, st;\r
-			for (p = 1 << 8, st = line; p; p >>= 1) {\r
-				if ((chr & p) !== 0) {\r
-					st = st[1];\r
-				} else {\r
-					st = st[0];\r
-				}\r
-				if (typeof st === "undefined") {\r
-				    st = null;\r
-				}\r
-				if (st === null)break;\r
-				if (Array.isArray(st))continue;\r
-				break;\r
-			}\r
-			var ac = this._dfaData[this.state].accept;\r
-			this.state = /** @type {?number} */ (st);\r
-			if (ac !== -1) {\r
-				this.match = /** @type{number} */ (ac);\r
-				this.match_pos = pos;\r
-			}\r
-		}\r
-	};\r
-##TABLES##\r
-##LABELS##\r
-	var ACTIONS = (function(){\r
-		var PCB = {};\r
-		var actions = ##ACTIONS##;\r
-		return function (/** number */ act, /** Array<*> */ vstack, /** !PcbClass */ pcb){\r
-			try{\r
-				PCB = pcb;\r
-				return actions[act].apply(null,vstack);\r
-			}catch(e){\r
-				if(e instanceof ReturnValue)return e.valueOf();\r
-				throw e;\r
-			}\r
-		}\r
-	})();\r
-\r
-	/**\r
-	 * @param {number} top\r
-	 * @param {?number} la\r
-	 * @returns {?number}\r
-     */\r
-	function get_act(top, la){	\r
-		for(var i = 0; i < act_tab[top].length; i+=2)\r
-			if(act_tab[top][i] === la)\r
-				return act_tab[top][i+1];\r
-		return null;\r
-	}\r
-	function get_goto(top, pop){	\r
-		for(var i = 0; i < goto_tab[top].length; i+=2)\r
-			if(goto_tab[top][i] === pop)\r
-				return goto_tab[top][i+1];\r
-		return null;\r
-	}\r
-\r
-	/**\r
-	 * @param {!string} src\r
-	 * @constructor\r
-     */\r
-	var PcbClass = function(src) {\r
-		this.src = src;\r
-	};\r
-	/**\r
-	 * @type {number}\r
-     */\r
-	PcbClass.prototype.line = 1;\r
-	/**\r
-	 * @type {number}\r
-     */\r
-	PcbClass.prototype.column = 1;\r
-	/**\r
-	 * @type {number}\r
-     */\r
-	PcbClass.prototype.offset = 0;\r
-	/**\r
-	 * @type {number}\r
-     */\r
-	PcbClass.prototype.error_step = 0;\r
-	/**\r
-	 * @type {string}\r
-     */\r
-	PcbClass.prototype.src = "";\r
-	/**\r
-	 * @type {string}\r
-     */\r
-	PcbClass.prototype.att = "";\r
-	/**\r
-	 * @type {?number}\r
-     */\r
-	PcbClass.prototype.la = null;\r
-	/**\r
-	 * @type {?number}\r
-     */\r
-	PcbClass.prototype.act = null;\r
-	/**\r
-	 * @returns {?number}\r
-     */\r
-	PcbClass.prototype.lex = function() {\r
-        var /** number */ start, /** number */ pos, /** number */ chr, actionResult;\r
-		var dfa = new DfaLex();\r
-		var loop = true;\r
-		while(loop){\r
-			dfa.match_pos = 0;\r
-			pos = this.offset + 1;\r
-			do{\r
-				pos--;\r
-				dfa.state = 0;\r
-				dfa.match = null;\r
-				start = pos;\r
-				if(this.src.length <= start) {\r
-					this.la = eof;\r
-					return eof;\r
-				}\r
-				do{\r
-					chr = this.src.charCodeAt(pos);\r
-					dfa.exec(chr,pos);\r
-					if(dfa.state !== null)\r
-						this.accountChar(chr);\r
-					pos++;\r
-				}while(dfa.state !== null);\r
-			}while(whitespace > -1 && dfa.match === whitespace);\r
-			if(dfa.match !== null){\r
-				this.att = this.src.slice(start, dfa.match_pos);\r
-				this.offset = dfa.match_pos;\r
-				actionResult = TERMINAL_ACTIONS(this,dfa.match);\r
-				if(dfa.state !== null)\r
-					this.accountChar(chr);\r
-				if(actionResult === Continue)\r
-					continue;\r
-				this.att = actionResult;\r
-			}else {\r
-				this.att = "";\r
-			}\r
-			loop = false;\r
-		}\r
-		this.la = dfa.match;\r
-		return this.la;\r
-	};\r
-	/**\r
-	 * @param {number} chr\r
-     */\r
-    PcbClass.prototype.accountChar = function(chr) {\r
-		if( chr === 10 ){\r
-			this.line++;\r
-			this.column = 0;\r
-		}\r
-		this.column++;\r
-	};\r
-	function parse(/** string */ src, err_off, err_la){\r
-		/**\r
-		 * @type {!Array<number>}\r
-         */\r
-		var		sstack			= [0];\r
-		/**\r
-		 * @type {!Array<*>}\r
-         */\r
-		var		vstack			= [0];\r
-		/**\r
-		 * @type {number}\r
-         */\r
-		var 	err_cnt			= 0;\r
-		/**\r
-		 * @type {*}\r
-		 */\r
-		var		rval;\r
-		/**\r
-		 * @type {?number}\r
-		 */\r
-		var		act;\r
-		/**\r
-		 * @type {number}\r
-		 */\r
-		var i = 0;\r
-\r
-		var PCB	= new PcbClass(src);\r
-		err_off	= err_off || [];\r
-		err_la = err_la || [];\r
-		PCB.lex();\r
-		while(true){\r
-			PCB.act = get_act(sstack[0],PCB.la);\r
-			if(PCB.act === null && defact_tab[sstack[0]] >= 0)\r
-				PCB.act = -defact_tab[sstack[0]];\r
-			if(PCB.act === null){//Parse error? Try to recover!\r
-				//Report errors only when error_step is 0, and this is not a\r
-				//subsequent error from a previous parse\r
-				if(PCB.error_step === 0){\r
-					err_cnt++;\r
-					err_off.unshift(PCB.offset - PCB.att.length);\r
-					err_la.unshift([]);\r
-					for(i = 0; i < act_tab[sstack[0]].length; i+=2)\r
-						err_la[0].push(labels[act_tab[sstack[0]][i]]);\r
-				}\r
-				//Perform error recovery			\r
-				while(sstack.length > 1 && PCB.act === null){\r
-					sstack.shift();\r
-					vstack.shift();\r
-					//Try to shift on error token\r
-					PCB.act = get_act(sstack[0],PCB.la);\r
-					if(PCB.act === error_token){\r
-						sstack.unshift(PCB.act);\r
-						vstack.unshift("");\r
-					}\r
-				}\r
-				//Is it better to leave the parser now?\r
-				if(sstack.length > 1 && PCB.act !== null){\r
-					//Ok, now try to shift on the next tokens\r
-					while(PCB.la !== eof){\r
-						PCB.act = act_tab[sstack[0]][i+1];\r
-						if(PCB.act != null)break;\r
-						while(PCB.lex() != null)PCB.offset++;\r
-					}\r
-				}\r
-				if(PCB.act === null || PCB.la === eof){\r
-					break;\r
-				}\r
-				//Try to parse the next three tokens successfully...\r
-				PCB.error_step = 3;\r
-			}\r
-			if(PCB.act > 0){//Shift\r
-				//Parse tree generation\r
-				sstack.unshift(PCB.act);\r
-				vstack.unshift(PCB.att);\r
-				PCB.lex();\r
-				//Successfull shift and right beyond error recovery?\r
-				if(PCB.error_step > 0)\r
-					PCB.error_step--;\r
-			}else{	//Reduce	\r
-				act = -PCB.act;\r
-				//vstack.unshift(vstack);\r
-				rval = ACTIONS(act,vstack,PCB);\r
-				//vstack.shift();\r
-				sstack.splice(0,pop_tab[act][1]);\r
-				vstack.splice(0,pop_tab[act][1]);\r
-				\r
-				PCB.act = get_goto(sstack[0],pop_tab[act][0]);\r
-				//Do some parse tree construction if desired\r
-				//Goal symbol match?\r
-				if(act === 0) break; //Don't use PCB.act here!\r
-			\r
-				//...and push it!\r
-				sstack.unshift(PCB.act);\r
-				vstack.unshift(rval);\r
-			}\r
-		}\r
-		return err_cnt;\r
-	}\r
-	return parse;\r
-})(##EOF##,##WHITESPACE##,##ERROR_TOKEN##);\r
-\r
-##FOOTER##\r
-`;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/bitset/BitSet32", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccbitset = factory();
-  }
-})(void 0, function() {
-  jscc.BitSet32 = function() {
-    var that = this;
-    this._data = [];
-    this.set = function(bit, state2) {
-      state2 = !!state2;
-      that._data[bit >> 5] = state2 ? that._data[bit >> 5] | 1 << (bit & 31) : that._data[bit >> 5] & ~(1 << (bit & 31));
-      return state2;
-    };
-    this.get = function(bit) {
-      return (that._data[bit >> 5] & 1 << (bit & 31)) != 0;
-    };
-    this.count = function() {
-      var i2, l2, c = 0;
-      for (i2 = 0, l2 = that._data.length * 32; i2 < l2; i2++) {
-        if (that.get(i2)) {
-          c++;
-        }
-      }
-      return c;
-    };
-  };
-  return jscc.BitSet32;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/EDGE", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccEDGE = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.EDGE;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/Nfa", ["require", "../enums/EDGE", "../bitset"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccNfa = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(new:jscc.classes.Nfa, NfaOptions=)}
-   */
-  function(require3, others) {
-    var BitSet, tmpBitSet, EDGE = require3("../enums/EDGE");
-    (function() {
-      if (false) {
-        tmpBitSet = require3("../bitset/BitSet32");
-      } else {
-        tmpBitSet = require3("../bitset");
-      }
-    })();
-    BitSet = /** @type {function(new:jscc.bitset)} */
-    tmpBitSet;
-    jscc.classes.Nfa = function(o) {
-      var p = o || {};
-      if (p.edge === EDGE.CHAR || p.edge === EDGE.FREE) {
-        this.edge = /** @type {!jscc.enums.EDGE} */
-        p.edge;
-      }
-      if (typeof p.ccl === "object" && p.ccl.hasOwnProperty("get") && p.ccl.hasOwnProperty("set") && p.ccl.hasOwnProperty("count")) {
-        this.ccl = /** @type {!jscc.bitset} */
-        p.ccl;
-      } else {
-        this.ccl = new BitSet();
-      }
-      if (typeof p.follow === "number") {
-        this.follow = /** @type {!number} */
-        p.follow;
-      }
-      if (typeof p.follow2 === "number") {
-        this.follow2 = /** @type {!number} */
-        p.follow2;
-      }
-      if (typeof p.accept === "number") {
-        this.accept = /** @type {!number} */
-        p.accept;
-      }
-      if (typeof p.weight === "number") {
-        this.weight = /** @type {!number} */
-        p.weight;
-      }
-    };
-    jscc.classes.Nfa.prototype.edge = EDGE.EPSILON;
-    jscc.classes.Nfa.prototype.ccl = new BitSet();
-    jscc.classes.Nfa.prototype.follow = -1;
-    jscc.classes.Nfa.prototype.follow2 = -1;
-    jscc.classes.Nfa.prototype.accept = -1;
-    jscc.classes.Nfa.prototype.weight = -1;
-    return jscc.classes.Nfa;
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/nfaStates", ["require", "./bitset", "./enums/EDGE", "./classes/Nfa"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccnfaStates = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(new:jscc.NFAStates)}
-   */
-  function(require3, others) {
-    var BitSet, tmpBitSet, EDGE = require3("./enums/EDGE"), Nfa = (
-      /** @type {function(new:jscc.classes.Nfa, ?NfaOptions=)} */
-      require3("./classes/Nfa")
-    );
-    (function() {
-      if (false) {
-        tmpBitSet = require3("./bitset/BitSet32");
-      } else {
-        tmpBitSet = require3("./bitset");
-      }
-    })();
-    BitSet = /** @type {function(new:jscc.bitset)} */
-    tmpBitSet;
-    jscc.NFAStates = function() {
-    };
-    jscc.NFAStates.prototype.value = [];
-    jscc.NFAStates.prototype.create = function() {
-      var nfa;
-      var i2;
-      for (i2 = 0; i2 < this.value.length; i2++) {
-        if (this.value[i2].edge === EDGE.FREE) {
-          break;
-        }
-      }
-      if (i2 == this.value.length) {
-        nfa = new Nfa();
-        this.value.push(nfa);
-      } else {
-        nfa = this.value[i2];
-      }
-      nfa.edge = EDGE.EPSILON;
-      nfa.ccl = new BitSet();
-      nfa.accept = -1;
-      nfa.follow = -1;
-      nfa.follow2 = -1;
-      nfa.weight = -1;
-      return i2;
-    };
-    return jscc.NFAStates;
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/SYM", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccSYM = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.SYM;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/ASSOC", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccASSOC = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.ASSOC;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/SPECIAL", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccSPECIAL = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.SPECIAL;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/Symbol", ["require", "../enums/SYM", "../enums/ASSOC", "../enums/SPECIAL"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccSymbol = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(new:jscc.classes.Symbol, SymbolOptions=)}
-   */
-  function(require3, others) {
-    var SYM = require3("../enums/SYM"), ASSOC = require3("../enums/ASSOC"), SPECIAL = require3("../enums/SPECIAL");
-    jscc.classes.Symbol = function(o) {
-      var p = o || {};
-      if (typeof p.id === "number") {
-        this.id = p.id;
-      }
-      if (p.kind === SYM.TERM) {
-        this.kind = p.kind;
-      }
-      if (typeof p.label === "string") {
-        this.label = p.label;
-      }
-      if (Array.isArray(p.prods)) {
-        this.prods = /** @type {!Array<number>} */
-        p.prods;
-      }
-      if (Array.isArray(p.first)) {
-        this.first = /** @type {!Array<number>} */
-        p.first;
-      }
-      if (p.associativity === ASSOC.LEFT || p.associativity === ASSOC.RIGHT || p.associativity === ASSOC.NOASSOC) {
-        this.associativity = p.associativity;
-      }
-      if (typeof p.level === "number") {
-        this.level = p.level;
-      }
-      if (typeof p.code === "string") {
-        this.code = p.code;
-      }
-      if (p.special === SPECIAL.EOF || p.special === SPECIAL.ERROR || p.special === SPECIAL.WHITESPACE) {
-        this.special = p.special;
-      }
-      if (typeof p.nullable === "boolean") {
-        this.nullable = p.nullable;
-      }
-      if (typeof p.defined === "boolean") {
-        this.defined = p.defined;
-      }
-    };
-    jscc.classes.Symbol.prototype.id = -1;
-    jscc.classes.Symbol.prototype.kind = SYM.NONTERM;
-    jscc.classes.Symbol.prototype.label = "";
-    jscc.classes.Symbol.prototype.prods = [];
-    jscc.classes.Symbol.prototype.first = [];
-    jscc.classes.Symbol.prototype.associativity = ASSOC.NONE;
-    jscc.classes.Symbol.prototype.level = 0;
-    jscc.classes.Symbol.prototype.code = "";
-    jscc.classes.Symbol.prototype.special = SPECIAL.NONE;
-    jscc.classes.Symbol.prototype.nullable = false;
-    jscc.classes.Symbol.prototype.defined = false;
-    return jscc.classes.Symbol;
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/Production", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccProduction = factory();
-  }
-})(void 0, function() {
-  jscc.classes.Production = function(o) {
-    var p = o || {};
-    if (typeof p.id === "number") {
-      this.id = /** @type {number} */
-      p.id;
-    }
-    if (typeof p.lhs === "number") {
-      this.lhs = /** @type {number} */
-      p.lhs;
-    }
-    if (typeof p.rhs !== "undefined" && Array.isArray(p.rhs)) {
-      this.rhs = /** @type {!Array<!number>} */
-      p.rhs;
-    }
-    if (typeof p.level === "number") {
-      this.level = /** @type {number} */
-      p.level;
-    }
-    if (typeof p.code === "string") {
-      this.code = /** @type {string} */
-      p.code;
-    }
-  };
-  jscc.classes.Production.prototype.id = -1;
-  jscc.classes.Production.prototype.lhs = -1;
-  jscc.classes.Production.prototype.rhs = [];
-  jscc.classes.Production.prototype.level = 0;
-  jscc.classes.Production.prototype.code = "";
-  return jscc.classes.Production;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/EXEC", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccEXEC = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.EXEC;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/global", [
-      "require",
-      "text!./template/parser-driver-js.txt",
-      "./nfaStates",
-      "./classes/Symbol",
-      "./classes/Production",
-      "./enums/SYM",
-      "./enums/SPECIAL",
-      "./enums/EXEC"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccglobal = factory(function(mod) {
-      var parts2 = mod.split("/");
-      var last = parts2[parts2.length - 1];
-      if (/js\.txt$/.test(last)) {
-        return root.jsccDEFAULT_PARSER_DRIVER;
-      }
-      return root["jscc" + last];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.global}
-   */
-  function(require3, others) {
-    var defaultParserDriver, nfaStates = (
-      /** @type {function(new:jscc.NFAStates)} */
-      require3("./nfaStates")
-    ), Symbol2 = (
-      /** @type {function(new:jscc.classes.Symbol, ?SymbolOptions=)} */
-      require3("./classes/Symbol")
-    ), Production = (
-      /** @type {function(new:jscc.classes.Production)} */
-      require3("./classes/Production")
-    ), SYM = require3("./enums/SYM"), SPECIAL = require3("./enums/SPECIAL"), EXEC = require3("./enums/EXEC");
-    (function() {
-      if (false) {
-        try {
-          defaultParserDriver = /** @type {string} */
-          require3("text!./template/parser-driver-js.txt");
-        } catch (e) {
-          if (typeof fs !== "undefined" && typeof path !== "undefined") {
-            defaultParserDriver = /** @type {string} */
-            fs.readFileSync(path.join(__dirname, "template", "parser-driver-js.txt"), "utf8");
-          } else if (typeof require3 === "function") {
-            defaultParserDriver = /** @type {string} */
-            require3("fs").readFileSync(require3("path").join(__dirname, "template", "parser-driver-js.txt"), "utf8");
-          }
-        }
-      } else {
-        defaultParserDriver = /** @type {string} */
-        require3("text!./template/parser-driver-js.txt");
-      }
-    })();
-    jscc.global = function() {
-      this.nfa_states = new nfaStates();
-      var goalSymbol = new Symbol2();
-      goalSymbol.kind = SYM.NONTERM;
-      goalSymbol.special = SPECIAL.NONE;
-      goalSymbol.label = "";
-      goalSymbol.id = 0;
-      goalSymbol.defined = true;
-      var errorResyncSymbol = new Symbol2();
-      errorResyncSymbol.kind = SYM.TERM;
-      errorResyncSymbol.special = SPECIAL.ERROR;
-      errorResyncSymbol.label = "ERROR_RESYNC";
-      errorResyncSymbol.id = 1;
-      errorResyncSymbol.defined = true;
-      this.symbols = [goalSymbol, errorResyncSymbol];
-      var p = new Production();
-      p.lhs = 0;
-      p.rhs = [];
-      p.code = "%% = %1;";
-      this.symbols[0].prods.push(0);
-      this.productions = [p];
-      this.whitespace_token = -1;
-      this.file = "";
-      this.errors = 0;
-      this.warnings = 0;
-      this.shifts = 0;
-      this.reduces = 0;
-      this.gotos = 0;
-      this.regex_weight = 0;
-      this.code_head = "";
-      this.code_foot = "";
-      this.DEFAULT_DRIVER = defaultParserDriver;
-      this.DEF_PROD_CODE = "%% = %1;";
-      this.MIN_CHAR = 0;
-      this.MAX_CHAR = 255;
-    };
-    jscc.global.prototype.symbols = [];
-    jscc.global.prototype.productions = [];
-    jscc.global.prototype.states = [];
-    jscc.global.prototype.nfa_states = null;
-    jscc.global.prototype.dfa_states = [];
-    jscc.global.prototype.whitespace_token = -1;
-    jscc.global.prototype.code_head = "";
-    jscc.global.prototype.code_foot = "";
-    jscc.global.prototype.file = "";
-    jscc.global.prototype.errors = 0;
-    jscc.global.prototype.warnings = 0;
-    jscc.global.prototype.shifts = 0;
-    jscc.global.prototype.reduces = 0;
-    jscc.global.prototype.gotos = 0;
-    jscc.global.prototype.exec_mode = EXEC.CONSOLE;
-    jscc.global.prototype.assoc_level = 1;
-    jscc.global.prototype.regex_weight = 0;
-    jscc.global.prototype.write_output_function = null;
-    jscc.global.prototype.read_all_input_function = null;
-    jscc.global.prototype.read_template_function = null;
-    jscc.global.prototype.write_debug_function = null;
-    return new jscc.global();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/io/ioBrowser", ["require", "../global"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccio = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(void 0, function(require3) {
-  var global2 = (
-    /** @type {jscc.global} */
-    require3("../global")
-  );
-  jscc.ioBrowser = function() {
-  };
-  jscc.ioBrowser.prototype.read_all_input = function(options) {
-    if (typeof global2.read_all_input_function === "function") {
-      options = options || {};
-      if (typeof options.chunkCallback === "function") {
-        var chunkCallback = options.chunkCallback;
-        var endCallback = typeof options.endCallback === "function" ? options.endCallback : function() {
-        };
-        chunkCallback(global2.read_all_input_function());
-        endCallback();
-      } else {
-        return global2.read_all_input_function();
-      }
-    } else {
-      throw new Error("global.read_all_input_function was not defined");
-    }
-  };
-  jscc.ioBrowser.prototype.read_template = function(options) {
-    if (typeof global2.read_template_function === "function") {
-      options = options || {};
-      if (typeof options.chunkCallback === "function") {
-        var chunkCallback = options.chunkCallback;
-        var endCallback = typeof options.endCallback === "function" ? options.endCallback : function() {
-        };
-        chunkCallback(global2.read_template_function());
-        endCallback();
-      } else {
-        return global2.read_template_function();
-      }
-    } else {
-      throw new Error("global.read_template_function was not defined");
-    }
-  };
-  jscc.ioBrowser.prototype.write_output = function(options) {
-    if (typeof global2.write_output_function === "function") {
-      var text = "";
-      var callback = /* @__PURE__ */ __name(function() {
-      }, "callback");
-      if (typeof options === "string") {
-        text = options;
-      } else if (options && typeof options === "object") {
-        if (typeof options.text === "string") {
-          text = options.text;
-        } else {
-          throw new Error("options was not a string, and options.text was not a string");
-        }
-        if (typeof options.callback === "function") {
-          callback = options.callback;
-        }
-      }
-      global2.write_output_function(text);
-      callback();
-    } else {
-      throw new Error("global.write_output_function was not defined");
-    }
-  };
-  jscc.ioBrowser.prototype.write_debug = function(text) {
-    if (typeof global2.write_debug_function === "function") {
-      global2.write_debug_function(text);
-    }
-  };
-  jscc.ioBrowser.prototype.exit = function(exitCode) {
-  };
-  return new jscc.ioBrowser();
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/LOG_LEVEL", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccLOG_LEVEL = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.LOG_LEVEL;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/util", ["require", "./enums/LOG_LEVEL"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccutil = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.util}
-   */
-  function(require3, others) {
-    var LOG_LEVEL = require3("./enums/LOG_LEVEL");
-    jscc.util = function() {
-    };
-    jscc.util.prototype = {
-      /**
-       * Unions the content of two arrays.
-       * @template T
-       * @param {!Array<T>} dest_array - The destination array.
-       * @param {!Array<T>} src_array - The source array.  Elements
-       * that are not in dest_array but in src_array are copied
-       * to dest_array.
-       * @returns {!Array<T>} The destination array, the union of
-       * both input arrays.
-       * @author Jan Max Meyer
-       * @memberof jscc.util
-       */
-      union: function(dest_array, src_array) {
-        var i2, j;
-        for (i2 = 0; i2 < src_array.length; i2++) {
-          for (j = 0; j < dest_array.length; j++) {
-            if (src_array[i2] == dest_array[j]) {
-              break;
-            }
-          }
-          if (j == dest_array.length) {
-            dest_array.push(src_array[i2]);
-          }
-        }
-        return dest_array;
-      },
-      /**
-       * Gets the string name (in all caps) of the
-       * {@link jscc.enums.LOG_LEVEL} value provided.
-       * @param {jscc.enums.LOG_LEVEL} level - The
-       * LOG_LEVEL value
-       * @returns {string} The name of the log level in all caps
-       * @memberof jscc.Util
-       */
-      log_level_string: function(level) {
-        switch (level) {
-          case LOG_LEVEL.FATAL:
-            return "FATAL";
-          case LOG_LEVEL.ERROR:
-            return "ERROR";
-          case LOG_LEVEL.WARN:
-            return "WARN";
-          case LOG_LEVEL.INFO:
-            return "INFO";
-          case LOG_LEVEL.DEBUG:
-            return "DEBUG";
-          case LOG_LEVEL.TRACE:
-            return "TRACE";
-          default:
-            return "";
-        }
-      },
-      /**
-       * Gets the {@link jscc.enums.LOG_LEVEL} value
-       * corresponding to the provided string.  If the string
-       * is empty or invalid, returns
-       * {@link jscc.enums.LOG_LEVEL.WARN} as a default.
-       * @param {string} levelString - The name of the log level.
-       * @returns {jscc.enums.LOG_LEVEL} The corresponding
-       * LOG_LEVEL value, defaulting to WARN.
-       */
-      log_level_value: function(levelString) {
-        switch ((levelString || "").trim().toUpperCase()) {
-          case "FATAL":
-            return LOG_LEVEL.FATAL;
-          case "ERROR":
-            return LOG_LEVEL.ERROR;
-          case "WARN":
-            return LOG_LEVEL.WARN;
-          case "INFO":
-            return LOG_LEVEL.INFO;
-          case "DEBUG":
-            return LOG_LEVEL.DEBUG;
-          case "TRACE":
-            return LOG_LEVEL.TRACE;
-          default:
-            return LOG_LEVEL.WARN;
-        }
-      }
-    };
-    return new jscc.util();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/first", ["require", "./global", "./util", "./enums/SYM"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccfirst = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.first}
-   */
-  function(require3, others) {
-    var global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), util = (
-      /** @type {jscc.util} */
-      require3("./util")
-    ), SYM = require3("./enums/SYM");
-    jscc.first = function() {
-    };
-    jscc.first.prototype.first = function() {
-      var cnt = 0, old_cnt = 0;
-      var nullable;
-      do {
-        old_cnt = cnt;
-        cnt = 0;
-        for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].kind == SYM.NONTERM) {
-            for (var j = 0; j < global2.symbols[i2].prods.length; j++) {
-              nullable = false;
-              for (var k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
-                global2.symbols[i2].first = util.union(
-                  global2.symbols[i2].first,
-                  global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].first
-                );
-                nullable = global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].nullable;
-                if (!nullable) {
-                  break;
-                }
-              }
-              cnt += global2.symbols[i2].first.length;
-              if (k == global2.productions[global2.symbols[i2].prods[j]].rhs.length) {
-                nullable = true;
-              }
-              if (nullable) {
-                global2.symbols[i2].nullable = true;
-              }
-            }
-          }
-        }
-      } while (cnt != old_cnt);
-    };
-    jscc.first.prototype.rhs_first = function(item, p, begin) {
-      var i2;
-      for (i2 = begin; i2 < p.rhs.length; i2++) {
-        item.lookahead = util.union(item.lookahead, global2.symbols[p.rhs[i2]].first);
-        if (!global2.symbols[p.rhs[i2]].nullable) {
-          return false;
-        }
-      }
-      return true;
-    };
-    return new jscc.first();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/log/logBrowser", ["require", "../global", "../enums/LOG_LEVEL"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jscclog = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(void 0, function(require3) {
-  var global2 = (
-    /** @type {jscc.global} */
-    require3("../global")
-  ), LOG_LEVEL = require3("../enums/LOG_LEVEL");
-  var innerConsole = console || Console || {};
-  innerConsole.log = innerConsole.log || function(msg) {
-  };
-  innerConsole.warn = innerConsole.warn || innerConsole.log || function(msg) {
-  };
-  innerConsole.error = innerConsole.error || innerConsole.log || function(msg) {
-  };
-  innerConsole.info = innerConsole.info || innerConsole.log || function(msg) {
-  };
-  innerConsole.trace = innerConsole.trace || innerConsole.log || function(msg) {
-  };
-  jscc.logBrowser = function() {
-    this._level = LOG_LEVEL.WARN;
-  };
-  jscc.logBrowser.prototype._level = LOG_LEVEL.WARN;
-  jscc.logBrowser.prototype.fatal = function(msg) {
-    if (this._level <= LOG_LEVEL.FATAL) {
-      innerConsole.error(msg);
-    }
-    global2.errors++;
-  };
-  jscc.logBrowser.prototype.error = function(msg) {
-    if (this._level <= LOG_LEVEL.ERROR) {
-      innerConsole.error(msg);
-    }
-    global2.errors++;
-  };
-  jscc.logBrowser.prototype.warn = function(msg) {
-    if (this._level <= LOG_LEVEL.WARN) {
-      innerConsole.warn(msg);
-    }
-    global2.warnings++;
-  };
-  jscc.logBrowser.prototype.info = function(msg) {
-    if (this._level <= LOG_LEVEL.INFO) {
-      innerConsole.info(msg);
-    }
-  };
-  jscc.logBrowser.prototype.debug = function(msg) {
-    if (this._level <= LOG_LEVEL.DEBUG) {
-      innerConsole.log(msg);
-    }
-  };
-  jscc.logBrowser.prototype.trace = function(msg) {
-    if (this._level <= LOG_LEVEL.TRACE) {
-      innerConsole.trace(msg);
-    }
-  };
-  jscc.logBrowser.prototype.setLevel = function(level) {
-    this._level = level;
-  };
-  return new jscc.logBrowser();
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/State", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccState = factory();
-  }
-})(void 0, function() {
-  jscc.classes.State = function(o) {
-    var p = o || {};
-    if (Array.isArray(p.kernel)) {
-      this.kernel = /** @type {!Array<!jscc.classes.Item>} */
-      p.kernel;
-    }
-    if (Array.isArray(p.epsilon)) {
-      this.epsilon = /** @type {!Array<!jscc.classes.Item>} */
-      p.epsilon;
-    }
-    if (typeof p.def_act === "number") {
-      this.def_act = /** @type {!number} */
-      p.def_act;
-    }
-    if (typeof p.done === "boolean") {
-      this.done = /** @type {!boolean} */
-      p.done;
-    }
-    if (typeof p.closed === "boolean") {
-      this.closed = /** @type {!boolean} */
-      p.closed;
-    }
-    if (Array.isArray(p.actionrow)) {
-      this.actionrow = /** @type {!Array<!jscc.classes.TableEntry>} */
-      p.actionrow;
-    }
-    if (Array.isArray(p.gotorow)) {
-      this.gotorow = /** @type {!Array<!jscc.classes.TableEntry>} */
-      p.gotorow;
-    }
-  };
-  jscc.classes.State.prototype.kernel = [];
-  jscc.classes.State.prototype.epsilon = [];
-  jscc.classes.State.prototype.def_act = 0;
-  jscc.classes.State.prototype.done = false;
-  jscc.classes.State.prototype.closed = false;
-  jscc.classes.State.prototype.actionrow = [];
-  jscc.classes.State.prototype.gotorow = [];
-  return jscc.classes.State;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/Item", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccItem = factory();
-  }
-})(void 0, function() {
-  jscc.classes.Item = function(o) {
-    var p = o || {};
-    if (typeof p.prod === "number") {
-      this.prod = /** @type {!number} */
-      p.prod;
-    }
-    if (typeof p.dot_offset === "number") {
-      this.dot_offset = /** @type {!number} */
-      p.dot_offset;
-    }
-    if (typeof p.lookahead !== "undefined" && Array.isArray(p.lookahead)) {
-      this.lookahead = /** @type {!Array<!number>} */
-      p.lookahead;
-    }
-  };
-  jscc.classes.Item.prototype.prod = -1;
-  jscc.classes.Item.prototype.dot_offset = 0;
-  jscc.classes.Item.prototype.lookahead = [];
-  return jscc.classes.Item;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/TableEntry", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccTableEntry = factory();
-  }
-})(void 0, function() {
-  jscc.classes.TableEntry = function(sym, act) {
-    this.symbol = sym;
-    this.action = act;
-  };
-  jscc.classes.TableEntry.prototype.symbol = -1;
-  jscc.classes.TableEntry.prototype.action = -1;
-  return jscc.classes.TableEntry;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/enums/MODE_GEN", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccMODE_GEN = factory();
-  }
-})(void 0, function() {
-  return jscc.enums.MODE_GEN;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/debug", [
-      "require",
-      "./global",
-      "./io/io",
-      "./enums/MODE_GEN",
-      "./enums/SYM",
-      "./enums/ASSOC"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccdebug = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.debug}
-   */
-  function(require3, others) {
-    var io, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), MODE_GEN = require3("./enums/MODE_GEN"), SYM = require3("./enums/SYM"), ASSOC = require3("./enums/ASSOC");
-    (function() {
-      if (false) {
-        io = /** @type {jscc.io} */
-        require3("./io/ioNode");
-      } else {
-        io = /** @type {jscc.io} */
-        require3("./io/io");
-      }
-    })();
-    jscc.debug = function() {
-    };
-    jscc.debug.prototype = {
-      /**
-       * Prints debugging output related to the current value of the
-       * {@link jscc.global.symbols} array.
-       * @param {jscc.enums.MODE_GEN} mode - The current output mode.
-       * @memberof jscc.debug
-       */
-      print_symbols: function(mode) {
-        if (mode == MODE_GEN.HTML) {
-          io.write_debug('<table class="debug" cellpadding="0" cellspacing="0">');
-          io.write_debug("<tr>");
-          io.write_debug('<td class="tabtitle" colspan="3">Symbols Overview</td>');
-          io.write_debug("</tr>");
-          io.write_debug("<tr>");
-          io.write_debug('<td class="coltitle">Symbol</td>');
-          io.write_debug('<td class="coltitle">Type</td>');
-          io.write_debug("</tr>");
-        } else if (mode == MODE_GEN.TEXT) {
-          io.write_debug("--- Symbol Dump ---");
-        }
-        for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (mode == MODE_GEN.HTML) {
-            io.write_debug("<tr>");
-            io.write_debug("<td>");
-            io.write_debug(global2.symbols[i2].label);
-            io.write_debug("</td>");
-            io.write_debug("<td>");
-            io.write_debug(global2.symbols[i2].kind == SYM.NONTERM ? "Non-terminal" : "Terminal");
-            io.write_debug("</td>");
-          } else if (mode == MODE_GEN.TEXT) {
-            var output = "";
-            output = global2.symbols[i2].label;
-            for (var j = output.length; j < 20; j++) {
-              output += " ";
-            }
-            output += global2.symbols[i2].kind == SYM.NONTERM ? "Non-terminal" : "Terminal";
-            if (global2.symbols[i2].kind == SYM.TERM) {
-              for (var j = output.length; j < 40; j++) {
-                output += " ";
-              }
-              output += global2.symbols[i2].level + "/";
-              switch (global2.symbols[i2].associativity) {
-                case ASSOC.NONE:
-                  output += "^";
-                  break;
-                case ASSOC.LEFT:
-                  output += "<";
-                  break;
-                case ASSOC.RIGHT:
-                  output += ">";
-                  break;
-              }
-            }
-            io.write_debug(output);
-          }
-        }
-        if (mode == MODE_GEN.HTML) {
-          io.write_debug("</table>");
-        } else if (mode == MODE_GEN.TEXT) {
-          io.write_debug("");
-        }
-      },
-      /**
-       * Prints debugging output related to the grammar being processed,
-       * using information from the {@link jscc.global.symbols} and
-       * {@link jscc.global.productions} arrays.
-       * @param {jscc.enums.MODE_GEN} mode - The current output mode.
-       * @memberof jscc.debug
-       */
-      print_grammar: function(mode) {
-        if (mode == MODE_GEN.HTML) {
-          io.write_debug('<table class="debug" cellpadding="0" cellspacing="0">');
-          io.write_debug("<tr>");
-          io.write_debug('<td class="tabtitle" colspan="3">Grammar Overview</td>');
-          io.write_debug("</tr>");
-          io.write_debug("<tr>");
-          io.write_debug('<td class="coltitle">Left-hand side</td>');
-          io.write_debug('<td class="coltitle">FIRST-set</td>');
-          io.write_debug('<td class="coltitle">Right-hand side</td>');
-          io.write_debug("</tr>");
-          for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-            io.write_debug("<tr>");
-            if (global2.symbols[i2].kind == SYM.NONTERM) {
-              io.write_debug("<td>");
-              io.write_debug(global2.symbols[i2].label);
-              io.write_debug("</td>");
-              io.write_debug("<td>");
-              for (var j = 0; j < global2.symbols[i2].first.length; j++) {
-                io.write_debug("<b>" + global2.symbols[global2.symbols[i2].first[j]].label + "</b>");
-              }
-              io.write_debug("</td>");
-              io.write_debug("<td>");
-              for (var j = 0; j < global2.symbols[i2].prods.length; j++) {
-                for (var k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
-                  if (global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].kind == SYM.TERM) {
-                    io.write_debug(
-                      "<b>" + global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + "</b>"
-                    );
-                  } else {
-                    io.write_debug(
-                      " " + global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + " "
-                    );
-                  }
-                }
-                io.write_debug("<br />");
-              }
-              io.write_debug("</td>");
-            }
-            io.write_debug("</tr>");
-          }
-          io.write_debug("</table>");
-        } else if (mode == MODE_GEN.TEXT) {
-          var output = "";
-          for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-            if (global2.symbols[i2].kind == SYM.NONTERM) {
-              output += global2.symbols[i2].label + " {";
-              for (var j = 0; j < global2.symbols[i2].first.length; j++) {
-                output += " " + global2.symbols[global2.symbols[i2].first[j]].label + " ";
-              }
-              output += "}\n";
-              for (var j = 0; j < global2.symbols[i2].prods.length; j++) {
-                output += "	";
-                for (var k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
-                  if (global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].kind == SYM.TERM) {
-                    output += "#" + global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + " ";
-                  } else {
-                    output += global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].label + " ";
-                  }
-                }
-                output += "\n";
-              }
-            }
-          }
-          io.write_debug(output);
-        }
-      },
-      /**
-       * Prints debugging information relating to the provided array
-       * of Item objects.
-       * @param {jscc.enums.MODE_GEN} mode - The current output mode.
-       * @param {string} label - A label for the debugging output.
-       * @param {Array<!jscc.classes.Item>} item_set - The items for which to print information.
-       * @memberof jscc.debug
-       */
-      print_item_set: function(mode, label, item_set) {
-        var i2, j;
-        if (item_set.length == 0) {
-          return;
-        }
-        if (mode == MODE_GEN.HTML) {
-          io.write_debug('<table class="debug" cellpadding="0" cellspacing="0">');
-          io.write_debug("<tr>");
-          io.write_debug('<td class="tabtitle" colspan="2">' + label + "</td>");
-          io.write_debug("</tr>");
-          io.write_debug("<tr>");
-          io.write_debug('<td class="coltitle" width="35%">Lookahead</td>');
-          io.write_debug('<td class="coltitle" width="65%">Production</td>');
-          io.write_debug("</tr>");
-        } else if (mode == MODE_GEN.TEXT) {
-          io.write_debug("--- " + label + " ---");
-        }
-        for (i2 = 0; i2 < item_set.length; i2++) {
-          if (mode == MODE_GEN.HTML) {
-            io.write_debug("<tr>");
-            io.write_debug("<td>");
-            for (j = 0; j < item_set[i2].lookahead.length; j++) {
-              io.write_debug("<b>" + global2.symbols[item_set[i2].lookahead[j]].label + "</b> ");
-            }
-            io.write_debug("</td>");
-            io.write_debug("<td>");
-            io.write_debug(global2.symbols[global2.productions[item_set[i2].prod].lhs].label + " -&gt; ");
-            for (j = 0; j < global2.productions[item_set[i2].prod].rhs.length; j++) {
-              if (j == item_set[i2].dot_offset) {
-                io.write_debug(".");
-              }
-              if (global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].kind == SYM.TERM) {
-                io.write_debug("<b>" + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + "</b>");
-              } else {
-                io.write_debug(" " + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + " ");
-              }
-            }
-            if (j == item_set[i2].dot_offset) {
-              io.write_debug(".");
-            }
-            io.write_debug("</td>");
-            io.write_debug("</tr>");
-          } else if (mode == MODE_GEN.TEXT) {
-            var out = "";
-            out += global2.symbols[global2.productions[item_set[i2].prod].lhs].label;
-            for (j = out.length; j < 20; j++) {
-              out += " ";
-            }
-            out += " -> ";
-            for (j = 0; j < global2.productions[item_set[i2].prod].rhs.length; j++) {
-              if (j == item_set[i2].dot_offset) {
-                out += ".";
-              }
-              if (global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].kind == SYM.TERM) {
-                out += " #" + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + " ";
-              } else {
-                out += " " + global2.symbols[global2.productions[item_set[i2].prod].rhs[j]].label + " ";
-              }
-            }
-            if (j == item_set[i2].dot_offset) {
-              out += ".";
-            }
-            for (j = out.length; j < 60; j++) {
-              out += " ";
-            }
-            out += "{ ";
-            for (j = 0; j < item_set[i2].lookahead.length; j++) {
-              out += "#" + global2.symbols[item_set[i2].lookahead[j]].label + " ";
-            }
-            out += "}";
-            io.write_debug(out);
-          }
-        }
-        if (mode == MODE_GEN.HTML) {
-          io.write_debug("</table>");
-        }
-      }
-    };
-    return new jscc.debug();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/tabgen", [
-      "require",
-      "./global",
-      "./first",
-      "./util",
-      "./log/log",
-      "./classes/State",
-      "./classes/Item",
-      "./classes/TableEntry",
-      "./classes/Symbol",
-      "./enums/SPECIAL",
-      "./enums/ASSOC",
-      "./enums/SYM",
-      "./enums/MODE_GEN",
-      "./enums/EXEC",
-      "./debug"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jscctabgen = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.tabgen}
-   */
-  function(require3, others) {
-    var log3;
-    var global2 = require3("./global");
-    var first = require3("./first");
-    var util = require3("./util");
-    (function() {
-      if (false) {
-        log3 = require3("./log/logNode");
-      } else {
-        log3 = require3("./log/log");
-      }
-    })();
-    var State = (
-      /** @type {function(new:jscc.classes.State, StateOptions=)} */
-      require3("./classes/State")
-    );
-    var Item = (
-      /** @type {function(new:jscc.classes.Item, ItemOptions=)} */
-      require3("./classes/Item")
-    );
-    var TableEntry = (
-      /** @type {function(new:jscc.classes.TableEntry, number, number)} */
-      require3("./classes/TableEntry")
-    );
-    var Symbol2 = (
-      /** @type {function(new:jscc.classes.Symbol, SymbolOptions=)} */
-      require3("./classes/Symbol")
-    );
-    var SPECIAL = require3("./enums/SPECIAL");
-    var ASSOC = require3("./enums/ASSOC");
-    var SYM = require3("./enums/SYM");
-    var EXEC = require3("./enums/EXEC");
-    var MODE_GEN = require3("./enums/MODE_GEN");
-    var debugFunctions = require3("./debug");
-    jscc.tabgen = function() {
-    };
-    jscc.tabgen.prototype.create_state = function() {
-      var state2 = new State({
-        kernel: [],
-        epsilon: [],
-        actionrow: [],
-        gotorow: [],
-        done: false,
-        closed: false,
-        def_act: 0
-      });
-      global2.states.push(state2);
-      return state2;
-    };
-    jscc.tabgen.prototype.create_item = function(p) {
-      return new Item({
-        prod: p,
-        dot_offset: 0,
-        lookahead: []
-      });
-    };
-    jscc.tabgen.prototype.add_table_entry = function(row, sym, act) {
-      for (var i2 = 0; i2 < row.length; i2++) {
-        if (row[i2].symbol == sym) {
-          return row;
-        }
-      }
-      row.push(new TableEntry(sym, act));
-      return row;
-    };
-    jscc.tabgen.prototype.update_table_entry = function(row, sym, act) {
-      var i2;
-      for (i2 = 0; i2 < row.length; i2++) {
-        if (row[i2].symbol == sym) {
-          row[i2].action = act;
-          return row;
-        }
-      }
-      return row;
-    };
-    jscc.tabgen.prototype.remove_table_entry = function(row, sym) {
-      for (var i2 = 0; i2 < row.length; i2++) {
-        if (row[i2].symbol == sym) {
-          row.splice(i2, 1);
-          return row;
-        }
-      }
-      return row;
-    };
-    jscc.tabgen.prototype.get_table_entry = function(row, sym) {
-      for (var i2 = 0; i2 < row.length; i2++) {
-        if (row[i2].symbol == sym) {
-          return row[i2].action;
-        }
-      }
-      return void 0;
-    };
-    jscc.tabgen.prototype.get_undone_state = function() {
-      for (var i2 = 0; i2 < global2.states.length; i2++) {
-        if (global2.states[i2].done == false) {
-          return i2;
-        }
-      }
-      return -1;
-    };
-    jscc.tabgen.prototype.sort_partition = function(a, b) {
-      return a.prod - b.prod;
-    };
-    jscc.tabgen.prototype.find_symbol = function(label, kind, special) {
-      if (!special) {
-        special = SPECIAL.NONE;
-      }
-      for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-        if (global2.symbols[i2].label.toString() == label.toString() && global2.symbols[i2].kind == kind && global2.symbols[i2].special == special) {
-          return i2;
-        }
-      }
-      return -1;
-    };
-    jscc.tabgen.prototype.create_symbol = function(label, kind, special) {
-      var exists;
-      if ((exists = this.find_symbol(label, kind, special)) > -1) {
-        return global2.symbols[exists].id;
-      }
-      var sym = new Symbol2({
-        label,
-        kind,
-        prods: [],
-        nullable: false,
-        id: global2.symbols.length,
-        code: "",
-        associativity: ASSOC.NONE,
-        level: 0,
-        special,
-        defined: false,
-        first: []
-      });
-      if (kind == SYM.TERM) {
-        sym.first.push(sym.id);
-      }
-      global2.symbols.push(sym);
-      return sym.id;
-    };
-    jscc.tabgen.prototype.item_set_equal = function(set1, set2) {
-      var i2, j, cnt = 0;
-      if (set1.length != set2.length) {
-        return false;
-      }
-      for (i2 = 0; i2 < set1.length; i2++) {
-        for (j = 0; j < set2.length; j++) {
-          if (set1[i2].prod == set2[j].prod && set1[i2].dot_offset == set2[j].dot_offset) {
-            cnt++;
-            break;
-          }
-        }
-      }
-      return cnt == set1.length;
-    };
-    jscc.tabgen.prototype.close_items = function(seed, closure) {
-      var i2, j, k;
-      var cnt = 0, tmp_cnt = 0;
-      var item;
-      for (i2 = 0; i2 < seed.length; i2++) {
-        if (seed[i2].dot_offset < global2.productions[seed[i2].prod].rhs.length) {
-          if (global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].kind == SYM.NONTERM) {
-            for (j = 0; j < global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].prods.length; j++) {
-              for (k = 0; k < closure.length; k++) {
-                if (closure[k].prod == global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].prods[j]) {
-                  break;
-                }
-              }
-              if (k == closure.length) {
-                item = this.create_item(
-                  global2.symbols[global2.productions[seed[i2].prod].rhs[seed[i2].dot_offset]].prods[j]
-                );
-                closure.push(item);
-                cnt++;
-              }
-              tmp_cnt = closure[k].lookahead.length;
-              if (first.rhs_first(closure[k], global2.productions[seed[i2].prod], seed[i2].dot_offset + 1)) {
-                closure[k].lookahead = util.union(closure[k].lookahead, seed[i2].lookahead);
-              }
-              cnt += closure[k].lookahead.length - tmp_cnt;
-            }
-          }
-        }
-      }
-      return cnt;
-    };
-    jscc.tabgen.prototype.lalr1_closure = function(s) {
-      var closure = [], nclosure, partition;
-      var partition_sym;
-      var i2, j, cnt = 0, old_cnt = 0, tmp_cnt, ns;
-      do {
-        old_cnt = cnt;
-        cnt = this.close_items(old_cnt == 0 ? global2.states[s].kernel : closure, closure);
-      } while (cnt != old_cnt);
-      for (i2 = 0; i2 < global2.states[s].kernel.length; i2++) {
-        if (global2.states[s].kernel[i2].dot_offset < global2.productions[global2.states[s].kernel[i2].prod].rhs.length) {
-          closure.unshift(
-            new Item({
-              prod: global2.states[s].kernel[i2].prod,
-              dot_offset: global2.states[s].kernel[i2].dot_offset,
-              lookahead: []
-            })
-          );
-          for (j = 0; j < global2.states[s].kernel[i2].lookahead.length; j++) {
-            closure[0].lookahead[j] = global2.states[s].kernel[i2].lookahead[j];
-          }
-        }
-      }
-      for (i2 = 0; i2 < closure.length; i2++) {
-        if (global2.productions[closure[i2].prod].rhs.length == 0) {
-          for (j = 0; j < global2.states[s].epsilon.length; j++) {
-            if (global2.states[s].epsilon[j].prod == closure[i2].prod && global2.states[s].epsilon[j].dot_offset == closure[i2].dot_offset) {
-              break;
-            }
-          }
-          if (j == global2.states[s].epsilon.length) {
-            global2.states[s].epsilon.push(closure[i2]);
-          }
-          closure.splice(i2, 1);
-        }
-      }
-      while (closure.length > 0) {
-        partition = [];
-        nclosure = [];
-        partition_sym = -1;
-        for (i2 = 0; i2 < closure.length; i2++) {
-          if (partition.length == 0) {
-            partition_sym = global2.productions[closure[i2].prod].rhs[closure[i2].dot_offset];
-          }
-          if (closure[i2].dot_offset < global2.productions[closure[i2].prod].rhs.length) {
-            if (global2.productions[closure[i2].prod].rhs[closure[i2].dot_offset] == partition_sym) {
-              closure[i2].dot_offset++;
-              partition.push(closure[i2]);
-            } else {
-              nclosure.push(closure[i2]);
-            }
-          }
-        }
-        if (partition.length > 0) {
-          partition.sort(this.sort_partition);
-          for (i2 = 0; i2 < global2.states.length; i2++) {
-            if (this.item_set_equal(global2.states[i2].kernel, partition)) {
-              break;
-            }
-          }
-          if (i2 == global2.states.length) {
-            ns = this.create_state();
-            ns.kernel = partition;
-          }
-          tmp_cnt = 0;
-          cnt = 0;
-          for (j = 0; j < partition.length; j++) {
-            tmp_cnt += global2.states[i2].kernel[j].lookahead.length;
-            global2.states[i2].kernel[j].lookahead = util.union(
-              global2.states[i2].kernel[j].lookahead,
-              partition[j].lookahead
-            );
-            cnt += global2.states[i2].kernel[j].lookahead.length;
-          }
-          if (tmp_cnt != cnt) {
-            global2.states[i2].done = false;
-          }
-          if (!global2.states[s].closed) {
-            for (j = 0; j < partition.length; j++) {
-              if (partition[j].dot_offset - 1 < global2.productions[partition[j].prod].rhs.length) {
-                if (global2.symbols[global2.productions[partition[j].prod].rhs[partition[j].dot_offset - 1]].kind == SYM.TERM) {
-                  global2.states[s].actionrow = this.add_table_entry(
-                    global2.states[s].actionrow,
-                    global2.productions[partition[j].prod].rhs[partition[j].dot_offset - 1],
-                    i2
-                  );
-                  global2.shifts++;
-                } else {
-                  global2.states[s].gotorow = this.add_table_entry(
-                    global2.states[s].gotorow,
-                    global2.productions[partition[j].prod].rhs[partition[j].dot_offset - 1],
-                    i2
-                  );
-                  global2.gotos++;
-                }
-              }
-            }
-          }
-        }
-        closure = nclosure;
-      }
-      global2.states[s].closed = true;
-    };
-    jscc.tabgen.prototype.do_reductions = function(s) {
-      var n, i2, j, ex, act, output_warning, item_set;
-      var reds = [];
-      var max = 0, count3;
-      for (n = 0; n < 2; n++) {
-        if (!n) {
-          item_set = global2.states[s].kernel;
-        } else {
-          item_set = global2.states[s].epsilon;
-        }
-        for (i2 = 0; i2 < item_set.length; i2++) {
-          if (item_set[i2].dot_offset == global2.productions[item_set[i2].prod].rhs.length) {
-            for (j = 0; j < item_set[i2].lookahead.length; j++) {
-              output_warning = true;
-              ex = this.get_table_entry(global2.states[s].actionrow, item_set[i2].lookahead[j]);
-              if (ex == void 0) {
-                act = -1 * item_set[i2].prod;
-                global2.states[s].actionrow = this.add_table_entry(
-                  global2.states[s].actionrow,
-                  item_set[i2].lookahead[j],
-                  act
-                );
-                global2.reduces++;
-              } else {
-                act = ex;
-                var warning = "";
-                if (ex > 0) {
-                  if (global2.symbols[item_set[i2].lookahead[j]].level > 0 || global2.productions[item_set[i2].prod].level > 0) {
-                    if (global2.symbols[item_set[i2].lookahead[j]].level == global2.productions[item_set[i2].prod].level) {
-                      if (global2.symbols[item_set[i2].lookahead[j]].associativity == ASSOC.LEFT) {
-                        act = -1 * item_set[i2].prod;
-                      } else if (global2.symbols[item_set[i2].lookahead[j]].associativity == ASSOC.NOASSOC) {
-                        this.remove_table_entry(global2.states[s].actionrow, item_set[i2].lookahead[j]);
-                        log3.warn(
-                          "Removing nonassociative symbol '" + global2.symbols[item_set[i2].lookahead[j]].label + "' in state " + s
-                        );
-                        output_warning = false;
-                      }
-                    } else {
-                      if (global2.symbols[item_set[i2].lookahead[j]].level < global2.productions[item_set[i2].prod].level) {
-                        act = -1 * item_set[i2].prod;
-                      }
-                    }
-                  }
-                  warning = "Shift";
-                } else {
-                  act = act * -1 < item_set[i2].prod ? act : -1 * item_set[i2].prod;
-                  warning = "Reduce";
-                }
-                warning += "-reduce conflict on symbol '" + global2.symbols[item_set[i2].lookahead[j]].label + "' in state " + s;
-                warning += "\n         Conflict resolved by " + (act <= 0 ? "reducing with production" : "shifting to state") + " " + (act <= 0 ? act * -1 : act);
-                if (output_warning) {
-                  log3.warn(warning);
-                }
-                if (act != ex) {
-                  this.update_table_entry(global2.states[s].actionrow, item_set[i2].lookahead[j], act);
-                }
-              }
-            }
-          }
-        }
-      }
-      global2.states[s].def_act = -1;
-      for (i2 = 0; i2 < reds.length; i2++) {
-        for (j = 0, count3 = 0; j < reds.length; j++) {
-          if (reds[j] == reds[i2]) {
-            count3++;
-          }
-        }
-        if (max < count3) {
-          max = count3;
-          global2.states[s].def_act = reds[i2];
-        }
-      }
-      if (global2.states[s].def_act >= 0) {
-        do {
-          count3 = global2.states[s].actionrow.length;
-          for (i2 = 0; i2 < global2.states[s].actionrow.length; i2++) {
-            if (global2.states[s].actionrow[i2][1] == global2.states[s].def_act * -1) {
-              global2.states[s].actionrow.splice(i2, 1);
-            }
-          }
-        } while (count3 != global2.states[s].actionrow.length);
-      }
-    };
-    jscc.tabgen.prototype.lalr1_parse_table = function(debug3) {
-      var i2, item, s;
-      item = this.create_item(0);
-      s = this.create_symbol("$", SYM.TERM, SPECIAL.EOF);
-      item.lookahead.push(s);
-      s = this.create_state();
-      s.kernel.push(item);
-      while ((i2 = this.get_undone_state()) >= 0) {
-        global2.states[i2].done = true;
-        this.lalr1_closure(i2);
-      }
-      for (i2 = 0; i2 < global2.states.length; i2++) {
-        this.do_reductions(i2);
-      }
-      if (debug3) {
-        for (i2 = 0; i2 < global2.states.length; i2++) {
-          debugFunctions.print_item_set(
-            global2.exec_mode == EXEC.CONSOLE ? MODE_GEN.TEXT : MODE_GEN.HTML,
-            "states[" + i2 + "].kernel",
-            global2.states[i2].kernel
-          );
-          debugFunctions.print_item_set(
-            global2.exec_mode == EXEC.CONSOLE ? MODE_GEN.TEXT : MODE_GEN.HTML,
-            "states[" + i2 + "].epsilon",
-            global2.states[i2].epsilon
-          );
-        }
-        log3.debug(global2.states.length + " States created.");
-      }
-    };
-    return new jscc.tabgen();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/printtab", [
-      "require",
-      "./global",
-      "./tabgen",
-      "./log/log",
-      "./enums/MODE_GEN",
-      "./enums/SYM",
-      "./enums/SPECIAL"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccprinttab = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.printtab}
-   */
-  function(require3, others) {
-    var log3, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), tabgen = (
-      /** @type {jscc.tabgen} */
-      require3("./tabgen")
-    ), MODE_GEN = require3("./enums/MODE_GEN"), SYM = require3("./enums/SYM"), SPECIAL = require3("./enums/SPECIAL");
-    (function() {
-      if (false) {
-        log3 = /** @type {jscc.log} */
-        require3("./log/logNode");
-      } else {
-        log3 = /** @type {jscc.log} */
-        require3("./log/log");
-      }
-    })();
-    jscc.printtab = function() {
-    };
-    jscc.printtab.prototype = {
-      /**
-       * Prints the parse tables in a desired format.
-       * @param {(jscc.enums.MODE_GEN|string)} mode - The output mode.
-       * This can be either {@link jscc.enums.MODE_GEN.JS} to create JavaScript/
-       * JScript code as output or {@link jscc.enums.MODE_GEN.HTML} to create
-       * HTML-tables as output (the HTML-tables are formatted to
-       * look nice with the JS/CC Web Environment).
-       * @returns {string} The code to be printed to a file or
-       * website.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      print_parse_tables: function(mode) {
-        var code3 = "";
-        var i2, j, deepest = 0, val2;
-        switch (mode) {
-          case MODE_GEN.HTML:
-          case "html":
-            code3 += '<table class="print" cellpadding="0" cellspacing="0">';
-            code3 += "<tr>";
-            code3 += '<td class="tabtitle" colspan="2">Pop-Table</td>';
-            code3 += "</tr>";
-            code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">Left-hand side</td>';
-            code3 += '<td class="coltitle">Number of symbols to pop</td>';
-            code3 += "</tr>";
-            for (i2 = 0; i2 < global2.productions.length; i2++) {
-              code3 += "<tr>";
-              code3 += '<td style="border-right: 1px solid lightgray;">' + global2.productions[i2].lhs + "</td>";
-              code3 += "<td>" + global2.productions[i2].rhs.length + "</td>";
-              code3 += "</tr>";
-            }
-            code3 += "</table>";
-            for (i2 = 0; i2 < global2.symbols.length; i2++) {
-              if (global2.symbols[i2].kind == SYM.TERM) {
-                deepest++;
-              }
-            }
-            code3 += '<table class="print" cellpadding="0" cellspacing="0">';
-            code3 += "<tr>";
-            code3 += '<td class="tabtitle" colspan="' + (deepest + 1) + '">Action-Table</td>';
-            code3 += "</tr>";
-            code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">State</td>';
-            for (i2 = 0; i2 < global2.symbols.length; i2++) {
-              if (global2.symbols[i2].kind == SYM.TERM) {
-                code3 += "<td><b>" + global2.symbols[i2].label + "</b></td>";
-              }
-            }
-            code3 += "</tr>";
-            for (i2 = 0; i2 < global2.states.length; i2++) {
-              code3 += "<tr>";
-              code3 += '<td class="coltitle" style="border-right: 1px solid lightgray;">' + i2 + "</td>";
-              for (j = 0; j < global2.symbols.length; j++) {
-                if (global2.symbols[j].kind == SYM.TERM) {
-                  code3 += "<td>";
-                  if ((val2 = tabgen.get_table_entry(global2.states[i2].actionrow, j)) != void 0) {
-                    if (val2 <= 0) {
-                      code3 += "r" + val2 * -1;
-                    } else {
-                      code3 += "s" + val2;
-                    }
-                  }
-                  code3 += "</td>";
-                }
-              }
-              code3 += "</tr>";
-            }
-            code3 += "</table>";
-            for (i2 = 0; i2 < global2.symbols.length; i2++) {
-              if (global2.symbols[i2].kind == SYM.NONTERM) {
-                deepest++;
-              }
-            }
-            code3 += '<table class="print" cellpadding="0" cellspacing="0">';
-            code3 += "<tr>";
-            code3 += '<td class="tabtitle" colspan="' + (deepest + 1) + '">Goto-Table</td>';
-            code3 += "</tr>";
-            code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">State</td>';
-            for (i2 = 0; i2 < global2.symbols.length; i2++) {
-              if (global2.symbols[i2].kind == SYM.NONTERM) {
-                code3 += "<td>" + global2.symbols[i2].label + "</td>";
-              }
-            }
-            code3 += "</tr>";
-            for (i2 = 0; i2 < global2.states.length; i2++) {
-              code3 += "<tr>";
-              code3 += '<td class="coltitle" style="border-right: 1px solid lightgray;">' + i2 + "</td>";
-              for (j = 0; j < global2.symbols.length; j++) {
-                if (global2.symbols[j].kind == SYM.NONTERM) {
-                  code3 += "<td>";
-                  if ((val2 = tabgen.get_table_entry(global2.states[i2].gotorow, j)) != void 0) {
-                    code3 += val2;
-                  }
-                  code3 += "</td>";
-                }
-              }
-              code3 += "</tr>";
-            }
-            code3 += "</table>";
-            code3 += '<table class="print" cellpadding="0" cellspacing="0">';
-            code3 += "<tr>";
-            code3 += '<td class="tabtitle" colspan="2">Default Actions Table</td>';
-            code3 += "</tr>";
-            code3 += '<td class="coltitle" width="1%" style="border-right: 1px solid lightgray;">Left-hand side</td>';
-            code3 += '<td class="coltitle">Number of symbols to pop</td>';
-            code3 += "</tr>";
-            for (i2 = 0; i2 < global2.states.length; i2++) {
-              code3 += "<tr>";
-              code3 += '<td style="border-right: 1px solid lightgray;">State ' + i2 + "</td>";
-              code3 += "<td>" + (global2.states[i2].def_act < 0 ? "(none)" : global2.states[i2].def_act) + "</td>";
-              code3 += "</tr>";
-            }
-            code3 += "</table>";
-            break;
-          case MODE_GEN.JS:
-          case "js":
-            var pop_tab_json = [];
-            for (i2 = 0; i2 < global2.productions.length; i2++) {
-              pop_tab_json.push([global2.productions[i2].lhs, global2.productions[i2].rhs.length]);
-            }
-            code3 += "\nvar pop_tab = " + JSON.stringify(pop_tab_json) + ";\n";
-            var act_tab_json = [];
-            for (i2 = 0; i2 < global2.states.length; i2++) {
-              var act_tab_json_item = [];
-              for (j = 0; j < global2.states[i2].actionrow.length; j++) {
-                act_tab_json_item.push(global2.states[i2].actionrow[j].symbol, global2.states[i2].actionrow[j].action);
-              }
-              act_tab_json.push(act_tab_json_item);
-            }
-            code3 += "\n/** @type {!Array<!Array<number>>} */\nvar act_tab =" + JSON.stringify(act_tab_json) + ";\n";
-            var goto_tab_json = [];
-            for (i2 = 0; i2 < global2.states.length; i2++) {
-              var goto_tab_json_item = [];
-              for (j = 0; j < global2.states[i2].gotorow.length; j++) {
-                goto_tab_json_item.push(global2.states[i2].gotorow[j].symbol, global2.states[i2].gotorow[j].action);
-              }
-              goto_tab_json.push(goto_tab_json_item);
-            }
-            code3 += "\nvar goto_tab =" + JSON.stringify(goto_tab_json) + ";\n";
-            var defact_tab_json = [];
-            for (i2 = 0; i2 < global2.states.length; i2++) {
-              defact_tab_json.push(global2.states[i2].def_act);
-            }
-            code3 += "\nvar defect_tab =" + JSON.stringify(defact_tab_json) + ";\n";
-            break;
-        }
-        return code3;
-      },
-      /**
-       *
-       * @param {Array<jscc.classes.Dfa>} dfa_states
-       * @returns {Array}
-       * @memberof jscc.printtab
-       */
-      pack_dfa: function(dfa_states) {
-        var PL = /* @__PURE__ */ __name(function(line) {
-          var out = [];
-          while (line.length) {
-            var first = line.shift();
-            var second = line.shift();
-            if (first == second) {
-              out.push(first);
-            } else {
-              out.push([first, second]);
-            }
-          }
-          return out;
-        }, "PL");
-        var json = [];
-        for (var i2 = 0; i2 < dfa_states.length; i2++) {
-          ;
-          (function(i3) {
-            var line = [];
-            for (var j = 0; j < dfa_states[i3].line.length; j++) {
-              if (dfa_states[i3].line[j] != -1) {
-                line[j] = dfa_states[i3].line[j];
-              }
-            }
-            line = PL(PL(PL(PL(PL(PL(PL(PL(line))))))));
-            json.push({
-              line,
-              accept: dfa_states[i3].accept
-            });
-          })(i2);
-        }
-        return json;
-      },
-      /**
-       * Generates a state-machine construction from the deterministic
-       * finite automata.
-       * @param {Array<jscc.classes.Dfa>} dfa_states - The dfa state machine for
-       * the lexing function.
-       * @returns {string} The code to be inserted into the static
-       * parser driver framework.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      print_dfa_table: function(dfa_states) {
-        var json = [], code3;
-        for (var i2 = 0; i2 < dfa_states.length; i2++) {
-          ;
-          (function(i3) {
-            var line = {};
-            for (var j = 0; j < dfa_states[i3].line.length; j++) {
-              if (dfa_states[i3].line[j] != -1) {
-                line[j] = dfa_states[i3].line[j];
-              }
-            }
-            json.push({
-              line,
-              accept: dfa_states[i3].accept
-            });
-          })(i2);
-        }
-        code3 = JSON.stringify(this.pack_dfa(dfa_states));
-        return code3.replace(/"([A-Za-z_][A-Za-z0-9_]*)"\s*:/g, "$1:").replace(/,/g, ",\n	");
-      },
-      /**
-       * Prints all symbol labels into an array; this is used for
-       * error reporting purposes only in the resulting parser.
-       * @returns {string} The code to be inserted into the
-       * static parser driver framework.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      print_symbol_labels: function() {
-        for (var i2 = 0, arr = []; i2 < global2.symbols.length; i2++) {
-          arr.push(global2.symbols[i2].label);
-        }
-        return "var labels = " + JSON.stringify(global2.symbols) + ";\n\n";
-      },
-      /**
-       * Prints the terminal symbol actions to be associated with a
-       * terminal definition into a switch-case-construct.
-       * @returns {string} The code to be inserted into the static
-       * parser driver framework.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      print_term_actions: function() {
-        var code3 = "({\n";
-        var re = /%match|%offset|%source/;
-        var i2, j, k;
-        var semcode;
-        var strmatch;
-        for (i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].kind == SYM.TERM && global2.symbols[i2].code != "") {
-            code3 += '   "' + i2 + '":';
-            code3 += " /** @suppress {uselessCode} */ function(PCB){";
-            semcode = "";
-            for (j = 0, k = 0; j < global2.symbols[i2].code.length; j++, k++) {
-              strmatch = re.exec(global2.symbols[i2].code.substr(j, global2.symbols[i2].code.length));
-              if (strmatch && strmatch.index == 0) {
-                if (strmatch[0] == "%match") {
-                  semcode += "PCB.att";
-                } else if (strmatch[0] == "%offset") {
-                  semcode += "( PCB.offset - PCB.att.length )";
-                } else if (strmatch[0] == "%source") {
-                  semcode += "PCB.src";
-                }
-                j += strmatch[0].length - 1;
-                k = semcode.length;
-              } else {
-                semcode += global2.symbols[i2].code.charAt(j);
-              }
-            }
-            code3 += "       " + semcode + "\n";
-            code3 += "       return PCB.att;},\n";
-          }
-        }
-        code3 += "\n})";
-        return code3;
-      },
-      /**
-       * Generates a switch-case-construction that contains all
-       * the semantic actions.  This construction should then be
-       * generated into the static parser driver template.
-       * @returns {string} The code to be inserted into the static
-       * parser driver framework.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      print_actions: function() {
-        var code3 = "";
-        var re = /%[0-9]+|%%/;
-        var semcode, strmatch;
-        var i2, j, k, idx, src;
-        code3 += "[";
-        for (i2 = 0; i2 < global2.productions.length; i2++) {
-          src = global2.productions[i2].code;
-          semcode = "function(){\n";
-          semcode += "var rval;";
-          for (j = 0, k = 0; j < src.length; j++, k++) {
-            strmatch = re.exec(src.substr(j, src.length));
-            if (strmatch && strmatch.index == 0) {
-              if (strmatch[0] == "%%") {
-                semcode += "rval";
-              } else {
-                idx = parseInt(strmatch[0].substr(1, strmatch[0].length), 10);
-                idx = global2.productions[i2].rhs.length - idx;
-                if (idx < 0) {
-                  var badProduction = global2.productions[i2], badLeftSymbol = global2.symbols[badProduction.lhs];
-                  if (global2.productions[i2].rhs.length == 0) {
-                    log3.error(
-                      "Default code was used for an empty right-hand side of a production, or a wildcard " + strmatch[0] + " was used explicitly.  The faulty left-hand side symbol label is '" + badLeftSymbol.label + "'."
-                    );
-                  } else {
-                    log3.error(
-                      "The wildcard " + strmatch[0] + " was used, but there are only " + global2.productions[i2].rhs.length + " symbols on the right-hand side of the production.  The faulty left-hand side symbol label is '" + badLeftSymbol.label + "'."
-                    );
-                  }
-                  semcode += ' "" ';
-                } else {
-                  semcode += " arguments[" + idx + "] ";
-                }
-              }
-              j += strmatch[0].length - 1;
-              k = semcode.length;
-            } else {
-              semcode += src.charAt(j);
-            }
-          }
-          code3 += "       " + semcode + "\nreturn rval;},\n";
-        }
-        code3 += "]";
-        return code3;
-      },
-      /**
-       * Returns the value of the eof-symbol.
-       * @returns {number} The id of the EOF-symbol.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      get_eof_symbol_id: function() {
-        var eof_id = -1;
-        for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].special == SPECIAL.EOF) {
-            eof_id = i2;
-            break;
-          }
-        }
-        if (eof_id == -1) {
-          log3.error("No EOF-symbol defined - This might not be possible (bug!)");
-        }
-        return eof_id;
-      },
-      /**
-       * Returns the value of the error-symbol.
-       * @returns {number} The id of the error-symbol.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      get_error_symbol_id: function() {
-        var error_id = -1;
-        for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].special == SPECIAL.ERROR) {
-            error_id = i2;
-            break;
-          }
-        }
-        if (error_id == -1) {
-          log3.error("No ERROR-symbol defined - This might not be possible (bug!)");
-        }
-        return error_id;
-      },
-      /**
-       * Returns the ID of the whitespace-symbol.
-       * @returns {number} The id of the whitespace-symbol.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      get_whitespace_symbol_id: function() {
-        return global2.whitespace_token;
-      },
-      /**
-       * Returns the ID of a non-existing state.
-       * @returns {number} One greater than the length of the
-       * states array.
-       * @author Jan Max Meyer
-       * @memberof jscc.printtab
-       */
-      get_error_state: function() {
-        return global2.states.length + 1;
-      }
-    };
-    return new jscc.printtab();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/integrity", ["require", "./global", "./log/log", "./enums/SYM"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccintegrity = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.integrity}
-   */
-  function(require3, others) {
-    var log3, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), SYM = require3("./enums/SYM");
-    (function() {
-      if (false) {
-        log3 = /** @type {jscc.log} */
-        require3("./log/logNode");
-      } else {
-        log3 = /** @type {jscc.log} */
-        require3("./log/log");
-      }
-    })();
-    jscc.integrity = function() {
-    };
-    jscc.integrity.prototype = {
-      /**
-       * Checks the {@link jscc.global.symbols} array for
-       * nonterminating, undefined symbols.  Logs an error if
-       * any such symbols are found.
-       */
-      undef: function() {
-        for (var i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].kind == SYM.NONTERM && global2.symbols[i2].defined == false) {
-            log3.error('Call to undefined non-terminal "' + global2.symbols[i2].label + '"');
-          }
-        }
-      },
-      /**
-       * Checks the {@link jscc.global.symbols} and
-       * {@link jscc.global.productions} arrays for
-       * unreachable, nonterminating symbols.  Logs a warning
-       * if any such symbols are found.
-       */
-      unreachable: function() {
-        var stack = [];
-        var reachable = [];
-        var i2, j, k, l2;
-        for (i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].kind == SYM.NONTERM) {
-            break;
-          }
-        }
-        if (i2 == global2.symbols.length) {
-          return;
-        }
-        stack.push(i2);
-        reachable.push(i2);
-        while (stack.length > 0) {
-          i2 = stack.pop();
-          for (j = 0; j < global2.symbols[i2].prods.length; j++) {
-            for (k = 0; k < global2.productions[global2.symbols[i2].prods[j]].rhs.length; k++) {
-              if (global2.symbols[global2.productions[global2.symbols[i2].prods[j]].rhs[k]].kind == SYM.NONTERM) {
-                for (l2 = 0; l2 < reachable.length; l2++) {
-                  if (reachable[l2] == global2.productions[global2.symbols[i2].prods[j]].rhs[k]) {
-                    break;
-                  }
-                }
-                if (l2 == reachable.length) {
-                  stack.push(global2.productions[global2.symbols[i2].prods[j]].rhs[k]);
-                  reachable.push(global2.productions[global2.symbols[i2].prods[j]].rhs[k]);
-                }
-              }
-            }
-          }
-        }
-        for (i2 = 0; i2 < global2.symbols.length; i2++) {
-          if (global2.symbols[i2].kind == SYM.NONTERM) {
-            for (j = 0; j < reachable.length; j++) {
-              if (reachable[j] == i2) {
-                break;
-              }
-            }
-            if (j == reachable.length) {
-              log3.warn('Unreachable non-terminal "' + global2.symbols[i2].label + '"');
-            }
-          }
-        }
-      },
-      /**
-       * Checks the {@link jscc.global.states} array for
-       * states with no lookahead information.  Logs an error
-       * if any such states are found.
-       */
-      check_empty_states: function() {
-        for (var i2 = 0; i2 < global2.states.length; i2++) {
-          if (global2.states[i2].actionrow.length == 0 && global2.states[i2].def_act == -1) {
-            log3.error("No lookaheads in state " + i2 + ", watch for endless list definitions");
-          }
-        }
-      }
-    };
-    return new jscc.integrity();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/lexdbg", ["require", "./global", "./io/io", "./enums/EDGE"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jscclexdbg = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.lexdbg}
-   */
-  function(require3, others) {
-    var io, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), EDGE = require3("./enums/EDGE");
-    (function() {
-      if (false) {
-        io = /** @type {jscc.io} */
-        require3("./io/ioNode");
-      } else {
-        io = /** @type {jscc.io} */
-        require3("./io/io");
-      }
-    })();
-    jscc.lexdbg = function() {
-    };
-    jscc.lexdbg.prototype = {
-      /**
-       * Prints debugging information about the contents of the
-       * {@link jscc.global.nfa_states.value} array.
-       * @memberof jscc.lexdbg
-       */
-      print_nfa: function() {
-        io.write_debug("Pos	Type		follow		follow2		accept");
-        io.write_debug("-----------------------------------------------------------------------");
-        for (var i2 = 0; i2 < global2.nfa_states.value.length; i2++) {
-          io.write_debug(
-            i2 + "	" + (global2.nfa_states.value[i2].edge == EDGE.FREE ? "FREE" : global2.nfa_states.value[i2].edge == EDGE.EPSILON ? "EPSILON" : "CHAR") + "		" + (global2.nfa_states.value[i2].edge != EDGE.FREE && global2.nfa_states.value[i2].follow > -1 ? global2.nfa_states.value[i2].follow : "") + "		" + (global2.nfa_states.value[i2].edge != EDGE.FREE && global2.nfa_states.value[i2].follow2 > -1 ? global2.nfa_states.value[i2].follow2 : "") + "		" + (global2.nfa_states.value[i2].edge != EDGE.FREE && global2.nfa_states.value[i2].accept > -1 ? global2.nfa_states.value[i2].accept : "")
-          );
-          if (global2.nfa_states.value[i2].edge == EDGE.CHAR) {
-            var chars = "";
-            for (var j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++) {
-              if (global2.nfa_states.value[i2].ccl.get(j)) {
-                chars += String.fromCharCode(j);
-                if (chars.length == 10) {
-                  io.write_debug("	" + chars);
-                  chars = "";
-                }
-              }
-            }
-            if (chars.length > 0) {
-              io.write_debug("	" + chars);
-            }
-          }
-        }
-        io.write_debug("");
-      },
-      /**
-       * Prints debugging information about the provided array of
-       * Dfa objects.
-       * @param {Array<jscc.classes.Dfa>} dfa_states - The states for which to
-       * print debugging information.
-       * @memberof jscc.lexdbg
-       */
-      print_dfa: function(dfa_states) {
-        var str = "";
-        var chr_cnt = 0;
-        for (var i2 = 0; i2 < dfa_states.length; i2++) {
-          str = i2 + " => (";
-          chr_cnt = 0;
-          for (var j = 0; j < dfa_states[i2].line.length; j++) {
-            if (dfa_states[i2].line[j] > -1) {
-              str += " >" + String.fromCharCode(j) + "<," + dfa_states[i2].line[j] + " ";
-              chr_cnt++;
-              if (chr_cnt % 5 == 0) {
-                str += "\n       ";
-              }
-            }
-          }
-          str += ") " + dfa_states[i2].accept;
-          io.write_debug(str);
-        }
-      }
-    };
-    return new jscc.lexdbg();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/Param", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccParam = factory();
-  }
-})(void 0, function() {
-  jscc.classes.Param = function(start, end) {
-    if (typeof start === "number") {
-      this.start = start;
-    }
-    if (typeof end === "number") {
-      this.end = end;
-    }
-  };
-  jscc.classes.Param.prototype.start = -1;
-  jscc.classes.Param.prototype.end = -1;
-  return jscc.classes.Param;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/regex", [
-      "require",
-      "./global",
-      "./log/log",
-      "./classes/Param",
-      "./classes/Nfa",
-      "./enums/EDGE"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccregex = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(string, number, boolean, number)}
-   */
-  function(require3, others) {
-    var first_nfa;
-    var last_nfa;
-    var log3, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), Param = (
-      /** @type {function(new:jscc.classes.Param, number=, number=)} */
-      require3("./classes/Param")
-    ), Nfa = (
-      /** @type {function(new:jscc.classes.Nfa, ?NfaOptions=)} */
-      require3("./classes/Nfa")
-    ), EDGE = require3("./enums/EDGE");
-    (function() {
-      if (false) {
-        log3 = /** @type {jscc.log} */
-        require3("./log/logNode");
-      } else {
-        log3 = /** @type {jscc.log} */
-        require3("./log/log");
-      }
-    })();
-    var __parse = function(eof, whitespace, error_token) {
-      var Continue = /* @__PURE__ */ __name(function() {
-        throw Continue;
-      }, "Continue");
-      var ReturnValue = /* @__PURE__ */ __name(function(value) {
-        Error.call(this);
-        this._value = value;
-      }, "ReturnValue");
-      ReturnValue.prototype = Object.create(Error.prototype);
-      ReturnValue.prototype.constructor = ReturnValue;
-      ReturnValue.prototype._value = null;
-      ReturnValue.prototype.valueOf = function() {
-        return this._value;
-      };
-      function Return(value) {
-        throw new ReturnValue(value);
-      }
-      __name(Return, "Return");
-      var TERMINAL_ACTIONS = /* @__PURE__ */ function() {
-        function emptyFn(PCB2) {
-          return PCB2.att;
-        }
-        __name(emptyFn, "emptyFn");
-        var actions = {};
-        return function(PCB2, match) {
-          try {
-            return (actions[match] || emptyFn)(PCB2);
-          } catch (e) {
-            if (e instanceof ReturnValue)
-              return e.valueOf();
-            if (e == Continue)
-              return Continue;
-            throw e;
-          }
-        };
-      }();
-      var DfaLex = /* @__PURE__ */ __name(function() {
-        this._dfaData = [
-          {
-            line: [
-              [
-                [
-                  [
-                    1,
-                    [
-                      [
-                        1,
-                        [
-                          [
-                            [2, 3],
-                            [4, 5]
-                          ],
-                          [1, [6, 1]]
-                        ]
-                      ],
-                      [1, [1, [1, [1, 7]]]]
-                    ]
-                  ],
-                  [
-                    [
-                      1,
-                      [
-                        1,
-                        [
-                          [1, [1, 8]],
-                          [[13, 9], 1]
-                        ]
-                      ]
-                    ],
-                    [1, [1, [1, [[10, 1], 1]]]]
-                  ]
-                ],
-                [1, [1, [1, [1, [1, [1, [1, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          { line: [], accept: 13 },
-          { line: [], accept: 6 },
-          { line: [], accept: 7 },
-          { line: [], accept: 3 },
-          { line: [], accept: 4 },
-          { line: [], accept: 10 },
-          { line: [], accept: 5 },
-          { line: [], accept: 8 },
-          { line: [], accept: 9 },
-          { line: [], accept: 2 },
-          { line: [], accept: 12 },
-          { line: [[[[null, [null, [12, [[12, null], null]]]], null], null]], accept: 11 },
-          {
-            line: [
-              [
-                [[11, [11, [12, [[12, 11], 11]]]], 11],
-                [11, [11, [11, [11, [11, [11, [11, null]]]]]]]
-              ]
-            ],
-            accept: 13
-          }
-        ];
-      }, "DfaLex");
-      DfaLex.prototype._dfaData = [];
-      DfaLex.prototype.match_pos = 0;
-      DfaLex.prototype.state = 0;
-      DfaLex.prototype.match = null;
-      DfaLex.prototype.exec = function(chr, pos) {
-        if (this.state !== null) {
-          if (typeof this.state !== "number" || this.state >= this._dfaData.length) {
-            this.state = null;
-            throw new Error("Invalid value for DfaLex.state at chr " + chr + " and pos " + pos);
-          }
-          var line = this._dfaData[this.state].line;
-          if (typeof line === "undefined" || line === null) {
-            var badState = this.state;
-            this.state = null;
-            throw new Error(
-              "At chr " + chr + " and pos " + pos + ", DfaLex._dfaData[" + badState + "] appears to exist, but its line property is " + (typeof line === "undefined" ? "undefined." : "null.")
-            );
-          }
-          var p, st;
-          for (p = 1 << 8, st = line; p; p >>= 1) {
-            if ((chr & p) !== 0) {
-              st = st[1];
-            } else {
-              st = st[0];
-            }
-            if (typeof st === "undefined") {
-              st = null;
-            }
-            if (st === null)
-              break;
-            if (Array.isArray(st))
-              continue;
-            break;
-          }
-          var ac = this._dfaData[this.state].accept;
-          this.state = /** @type {?number} */
-          st;
-          if (ac !== -1) {
-            this.match = /** @type{number} */
-            ac;
-            this.match_pos = pos;
-          }
-        }
-      };
-      var pop_tab = [
-        [0, 1],
-        [15, 1],
-        [14, 3],
-        [14, 1],
-        [16, 2],
-        [16, 1],
-        [17, 2],
-        [17, 2],
-        [17, 2],
-        [17, 1],
-        [18, 1],
-        [18, 1],
-        [18, 3],
-        [20, 3],
-        [20, 1],
-        [21, 2],
-        [21, 0],
-        [19, 1],
-        [19, 1],
-        [19, 1]
-      ];
-      var act_tab = [
-        [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
-        [],
-        [2, 14],
-        [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
-        [],
-        [5, 16, 4, 17, 3, 18],
-        [],
-        [],
-        [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
-        [],
-        [],
-        [],
-        [],
-        [7, 22, 2, 14],
-        [9, 24, 11, 9, 12, 10, 13, 11],
-        [6, 8, 11, 9, 12, 10, 13, 11, 8, 12, 10, 13],
-        [],
-        [],
-        []
-      ];
-      var goto_tab = [
-        [15, 1, 14, 2, 16, 3, 17, 4, 18, 5, 19, 6, 20, 7],
-        [],
-        [],
-        [17, 15, 18, 5, 19, 6, 20, 7],
-        [],
-        [],
-        [],
-        [],
-        [14, 19, 16, 3, 17, 4, 18, 5, 19, 6, 20, 7],
-        [],
-        [],
-        [],
-        [21, 20],
-        [],
-        [16, 21, 17, 4, 18, 5, 19, 6, 20, 7],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [19, 23],
-        [17, 15, 18, 5, 19, 6, 20, 7],
-        [],
-        [],
-        []
-      ];
-      var defact_tab = [-1, 0, 1, 3, 5, 9, 10, 11, -1, 17, 18, 19, 16, 14, -1, 4, 8, 7, 6, -1, -1, 2, 12, 15, 13];
-      var labels = [
-        {
-          label: "RegEx'",
-          kind: {},
-          prods: [0],
-          nullable: 0,
-          id: 0,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [6, 11, 12, 13, 8, 10]
-        },
-        {
-          label: "ERROR_RESYNC",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 1,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [1]
-        },
-        {
-          label: "|",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 2,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [2]
-        },
-        {
-          label: "*",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 3,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [3]
-        },
-        {
-          label: "+",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 4,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [4]
-        },
-        {
-          label: "?",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 5,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [5]
-        },
-        {
-          label: "(",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 6,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [6]
-        },
-        {
-          label: ")",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 7,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [7]
-        },
-        {
-          label: "[",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 8,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [8]
-        },
-        {
-          label: "]",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 9,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [9]
-        },
-        {
-          label: "ANY_CHAR",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 10,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [10]
-        },
-        {
-          label: "ASCII_CODE",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 11,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [11]
-        },
-        {
-          label: "ESCAPED_CHAR",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 12,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [12]
-        },
-        {
-          label: "ANY",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 13,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [13]
-        },
-        {
-          label: "Expression",
-          kind: {},
-          prods: [2, 3],
-          nullable: 0,
-          id: 14,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [6, 11, 12, 13, 8, 10]
-        },
-        {
-          label: "RegEx",
-          kind: {},
-          prods: [1],
-          nullable: 0,
-          id: 15,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [6, 11, 12, 13, 8, 10]
-        },
-        {
-          label: "Catenation",
-          kind: {},
-          prods: [4, 5],
-          nullable: 0,
-          id: 16,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [6, 11, 12, 13, 8, 10]
-        },
-        {
-          label: "Factor",
-          kind: {},
-          prods: [6, 7, 8, 9],
-          nullable: 0,
-          id: 17,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [6, 11, 12, 13, 8, 10]
-        },
-        {
-          label: "Term",
-          kind: {},
-          prods: [10, 11, 12],
-          nullable: 0,
-          id: 18,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [6, 11, 12, 13, 8, 10]
-        },
-        {
-          label: "Character",
-          kind: {},
-          prods: [17, 18, 19],
-          nullable: 0,
-          id: 19,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [11, 12, 13]
-        },
-        {
-          label: "CharacterSet",
-          kind: {},
-          prods: [13, 14],
-          nullable: 0,
-          id: 20,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [8, 10]
-        },
-        {
-          label: "CharClass",
-          kind: {},
-          prods: [15, 16],
-          nullable: 1,
-          id: 21,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [11, 12, 13]
-        },
-        {
-          label: "$",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 22,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [22]
-        }
-      ];
-      var ACTIONS = /* @__PURE__ */ function() {
-        var PCB2 = {};
-        var actions = [
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param();
-            global2.nfa_states.value[first_nfa].follow = arguments[0].start;
-            last_nfa = arguments[0].end;
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
-            global2.nfa_states.value[rval.start].follow = arguments[2].start;
-            global2.nfa_states.value[rval.start].follow2 = arguments[0].start;
-            global2.nfa_states.value[arguments[2].end].follow = rval.end;
-            global2.nfa_states.value[arguments[0].end].follow = rval.end;
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            var weight = global2.nfa_states.value[arguments[1].end].weight;
-            global2.nfa_states.value[arguments[1].end] = new Nfa(global2.nfa_states.value[arguments[0].start]);
-            global2.nfa_states.value[arguments[1].end].weight = weight;
-            global2.nfa_states.value[arguments[0].start].edge = EDGE.FREE;
-            arguments[1].end = arguments[0].end;
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
-            global2.nfa_states.value[rval.start].follow = arguments[1].start;
-            global2.nfa_states.value[arguments[1].end].follow = rval.end;
-            global2.nfa_states.value[rval.start].follow2 = rval.end;
-            global2.nfa_states.value[arguments[1].end].follow2 = arguments[1].start;
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
-            global2.nfa_states.value[rval.start].follow = arguments[1].start;
-            global2.nfa_states.value[arguments[1].end].follow = rval.end;
-            global2.nfa_states.value[arguments[1].end].follow2 = arguments[1].start;
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param(global2.nfa_states.create(), global2.nfa_states.create());
-            global2.nfa_states.value[rval.start].follow = arguments[1].start;
-            global2.nfa_states.value[rval.start].follow2 = rval.end;
-            global2.nfa_states.value[arguments[1].end].follow = rval.end;
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param();
-            rval.start = global2.nfa_states.create();
-            rval.end = global2.nfa_states.value[rval.start].follow = global2.nfa_states.create();
-            global2.nfa_states.value[rval.start].edge = EDGE.CHAR;
-            global2.nfa_states.value[rval.start].ccl.set(arguments[0].charCodeAt(0), true);
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            var negate = false;
-            var i2 = 0, j, start;
-            rval = new Param();
-            rval.start = global2.nfa_states.create();
-            rval.end = global2.nfa_states.value[rval.start].follow = global2.nfa_states.create();
-            global2.nfa_states.value[rval.start].edge = EDGE.CHAR;
-            if (arguments[1].charAt(i2) == "^") {
-              negate = true;
-              for (j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++)
-                global2.nfa_states.value[rval.start].ccl.set(j, true);
-              i2++;
-            }
-            for (; i2 < arguments[1].length; i2++) {
-              if (arguments[1].charAt(i2 + 1) == "-" && i2 + 2 < arguments[1].length) {
-                i2++;
-                for (j = arguments[1].charCodeAt(i2 - 1); j < arguments[1].charCodeAt(i2 + 1); j++)
-                  global2.nfa_states.value[rval.start].ccl.set(j, !negate);
-              } else
-                global2.nfa_states.value[rval.start].ccl.set(arguments[1].charCodeAt(i2), !negate);
-            }
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = new Param();
-            rval.start = global2.nfa_states.create();
-            rval.end = global2.nfa_states.value[rval.start].follow = global2.nfa_states.create();
-            global2.nfa_states.value[rval.start].edge = EDGE.CHAR;
-            for (var i2 = global2.MIN_CHAR; i2 < global2.MAX_CHAR; i2++)
-              global2.nfa_states.value[rval.start].ccl.set(i2, true);
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1] + arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = "";
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = String.fromCharCode(arguments[0].substr(1));
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = { n: "\n", r: "\r", t: "	", a: "a" }[arguments[0].substr(1)] || arguments[0].substr(1);
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          }
-        ];
-        return function(act, vstack, pcb) {
-          try {
-            PCB2 = pcb;
-            return actions[act].apply(null, vstack);
-          } catch (e) {
-            if (e instanceof ReturnValue)
-              return e.valueOf();
-            throw e;
-          }
-        };
-      }();
-      function get_act(top, la) {
-        for (var i2 = 0; i2 < act_tab[top].length; i2 += 2)
-          if (act_tab[top][i2] === la)
-            return act_tab[top][i2 + 1];
-        return null;
-      }
-      __name(get_act, "get_act");
-      function get_goto(top, pop) {
-        for (var i2 = 0; i2 < goto_tab[top].length; i2 += 2)
-          if (goto_tab[top][i2] === pop)
-            return goto_tab[top][i2 + 1];
-        return null;
-      }
-      __name(get_goto, "get_goto");
-      var PcbClass = /* @__PURE__ */ __name(function(src) {
-        this.src = src;
-      }, "PcbClass");
-      PcbClass.prototype.line = 1;
-      PcbClass.prototype.column = 1;
-      PcbClass.prototype.offset = 0;
-      PcbClass.prototype.error_step = 0;
-      PcbClass.prototype.src = "";
-      PcbClass.prototype.att = "";
-      PcbClass.prototype.la = null;
-      PcbClass.prototype.act = null;
-      PcbClass.prototype.lex = function() {
-        var start, pos, chr, actionResult;
-        var dfa = new DfaLex();
-        var loop = true;
-        while (loop) {
-          dfa.match_pos = 0;
-          pos = this.offset + 1;
-          do {
-            pos--;
-            dfa.state = 0;
-            dfa.match = null;
-            start = pos;
-            if (this.src.length <= start) {
-              this.la = eof;
-              return eof;
-            }
-            do {
-              chr = this.src.charCodeAt(pos);
-              dfa.exec(chr, pos);
-              if (dfa.state !== null)
-                this.accountChar(chr);
-              pos++;
-            } while (dfa.state !== null);
-          } while (whitespace > -1 && dfa.match === whitespace);
-          if (dfa.match !== null) {
-            this.att = this.src.slice(start, dfa.match_pos);
-            this.offset = dfa.match_pos;
-            actionResult = TERMINAL_ACTIONS(this, dfa.match);
-            if (dfa.state !== null)
-              this.accountChar(chr);
-            if (actionResult === Continue)
-              continue;
-            this.att = actionResult;
-          } else {
-            this.att = "";
-          }
-          loop = false;
-        }
-        this.la = dfa.match;
-        return this.la;
-      };
-      PcbClass.prototype.accountChar = function(chr) {
-        if (chr === 10) {
-          this.line++;
-          this.column = 0;
-        }
-        this.column++;
-      };
-      function parse3(src, err_off, err_la) {
-        var sstack = [0];
-        var vstack = [0];
-        var err_cnt = 0;
-        var rval;
-        var act;
-        var i2 = 0;
-        var PCB2 = new PcbClass(src);
-        err_off = err_off || [];
-        err_la = err_la || [];
-        PCB2.lex();
-        while (true) {
-          PCB2.act = get_act(sstack[0], PCB2.la);
-          if (PCB2.act === null && defact_tab[sstack[0]] >= 0)
-            PCB2.act = -defact_tab[sstack[0]];
-          if (PCB2.act === null) {
-            if (PCB2.error_step === 0) {
-              err_cnt++;
-              err_off.unshift(PCB2.offset - PCB2.att.length);
-              err_la.unshift([]);
-              for (i2 = 0; i2 < act_tab[sstack[0]].length; i2 += 2)
-                err_la[0].push(labels[act_tab[sstack[0]][i2]]);
-            }
-            while (sstack.length > 1 && PCB2.act === null) {
-              sstack.shift();
-              vstack.shift();
-              PCB2.act = get_act(sstack[0], PCB2.la);
-              if (PCB2.act === error_token) {
-                sstack.unshift(PCB2.act);
-                vstack.unshift("");
-              }
-            }
-            if (sstack.length > 1 && PCB2.act !== null) {
-              while (PCB2.la !== eof) {
-                PCB2.act = act_tab[sstack[0]][i2 + 1];
-                if (PCB2.act != null)
-                  break;
-                while (PCB2.lex() != null)
-                  PCB2.offset++;
-              }
-            }
-            if (PCB2.act === null || PCB2.la === eof) {
-              break;
-            }
-            PCB2.error_step = 3;
-          }
-          if (PCB2.act > 0) {
-            sstack.unshift(PCB2.act);
-            vstack.unshift(PCB2.att);
-            PCB2.lex();
-            if (PCB2.error_step > 0)
-              PCB2.error_step--;
-          } else {
-            act = -PCB2.act;
-            rval = ACTIONS(act, vstack, PCB2);
-            sstack.splice(0, pop_tab[act][1]);
-            vstack.splice(0, pop_tab[act][1]);
-            PCB2.act = get_goto(sstack[0], pop_tab[act][0]);
-            if (act === 0)
-              break;
-            sstack.unshift(PCB2.act);
-            vstack.unshift(rval);
-          }
-        }
-        return err_cnt;
-      }
-      __name(parse3, "parse");
-      return parse3;
-    }(22, -1, 1);
-    function compile_regex(str, accept, case_insensitive, cur_line) {
-      var i2, j;
-      var weight = 0;
-      var true_edges = 0;
-      var error_offsets = [];
-      var error_expects = [];
-      var error_count = 0;
-      if (str == "")
-        return;
-      cur_line = cur_line || 0;
-      first_nfa = global2.nfa_states.create();
-      if ((error_count = __parse(str, error_offsets, error_expects)) == 0) {
-        if (case_insensitive) {
-          for (i2 = 0; i2 < global2.nfa_states.value.length; i2++) {
-            if (global2.nfa_states.value[i2].edge == EDGE.CHAR) {
-              for (j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++) {
-                if (global2.nfa_states.value[i2].ccl.get(j)) {
-                  global2.nfa_states.value[i2].ccl.set(String.fromCharCode(j).toUpperCase().charCodeAt(0), true);
-                  global2.nfa_states.value[i2].ccl.set(String.fromCharCode(j).toLowerCase().charCodeAt(0), true);
-                }
-              }
-            }
-          }
-        }
-        global2.nfa_states.value[last_nfa].accept = accept;
-        global2.nfa_states.value[last_nfa].weight = global2.regex_weight++;
-        if (first_nfa > 0) {
-          i2 = 0;
-          while (global2.nfa_states.value[i2].follow2 != -1)
-            i2 = global2.nfa_states.value[i2].follow2;
-          global2.nfa_states.value[i2].follow2 = first_nfa;
-        }
-      } else {
-        for (i2 = 0; i2 < error_count; i2++) {
-          var spaces = "";
-          for (j = 0; j < error_offsets[i2]; j++)
-            spaces += " ";
-          log3.error(
-            "Regular expression:\n	" + str + "\n	" + spaces + "^ expecting " + error_expects[i2].join() + " on line " + cur_line
-          );
-        }
-      }
-    }
-    __name(compile_regex, "compile_regex");
-    return compile_regex;
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/parse", [
-      "require",
-      "./global",
-      "./regex",
-      "./tabgen",
-      "./log/log",
-      "./classes/Production",
-      "./enums/ASSOC",
-      "./enums/SYM",
-      "./enums/SPECIAL"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccparse = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(string, string=):number}
-   */
-  function(require3, others) {
-    var log3, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), compile_regex = (
-      /** @type {function(string, number, boolean, number)} */
-      require3("./regex")
-    ), tabgen = (
-      /** @type {jscc.tabgen} */
-      require3("./tabgen")
-    ), Production = (
-      /** @type {function(new:jscc.classes.Production, ?ProductionOptions=)} */
-      require3("./classes/Production")
-    ), ASSOC = require3("./enums/ASSOC"), SYM = require3("./enums/SYM"), SPECIAL = require3("./enums/SPECIAL");
-    (function() {
-      if (false) {
-        log3 = /** @type {jscc.log} */
-        require3("./log/logNode");
-      } else {
-        log3 = /** @type {jscc.log} */
-        require3("./log/log");
-      }
-    })();
-    var first_lhs;
-    var cur_line;
-    function line_error(line, txt) {
-      log3.error("line " + line + ": " + txt);
-    }
-    __name(line_error, "line_error");
-    var __parse = function(eof, whitespace, error_token) {
-      var Continue = /* @__PURE__ */ __name(function() {
-        throw Continue;
-      }, "Continue");
-      var ReturnValue = /* @__PURE__ */ __name(function(value) {
-        Error.call(this);
-        this._value = value;
-      }, "ReturnValue");
-      ReturnValue.prototype = Object.create(Error.prototype);
-      ReturnValue.prototype.constructor = ReturnValue;
-      ReturnValue.prototype._value = null;
-      ReturnValue.prototype.valueOf = function() {
-        return this._value;
-      };
-      function Return(value) {
-        throw new ReturnValue(value);
-      }
-      __name(Return, "Return");
-      var TERMINAL_ACTIONS = /* @__PURE__ */ function() {
-        function emptyFn(PCB2) {
-          return PCB2.att;
-        }
-        __name(emptyFn, "emptyFn");
-        var actions = {
-          13: (
-            /** @suppress {uselessCode} */
-            function(PCB2) {
-              return PCB2.att.substr(2, PCB2.att.length - 4);
-              return PCB2.att;
-            }
-          ),
-          17: (
-            /** @suppress {uselessCode} */
-            function(PCB2) {
-              return Continue.apply(null, arguments);
-              return PCB2.att;
-            }
-          ),
-          18: (
-            /** @suppress {uselessCode} */
-            function(PCB2) {
-              return Continue.apply(null, arguments);
-              return PCB2.att;
-            }
-          ),
-          19: (
-            /** @suppress {uselessCode} */
-            function(PCB2) {
-              return Continue.apply(null, arguments);
-              return PCB2.att;
-            }
-          )
-        };
-        return function(PCB2, match) {
-          try {
-            return (actions[match] || emptyFn)(PCB2);
-          } catch (e) {
-            if (e instanceof ReturnValue)
-              return e.valueOf();
-            if (e == Continue)
-              return Continue;
-            throw e;
-          }
-        };
-      }();
-      var DfaLex = /* @__PURE__ */ __name(function() {
-        this._dfaData = [
-          {
-            line: [
-              [
-                [
-                  [
-                    [
-                      [
-                        null,
-                        [
-                          [
-                            [null, 1],
-                            [2, null]
-                          ],
-                          [[null, 1], null]
-                        ]
-                      ],
-                      null
-                    ],
-                    [
-                      [
-                        [
-                          [
-                            [1, 3],
-                            [19, 22]
-                          ],
-                          [null, [4, 23]]
-                        ],
-                        [
-                          null,
-                          [
-                            [null, 5],
-                            [null, 24]
-                          ]
-                        ]
-                      ],
-                      [
-                        5,
-                        [
-                          [5, [6, 7]],
-                          [
-                            [8, 25],
-                            [9, null]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ],
-                  [
-                    [
-                      [[[[null, 5], 5], 5], 5],
-                      [
-                        5,
-                        [
-                          [5, [5, 26]],
-                          [null, [10, 5]]
-                        ]
-                      ]
-                    ],
-                    [
-                      [[[[null, 5], 5], 5], 5],
-                      [
-                        5,
-                        [
-                          [5, [5, null]],
-                          [
-                            [11, null],
-                            [12, null]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ],
-                null
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [
-                    [
-                      [
-                        null,
-                        [
-                          [[null, 1], null],
-                          [[null, 1], null]
-                        ]
-                      ],
-                      null
-                    ],
-                    [[[[[1, null], null], null], null], null]
-                  ],
-                  null
-                ],
-                null
-              ]
-            ],
-            accept: 19
-          },
-          { line: [], accept: 17 },
-          { line: [], accept: 6 },
-          { line: [], accept: 10 },
-          {
-            line: [
-              [
-                [
-                  [
-                    null,
-                    [
-                      [null, [null, [[null, 5], null]]],
-                      [5, [[5, null], null]]
-                    ]
-                  ],
-                  [
-                    [
-                      [[[[null, 5], 5], 5], 5],
-                      [
-                        5,
-                        [
-                          [5, [5, null]],
-                          [null, [null, 5]]
-                        ]
-                      ]
-                    ],
-                    [
-                      [[[[null, 5], 5], 5], 5],
-                      [5, [[5, [5, null]], null]]
-                    ]
-                  ]
-                ],
-                null
-              ]
-            ],
-            accept: 16
-          },
-          { line: [], accept: 8 },
-          { line: [], accept: 7 },
-          { line: [], accept: 3 },
-          { line: [], accept: 4 },
-          { line: [], accept: 5 },
-          { line: [], accept: 9 },
-          { line: [], accept: 11 },
-          { line: [], accept: 15 },
-          { line: [], accept: 2 },
-          { line: [], accept: 14 },
-          { line: [], accept: 12 },
-          { line: [], accept: 18 },
-          { line: [], accept: 13 },
-          {
-            line: [
-              [
-                [
-                  [19, [[[[19, [13, 19]], 19], 19], 19]],
-                  [[19, [19, [19, [[27, 19], 19]]]], 19]
-                ],
-                [19, [19, [19, [19, [19, [19, [19, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [19, [[[[19, [13, 19]], 19], 19], 19]],
-                  [[19, [19, [19, [[27, 19], 19]]]], 19]
-                ],
-                [19, [19, [19, [19, [19, [19, [19, null]]]]]]]
-              ]
-            ],
-            accept: 15
-          },
-          {
-            line: [
-              [
-                [
-                  [23, [[[23, [23, [23, 15]]], 23], 23]],
-                  [[23, [23, [23, [[28, 23], 23]]]], 23]
-                ],
-                [23, [23, [23, [23, [23, [23, [23, null]]]]]]]
-              ]
-            ],
-            accept: 14
-          },
-          { line: [[[[null, [[[[null, [null, 14]], null], null], null]], null], null]], accept: -1 },
-          {
-            line: [
-              [
-                [
-                  [23, [[[23, [23, [23, 15]]], 23], 23]],
-                  [[23, [23, [23, [[28, 23], 23]]]], 23]
-                ],
-                [23, [23, [23, [23, [23, [23, [23, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          { line: [[[null, [null, [null, [null, [null, [null, [29, null]]]]]]], null]], accept: -1 },
-          { line: [[[[null, [null, [null, [null, [null, [16, null]]]]]], null], null]], accept: -1 },
-          { line: [[[[null, [[null, [[null, [37, null]], null]], null]], null], null]], accept: -1 },
-          {
-            line: [
-              [
-                [
-                  [19, [[[[19, [20, 19]], 19], 19], 19]],
-                  [[19, [19, [19, [[27, 19], 19]]]], 19]
-                ],
-                [19, [19, [19, [19, [19, [19, [19, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [23, [[[23, [23, [23, 21]]], 23], 23]],
-                  [[23, [23, [23, [[28, 23], 23]]]], 23]
-                ],
-                [23, [23, [23, [23, [23, [23, [23, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [38, [[38, [38, [38, [38, 30]]]], 38]],
-                  [38, [38, [38, [38, [38, [31, 38]]]]]]
-                ],
-                [38, [38, [38, [38, [38, [38, [38, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          { line: [[[[null, [[null, [null, [null, [null, 29]]]], null]], null], null]], accept: -1 },
-          {
-            line: [
-              [
-                [[29, [[29, [29, [29, [29, 17]]]], 29]], 29],
-                [29, [29, [29, [29, [29, [29, [29, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [[32, [[32, [[32, [33, 32]], 32]], 32]], 32],
-                [32, [32, [32, [32, [32, [32, [32, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [36, [[36, [36, [36, [[36, 18], 36]]]], 36]],
-                [36, [36, [36, [36, [36, [36, [36, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          { line: [[[null, [[null, [null, [null, [[null, 36], null]]]], null]], null]], accept: -1 },
-          {
-            line: [
-              [
-                [
-                  [38, [[38, [38, [38, [38, 35]]]], 38]],
-                  [38, [38, [38, [38, [38, [31, 38]]]]]]
-                ],
-                [38, [38, [38, [38, [38, [38, [38, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [32, [[32, [[32, [33, 32]], 32]], 32]],
-                  [[32, [32, [32, [[32, 34], 32]]]], 32]
-                ],
-                [32, [32, [32, [32, [32, [32, [32, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [32, [[32, [[32, [33, 32]], 32]], 32]],
-                  [[32, [32, [32, [[32, 34], 32]]]], 32]
-                ],
-                [32, [32, [32, [32, [32, [32, [32, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          },
-          {
-            line: [
-              [
-                [
-                  [38, [[38, [38, [38, [38, 35]]]], 38]],
-                  [38, [38, [38, [38, [38, [31, 38]]]]]]
-                ],
-                [38, [38, [38, [38, [38, [38, [38, null]]]]]]]
-              ]
-            ],
-            accept: -1
-          }
-        ];
-      }, "DfaLex");
-      DfaLex.prototype._dfaData = [];
-      DfaLex.prototype.match_pos = 0;
-      DfaLex.prototype.state = 0;
-      DfaLex.prototype.match = null;
-      DfaLex.prototype.exec = function(chr, pos) {
-        if (this.state !== null) {
-          if (typeof this.state !== "number" || this.state >= this._dfaData.length) {
-            this.state = null;
-            throw new Error("Invalid value for DfaLex.state at chr " + chr + " and pos " + pos);
-          }
-          var line = this._dfaData[this.state].line;
-          if (typeof line === "undefined" || line === null) {
-            var badState = this.state;
-            this.state = null;
-            throw new Error(
-              "At chr " + chr + " and pos " + pos + ", DfaLex._dfaData[" + badState + "] appears to exist, but its line property is " + (typeof line === "undefined" ? "undefined." : "null.")
-            );
-          }
-          var p, st;
-          for (p = 1 << 8, st = line; p; p >>= 1) {
-            if ((chr & p) !== 0) {
-              st = st[1];
-            } else {
-              st = st[0];
-            }
-            if (typeof st === "undefined") {
-              st = null;
-            }
-            if (st === null)
-              break;
-            if (Array.isArray(st))
-              continue;
-            break;
-          }
-          var ac = this._dfaData[this.state].accept;
-          this.state = /** @type {?number} */
-          st;
-          if (ac !== -1) {
-            this.match = /** @type{number} */
-            ac;
-            this.match_pos = pos;
-          }
-        }
-      };
-      var pop_tab = [
-        [0, 1],
-        [24, 5],
-        [20, 1],
-        [23, 1],
-        [21, 2],
-        [21, 1],
-        [26, 3],
-        [26, 3],
-        [26, 3],
-        [26, 2],
-        [26, 3],
-        [27, 2],
-        [27, 1],
-        [30, 3],
-        [30, 2],
-        [22, 2],
-        [22, 1],
-        [32, 4],
-        [32, 2],
-        [33, 3],
-        [33, 1],
-        [34, 3],
-        [36, 2],
-        [36, 2],
-        [36, 0],
-        [35, 1],
-        [35, 0],
-        [37, 2],
-        [37, 1],
-        [38, 1],
-        [38, 1],
-        [38, 1],
-        [25, 1],
-        [25, 2],
-        [25, 2],
-        [25, 0],
-        [39, 2],
-        [39, 1],
-        [28, 1],
-        [28, 1],
-        [31, 1],
-        [29, 1],
-        [29, 0]
-      ];
-      var act_tab = [
-        [12, 5, 13, 6],
-        [],
-        [3, 9, 4, 10, 5, 11, 6, 13, 14, 16, 15, 17],
-        [],
-        [13, 18],
-        [13, 19, 16, 21],
-        [],
-        [2, 23, 3, 9, 4, 10, 5, 11, 6, 13, 14, 16, 15, 17],
-        [],
-        [14, 16, 15, 17],
-        [14, 16, 15, 17],
-        [14, 16, 15, 17],
-        [7, 28, 14, 16, 15, 17],
-        [14, 16, 15, 17],
-        [],
-        [16, 21, 12, 5, 13, 6],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [1, 35, 16, 21],
-        [7, 36, 14, 16, 15, 17],
-        [7, 37, 14, 16, 15, 17],
-        [7, 38, 14, 16, 15, 17],
-        [],
-        [],
-        [7, 40],
-        [],
-        [12, 5, 13, 6],
-        [1, 35, 12, 5, 16, 21, 13, 6],
-        [],
-        [8, 45],
-        [7, 46],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [11, 54, 16, 21, 14, 16, 15, 17],
-        [],
-        [9, 55, 7, 56],
-        [],
-        [10, 58],
-        [11, 54, 16, 21, 14, 16, 15, 17],
-        [],
-        [],
-        [],
-        [],
-        [11, 54, 16, 21, 14, 16, 15, 17],
-        [],
-        [12, 5, 13, 6],
-        [16, 21, 14, 16, 15, 17],
-        [],
-        [],
-        [],
-        [],
-        []
-      ];
-      var goto_tab = [
-        [24, 1, 20, 2, 25, 3, 39, 4],
-        [],
-        [21, 7, 26, 8, 27, 12, 30, 14, 28, 15],
-        [],
-        [],
-        [31, 20],
-        [],
-        [26, 22, 27, 12, 30, 14, 28, 15],
-        [],
-        [27, 24, 30, 14, 28, 15],
-        [27, 25, 30, 14, 28, 15],
-        [27, 26, 30, 14, 28, 15],
-        [30, 27, 28, 15],
-        [28, 29],
-        [],
-        [25, 30, 31, 31, 39, 4],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [22, 32, 32, 33, 31, 34],
-        [30, 27, 28, 15],
-        [30, 27, 28, 15],
-        [30, 27, 28, 15],
-        [],
-        [],
-        [29, 39],
-        [],
-        [25, 41, 39, 4],
-        [32, 42, 23, 43, 25, 44, 31, 34, 39, 4],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [33, 47, 34, 48, 35, 49, 37, 50, 38, 51, 31, 52, 28, 53],
-        [],
-        [],
-        [],
-        [36, 57],
-        [38, 59, 31, 52, 28, 53],
-        [],
-        [],
-        [],
-        [],
-        [34, 60, 35, 49, 37, 50, 38, 51, 31, 52, 28, 53],
-        [],
-        [25, 61, 39, 4],
-        [28, 62, 31, 63],
-        [],
-        [],
-        [],
-        [],
-        []
-      ];
-      var defact_tab = [
-        35,
-        0,
-        -1,
-        2,
-        32,
-        -1,
-        37,
-        -1,
-        5,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        12,
-        35,
-        38,
-        39,
-        36,
-        34,
-        33,
-        40,
-        4,
-        -1,
-        -1,
-        -1,
-        -1,
-        11,
-        9,
-        42,
-        14,
-        35,
-        35,
-        16,
-        -1,
-        -1,
-        6,
-        7,
-        8,
-        10,
-        41,
-        13,
-        15,
-        1,
-        3,
-        26,
-        18,
-        -1,
-        20,
-        24,
-        25,
-        28,
-        29,
-        30,
-        31,
-        26,
-        17,
-        35,
-        -1,
-        27,
-        19,
-        21,
-        23,
-        22
-      ];
-      var labels = [
-        {
-          label: "def'",
-          kind: {},
-          prods: [0],
-          nullable: 0,
-          id: 0,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [12, 3, 4, 5, 6, 13, 14, 15]
-        },
-        {
-          label: "ERROR_RESYNC",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 1,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [1]
-        },
-        {
-          label: "##",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 2,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [2]
-        },
-        {
-          label: "<",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 3,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [3]
-        },
-        {
-          label: ">",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 4,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [4]
-        },
-        {
-          label: "^",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 5,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [5]
-        },
-        {
-          label: "!",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 6,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [6]
-        },
-        {
-          label: ";",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 7,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [7]
-        },
-        {
-          label: ":",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 8,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [8]
-        },
-        {
-          label: "|",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 9,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [9]
-        },
-        {
-          label: "&",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 10,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [10]
-        },
-        {
-          label: "~",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 11,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [11]
-        },
-        {
-          label: "=>",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 12,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [12]
-        },
-        {
-          label: "CODE",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 13,
-          code: "	return %match.substr(2, %match.length - 4 ); ",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [13]
-        },
-        {
-          label: "STRING_SINGLE",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 14,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [14]
-        },
-        {
-          label: "STRING_DOUBLE",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 15,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [15]
-        },
-        {
-          label: "IDENT",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 16,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [16]
-        },
-        {
-          label: "n",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 17,
-          code: "return Continue.apply(null, arguments);",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [17]
-        },
-        {
-          label: "/~([^~]/|~[^/]|[^~/])*~/",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 18,
-          code: "return Continue.apply(null, arguments);",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [18]
-        },
-        {
-          label: "[tr ]+",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 19,
-          code: "return Continue.apply(null, arguments);",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [19]
-        },
-        {
-          label: "header_code",
-          kind: {},
-          prods: [2],
-          nullable: 1,
-          id: 20,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [12, 13]
-        },
-        {
-          label: "token_assocs",
-          kind: {},
-          prods: [4, 5],
-          nullable: 0,
-          id: 21,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [3, 4, 5, 6, 14, 15]
-        },
-        {
-          label: "grammar_defs",
-          kind: {},
-          prods: [15, 16],
-          nullable: 0,
-          id: 22,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [16, 1]
-        },
-        {
-          label: "footer_code",
-          kind: {},
-          prods: [3],
-          nullable: 1,
-          id: 23,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [12, 13]
-        },
-        {
-          label: "def",
-          kind: {},
-          prods: [1],
-          nullable: 0,
-          id: 24,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [12, 3, 4, 5, 6, 13, 14, 15]
-        },
-        {
-          label: "code_opt",
-          kind: {},
-          prods: [32, 33, 34, 35],
-          nullable: 1,
-          id: 25,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [12, 13]
-        },
-        {
-          label: "token_assoc",
-          kind: {},
-          prods: [6, 7, 8, 9, 10],
-          nullable: 0,
-          id: 26,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [3, 4, 5, 6, 14, 15]
-        },
-        {
-          label: "token_defs",
-          kind: {},
-          prods: [11, 12],
-          nullable: 0,
-          id: 27,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [14, 15]
-        },
-        {
-          label: "string",
-          kind: {},
-          prods: [38, 39],
-          nullable: 0,
-          id: 28,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [14, 15]
-        },
-        {
-          label: "opt_semicolon",
-          kind: {},
-          prods: [41, 42],
-          nullable: 1,
-          id: 29,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [7]
-        },
-        {
-          label: "token_def",
-          kind: {},
-          prods: [13, 14],
-          nullable: 0,
-          id: 30,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [14, 15]
-        },
-        {
-          label: "identifier",
-          kind: {},
-          prods: [40],
-          nullable: 0,
-          id: 31,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [16]
-        },
-        {
-          label: "grammar_def",
-          kind: {},
-          prods: [17, 18],
-          nullable: 0,
-          id: 32,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [16, 1]
-        },
-        {
-          label: "productions",
-          kind: {},
-          prods: [19, 20],
-          nullable: 1,
-          id: 33,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [10, 12, 13, 9, 16, 14, 15, 11]
-        },
-        {
-          label: "rhs",
-          kind: {},
-          prods: [21],
-          nullable: 1,
-          id: 34,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [10, 12, 13, 16, 14, 15, 11]
-        },
-        {
-          label: "sequence_opt",
-          kind: {},
-          prods: [25, 26],
-          nullable: 1,
-          id: 35,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [16, 14, 15, 11]
-        },
-        {
-          label: "rhs_prec",
-          kind: {},
-          prods: [22, 23, 24],
-          nullable: 1,
-          id: 36,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [10]
-        },
-        {
-          label: "sequence",
-          kind: {},
-          prods: [27, 28],
-          nullable: 0,
-          id: 37,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [16, 14, 15, 11]
-        },
-        {
-          label: "symbol",
-          kind: {},
-          prods: [29, 30, 31],
-          nullable: 0,
-          id: 38,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [16, 14, 15, 11]
-        },
-        {
-          label: "code",
-          kind: {},
-          prods: [36, 37],
-          nullable: 0,
-          id: 39,
-          code: "",
-          level: 0,
-          special: {},
-          defined: true,
-          first: [13]
-        },
-        {
-          label: "$",
-          kind: {},
-          prods: [],
-          nullable: false,
-          id: 40,
-          code: "",
-          level: 0,
-          special: {},
-          defined: false,
-          first: [40]
-        }
-      ];
-      var ACTIONS = /* @__PURE__ */ function() {
-        var PCB2 = {};
-        var actions = [
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[4];
-            return rval;
-          },
-          function() {
-            var rval;
-            global2.code_head += arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            global2.code_foot += arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            global2.assoc_level++;
-            for (var i2 = 0; i2 < arguments[1].length; i2++) {
-              global2.symbols[arguments[1][i2]].level = global2.assoc_level;
-              global2.symbols[arguments[1][i2]].assoc = ASSOC.LEFT;
-            }
-            return rval;
-          },
-          function() {
-            var rval;
-            global2.assoc_level++;
-            for (var i2 = 0; i2 < arguments[1].length; i2++) {
-              global2.symbols[arguments[1][i2]].level = global2.assoc_level;
-              global2.symbols[arguments[1][i2]].assoc = ASSOC.RIGHT;
-            }
-            return rval;
-          },
-          function() {
-            var rval;
-            global2.assoc_level++;
-            for (var i2 = 0; i2 < arguments[1].length; i2++) {
-              global2.symbols[arguments[1][i2]].level = global2.assoc_level;
-              global2.symbols[arguments[1][i2]].assoc = ASSOC.NOASSOC;
-            }
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            if (global2.whitespace_token == -1) {
-              var regex = arguments[1].substr(1, arguments[1].length - 2);
-              global2.whitespace_token = tabgen.create_symbol("WHITESPACE", SYM.TERM, SPECIAL.WHITESPACE);
-              compile_regex(regex, global2.whitespace_token, arguments[1][0] != "'", cur_line);
-            } else
-              line_error(PCB2.line, "Multiple whitespace definition");
-            return rval;
-          },
-          function() {
-            var rval;
-            arguments[1].push(arguments[0]);
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = [arguments[0]];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = tabgen.create_symbol(arguments[1], SYM.TERM, SPECIAL.NONE);
-            var regex = arguments[2].substr(1, arguments[2].length - 2);
-            global2.symbols[rval].code = arguments[0];
-            compile_regex(regex, global2.symbols[rval].id, arguments[2].charAt(0) != "'", cur_line);
-            return rval;
-          },
-          function() {
-            var rval;
-            var regex = arguments[1].substr(1, arguments[1].length - 2);
-            rval = tabgen.create_symbol(regex.replace(/\\/g, ""), SYM.TERM, SPECIAL.NONE);
-            global2.symbols[rval].code = arguments[0];
-            compile_regex(regex, global2.symbols[rval].id, arguments[1].charAt(0) != "'", cur_line);
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            var nonterm = tabgen.create_symbol(arguments[3], SYM.NONTERM, SPECIAL.NONE);
-            global2.symbols[nonterm].defined = true;
-            for (var i2 = 0; i2 < arguments[1].length; i2++) {
-              global2.productions[arguments[1][i2]].lhs = nonterm;
-              global2.symbols[nonterm].prods.push(arguments[1][i2]);
-            }
-            if (first_lhs) {
-              first_lhs = false;
-              global2.symbols[0].label = global2.symbols[nonterm].label + "'";
-              global2.productions[0].rhs.push(nonterm);
-            }
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            arguments[2].push(arguments[0]);
-            rval = arguments[2];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = [arguments[0]];
-            return rval;
-          },
-          function() {
-            var rval;
-            var prod = new Production({
-              id: global2.productions.length,
-              lhs: null,
-              rhs: (
-                /** @type {Array<number>} */
-                arguments[2]
-              ),
-              level: (
-                /** @type {number} */
-                arguments[1]
-              ),
-              code: arguments[0] == "" ? global2.DEF_PROD_CODE : (
-                /** @type {string} */
-                arguments[0]
-              )
-            });
-            if (prod.level == 0) {
-              if (prod.rhs.length > 0) {
-                for (var i2 = prod.rhs.length - 1; i2 >= 0; i2--)
-                  if (global2.symbols[prod.rhs[i2]] && global2.symbols[prod.rhs[i2]].kind == SYM.TERM) {
-                    prod.level = global2.symbols[prod.rhs[i2]].level;
-                    break;
-                  }
-              }
-            }
-            global2.productions.push(prod);
-            rval = prod.id;
-            return rval;
-          },
-          function() {
-            var rval;
-            var index;
-            if ((index = tabgen.find_symbol(arguments[0], SYM.TERM, SPECIAL.NONE)) > -1)
-              rval = global2.symbols[index].level;
-            else
-              line_error(PCB2.line, 'Call to undefined terminal "' + arguments[0] + '"');
-            return rval;
-          },
-          function() {
-            var rval;
-            var index;
-            if ((index = tabgen.find_symbol(
-              arguments[0].substr(1, arguments[0].length - 2).replace(/\\/g, ""),
-              SYM.TERM,
-              SPECIAL.NONE
-            )) > -1)
-              rval = global2.symbols[index].level;
-            else
-              line_error(PCB2.line, 'Call to undefined terminal "' + arguments[0] + '"');
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = 0;
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = [];
-            return rval;
-          },
-          function() {
-            var rval;
-            arguments[1].push(arguments[0]);
-            rval = arguments[1];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = [arguments[0]];
-            return rval;
-          },
-          function() {
-            var rval;
-            if ((rval = tabgen.find_symbol(arguments[0], SYM.TERM, SPECIAL.NONE)) <= -1)
-              rval = tabgen.create_symbol(arguments[0], SYM.NONTERM, SPECIAL.NONE);
-            return rval;
-          },
-          function() {
-            var rval;
-            if ((rval = tabgen.find_symbol(
-              arguments[0].substr(1, arguments[0].length - 2).replace(/\\/g, ""),
-              SYM.TERM,
-              SPECIAL.NONE
-            )) <= -1)
-              line_error(PCB2.line, "Call to undefined terminal " + arguments[0]);
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = tabgen.find_symbol("ERROR_RESYNC", SYM.TERM, SPECIAL.ERROR);
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = "return " + arguments[0] + ".apply(null, arguments);";
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = "(" + arguments[0] + ").apply(null, arguments);";
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = "";
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[1] + arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = arguments[0];
-            return rval;
-          },
-          function() {
-            var rval;
-            rval = "";
-            return rval;
-          }
-        ];
-        return function(act, vstack, pcb) {
-          try {
-            PCB2 = pcb;
-            return actions[act].apply(null, vstack);
-          } catch (e) {
-            if (e instanceof ReturnValue)
-              return e.valueOf();
-            throw e;
-          }
-        };
-      }();
-      function get_act(top, la) {
-        for (var i2 = 0; i2 < act_tab[top].length; i2 += 2)
-          if (act_tab[top][i2] === la)
-            return act_tab[top][i2 + 1];
-        return null;
-      }
-      __name(get_act, "get_act");
-      function get_goto(top, pop) {
-        for (var i2 = 0; i2 < goto_tab[top].length; i2 += 2)
-          if (goto_tab[top][i2] === pop)
-            return goto_tab[top][i2 + 1];
-        return null;
-      }
-      __name(get_goto, "get_goto");
-      var PcbClass = /* @__PURE__ */ __name(function(src) {
-        this.src = src;
-      }, "PcbClass");
-      PcbClass.prototype.line = 1;
-      PcbClass.prototype.column = 1;
-      PcbClass.prototype.offset = 0;
-      PcbClass.prototype.error_step = 0;
-      PcbClass.prototype.src = "";
-      PcbClass.prototype.att = "";
-      PcbClass.prototype.la = null;
-      PcbClass.prototype.act = null;
-      PcbClass.prototype.lex = function() {
-        var start, pos, chr, actionResult;
-        var dfa = new DfaLex();
-        var loop = true;
-        while (loop) {
-          dfa.match_pos = 0;
-          pos = this.offset + 1;
-          do {
-            pos--;
-            dfa.state = 0;
-            dfa.match = null;
-            start = pos;
-            if (this.src.length <= start) {
-              this.la = eof;
-              return eof;
-            }
-            do {
-              chr = this.src.charCodeAt(pos);
-              dfa.exec(chr, pos);
-              if (dfa.state !== null)
-                this.accountChar(chr);
-              pos++;
-            } while (dfa.state !== null);
-          } while (whitespace > -1 && dfa.match === whitespace);
-          if (dfa.match !== null) {
-            this.att = this.src.slice(start, dfa.match_pos);
-            this.offset = dfa.match_pos;
-            actionResult = TERMINAL_ACTIONS(this, dfa.match);
-            if (dfa.state !== null)
-              this.accountChar(chr);
-            if (actionResult === Continue)
-              continue;
-            this.att = actionResult;
-          } else {
-            this.att = "";
-          }
-          loop = false;
-        }
-        this.la = dfa.match;
-        return this.la;
-      };
-      PcbClass.prototype.accountChar = function(chr) {
-        if (chr === 10) {
-          this.line++;
-          this.column = 0;
-        }
-        this.column++;
-      };
-      function parse3(src, err_off, err_la) {
-        var sstack = [0];
-        var vstack = [0];
-        var err_cnt = 0;
-        var rval;
-        var act;
-        var i2 = 0;
-        var PCB2 = new PcbClass(src);
-        err_off = err_off || [];
-        err_la = err_la || [];
-        PCB2.lex();
-        while (true) {
-          PCB2.act = get_act(sstack[0], PCB2.la);
-          if (PCB2.act === null && defact_tab[sstack[0]] >= 0)
-            PCB2.act = -defact_tab[sstack[0]];
-          if (PCB2.act === null) {
-            if (PCB2.error_step === 0) {
-              err_cnt++;
-              err_off.unshift(PCB2.offset - PCB2.att.length);
-              err_la.unshift([]);
-              for (i2 = 0; i2 < act_tab[sstack[0]].length; i2 += 2)
-                err_la[0].push(labels[act_tab[sstack[0]][i2]]);
-            }
-            while (sstack.length > 1 && PCB2.act === null) {
-              sstack.shift();
-              vstack.shift();
-              PCB2.act = get_act(sstack[0], PCB2.la);
-              if (PCB2.act === error_token) {
-                sstack.unshift(PCB2.act);
-                vstack.unshift("");
-              }
-            }
-            if (sstack.length > 1 && PCB2.act !== null) {
-              while (PCB2.la !== eof) {
-                PCB2.act = act_tab[sstack[0]][i2 + 1];
-                if (PCB2.act != null)
-                  break;
-                while (PCB2.lex() != null)
-                  PCB2.offset++;
-              }
-            }
-            if (PCB2.act === null || PCB2.la === eof) {
-              break;
-            }
-            PCB2.error_step = 3;
-          }
-          if (PCB2.act > 0) {
-            sstack.unshift(PCB2.act);
-            vstack.unshift(PCB2.att);
-            PCB2.lex();
-            if (PCB2.error_step > 0)
-              PCB2.error_step--;
-          } else {
-            act = -PCB2.act;
-            rval = ACTIONS(act, vstack, PCB2);
-            sstack.splice(0, pop_tab[act][1]);
-            vstack.splice(0, pop_tab[act][1]);
-            PCB2.act = get_goto(sstack[0], pop_tab[act][0]);
-            if (act === 0)
-              break;
-            sstack.unshift(PCB2.act);
-            vstack.unshift(rval);
-          }
-        }
-        return err_cnt;
-      }
-      __name(parse3, "parse");
-      return parse3;
-    }(40, -1, 1);
-    function parse_grammar(str, filename2) {
-      var error_offsets = [];
-      var error_expects = [];
-      var parse_error = 0;
-      first_lhs = true;
-      cur_line = 1;
-      if ((parse_error += __parse(str, error_offsets, error_expects)) > 0) {
-        for (var i2 = 0; i2 < parse_error; i2++)
-          line_error(
-            str.substr(0, error_offsets[i2]).match(/\n/g) ? str.substr(0, error_offsets[i2]).match(/\n/g).length : 1,
-            "Parse error near\n	" + str.substr(error_offsets[i2], 30) + (error_offsets[i2] + 30 < str.substr(error_offsets[i2]).length ? "..." : "") + "\n	" + error_expects[i2].join() + " expected"
-          );
-      }
-      return parse_error;
-    }
-    __name(parse_grammar, "parse_grammar");
-    return parse_grammar;
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/classes/Dfa", factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.jsccDfa = factory();
-  }
-})(void 0, function() {
-  jscc.classes.Dfa = function(o) {
-    var p = o || {};
-    if (typeof p.line !== "undefined" && Array.isArray(p.line)) {
-      this.line = /** @type {!Array} */
-      p.line;
-    }
-    if (typeof p.nfa_set !== "undefined" && Array.isArray(p.nfa_set)) {
-      this.nfa_set = /** @type {!Array<!number>} */
-      p.nfa_set;
-    }
-    if (typeof p.accept === "number") {
-      this.accept = /** @type {!number} */
-      p.accept;
-    }
-    if (typeof p.done === "boolean") {
-      this.done = /** @type {!boolean} */
-      p.done;
-    }
-    if (typeof p.group === "number") {
-      this.group = /** @type {!number} */
-      p.group;
-    }
-  };
-  jscc.classes.Dfa.prototype.line = [];
-  jscc.classes.Dfa.prototype.nfa_set = [];
-  jscc.classes.Dfa.prototype.accept = -1;
-  jscc.classes.Dfa.prototype.done = false;
-  jscc.classes.Dfa.prototype.group = -1;
-  return jscc.classes.Dfa;
-});
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/lexdfa", ["require", "./global", "./log/log", "./enums/EDGE", "./classes/Dfa"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jscclexdfa = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {jscc.lexdfa}
-   */
-  function(require3, others) {
-    var log3, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), EDGE = require3("./enums/EDGE"), Dfa = (
-      /** @type {function(new:jscc.classes.Dfa, ?DfaOptions=)} */
-      require3("./classes/Dfa")
-    );
-    (function() {
-      if (false) {
-        log3 = /** @type {jscc.log} */
-        require3("./log/logNode");
-      } else {
-        log3 = /** @type {jscc.log} */
-        require3("./log/log");
-      }
-    })();
-    jscc.lexdfa = function() {
-    };
-    jscc.lexdfa.prototype = {
-      /**
-       * Creates a new {@link jscc.global.Dfa} object and
-       * adds it to the provided array.
-       * @param {Array<!jscc.classes.Dfa>} where - The array to which to add the
-       * new Dfa object.
-       * @returns {number} The prior length of the provided array.
-       * @memberof jscc.lexdfa
-       */
-      create_dfa: function(where) {
-        var dfa = new Dfa({
-          line: new Array(global2.MAX_CHAR),
-          accept: -1,
-          nfa_set: [],
-          done: false,
-          group: -1
-        });
-        where.push(dfa);
-        return where.length - 1;
-      },
-      /**
-       * Determines whether the dfa_states array has a
-       * Dfa object whose {@link jscc.global.Dfa#nfa_set}
-       * property contains the same values as those in the
-       * items parameter.
-       * @param {Array<!jscc.classes.Dfa>} dfa_states - The array of Dfa
-       * objects to check.
-       * @param {Array<number>} items - The set to match.
-       * @returns {number} The index in dfa_states of the first
-       * matching item, or -1 if no match exists.
-       * @memberof jscc.lexdfa
-       */
-      same_nfa_items: function(dfa_states, items) {
-        var i2, j;
-        for (i2 = 0; i2 < dfa_states.length; i2++) {
-          if (dfa_states[i2].nfa_set.length == items.length) {
-            for (j = 0; j < dfa_states[i2].nfa_set.length; j++) {
-              if (dfa_states[i2].nfa_set[j] != items[j]) {
-                break;
-              }
-            }
-            if (j == dfa_states[i2].nfa_set.length) {
-              return i2;
-            }
-          }
-        }
-        return -1;
-      },
-      /**
-       * Determines the next Dfa object in the provided array
-       * whose {@link jscc.classes.Dfa#done} value is false.
-       * @param {Array<!jscc.classes.Dfa>} dfa_states - The array to check.
-       * @returns {number} The index of the first array element for
-       * which done is false, or -1 if no such element exists.
-       * @memberof jscc.lexdfa
-       */
-      get_undone_dfa: function(dfa_states) {
-        for (var i2 = 0; i2 < dfa_states.length; i2++) {
-          if (!dfa_states[i2].done) {
-            return i2;
-          }
-        }
-        return -1;
-      },
-      /**
-       * Performs a move operation on a given input character from a
-       * set of NFA states.
-       * @param {Array<!number>} state_set - The set of epsilon-closure
-       * states on which base the move should be performed.
-       * @param {Array<!jscc.classes.Nfa>} machine - The NFA state machine.
-       * @param {number} ch - A character code to be moved on.
-       * @returns {Array<!number>} If there is a possible move, a new
-       * set of NFA-states is returned, else the returned array has a
-       * length of 0.
-       * @author Jan Max Meyer
-       * @memberof jscc.lexdfa
-       */
-      move: function(state_set, machine, ch) {
-        var hits = [];
-        var tos = -1;
-        try {
-          do {
-            tos = state_set.pop();
-            if (machine[tos].edge == EDGE.CHAR) {
-              if (machine[tos].ccl.get(ch)) {
-                hits.push(machine[tos].follow);
-              }
-            }
-          } while (state_set.length > 0);
-        } catch (e) {
-          log3.error("\n state_set= " + state_set + " machine= " + machine + " ch= " + ch);
-          throw e;
-        }
-        return hits;
-      },
-      /**
-       * Performs an epsilon closure from a set of NFA states.
-       * @param {Array<!number>} state_set - The set of states on which
-       * base the closure is started.  The whole epsilon closure will
-       * be appended to this parameter, so this parameter acts as
-       * input/output value.
-       * @param {Array<!jscc.classes.Nfa>} machine - The NFA state machine.
-       * @returns {Array<!number>} An array of accepting states, if
-       * available.
-       * @author Jan Max Meyer
-       * @memberof jscc.lexdfa
-       */
-      epsilon_closure: function(state_set, machine) {
-        var stack = [];
-        var accept = [];
-        var tos = -1;
-        for (var i2 = 0; i2 < state_set.length; i2++) {
-          stack.push(state_set[i2]);
-        }
-        do {
-          tos = stack.pop();
-          if (machine[tos].accept >= 0) {
-            accept.push(machine[tos].accept);
-          }
-          if (machine[tos].edge == EDGE.EPSILON) {
-            if (machine[tos].follow > -1) {
-              for (var i2 = 0; i2 < state_set.length; i2++) {
-                if (state_set[i2] == machine[tos].follow) {
-                  break;
-                }
-              }
-              if (i2 == state_set.length) {
-                state_set.push(machine[tos].follow);
-                stack.push(machine[tos].follow);
-              }
-            }
-            if (machine[tos].follow2 > -1) {
-              for (var i2 = 0; i2 < state_set.length; i2++) {
-                if (state_set[i2] == machine[tos].follow2) {
-                  break;
-                }
-              }
-              if (i2 == state_set.length) {
-                state_set.push(machine[tos].follow2);
-                stack.push(machine[tos].follow2);
-              }
-            }
-          }
-        } while (stack.length > 0);
-        return accept.sort();
-      },
-      /**
-       * Constructs a deterministic finite automata (DFA) from a
-       * nondeterministic finite automata, by using the subset
-       * construction algorithm.
-       * @param {!Array<!jscc.classes.Nfa>} nfa_states - The NFA-state machine
-       * on which base the DFA will be constructed.
-       * @returns {!Array<!jscc.classes.Dfa>} An array of DFA-objects forming the
-       * new DFA-state machine.  This machine is not minimized here.
-       * @author Jan Max Meyer
-       * @memberof jscc.lexdfa
-       */
-      create_subset: function(nfa_states) {
-        var dfa_states = [];
-        var stack = [0];
-        var current = this.create_dfa(dfa_states);
-        var trans;
-        var next = -1;
-        var lowest_weight;
-        if (nfa_states.length == 0) {
-          return dfa_states;
-        }
-        this.epsilon_closure(stack, nfa_states);
-        dfa_states[current].nfa_set = dfa_states[current].nfa_set.concat(stack);
-        while ((current = this.get_undone_dfa(dfa_states)) > -1) {
-          dfa_states[current].done = true;
-          lowest_weight = -1;
-          for (var i2 = 0; i2 < dfa_states[current].nfa_set.length; i2++) {
-            if (nfa_states[dfa_states[current].nfa_set[i2]].accept > -1 && nfa_states[dfa_states[current].nfa_set[i2]].weight < lowest_weight || lowest_weight == -1) {
-              dfa_states[current].accept = nfa_states[dfa_states[current].nfa_set[i2]].accept;
-              lowest_weight = nfa_states[dfa_states[current].nfa_set[i2]].weight;
-            }
-          }
-          for (var i2 = global2.MIN_CHAR; i2 < global2.MAX_CHAR; i2++) {
-            trans = [].concat(dfa_states[current].nfa_set);
-            trans = this.move(trans, nfa_states, i2);
-            if (trans.length > 0) {
-              this.epsilon_closure(trans, nfa_states);
-            }
-            if (trans.length == 0) {
-              next = -1;
-            } else if ((next = this.same_nfa_items(dfa_states, trans)) == -1) {
-              next = this.create_dfa(dfa_states);
-              dfa_states[next].nfa_set = trans;
-            }
-            dfa_states[current].line[i2] = next;
-          }
-        }
-        return dfa_states;
-      },
-      /**
-       * Minimizes a DFA, by grouping equivalent states together.
-       * These groups form the new, minimized dfa-states.
-       * @param {!Array<!jscc.classes.Dfa>} dfa_states - The DFA-state machine on
-       * which base the minimized DFA is constructed.
-       * @returns {!Array<!jscc.classes.Dfa>} An array of DFA-objects forming the
-       * minimized DFA-state machine.
-       * @author Jan Max Meyer
-       * @memberof jscc.lexdfa
-       */
-      minimize_dfa: function(dfa_states) {
-        var groups = [[]];
-        var accept_groups = [];
-        var min_dfa_states = [];
-        var old_cnt = 0;
-        var cnt = 0;
-        var new_group;
-        var i2, j, k;
-        if (dfa_states.length == 0) {
-          return min_dfa_states;
-        }
-        for (i2 = 0; i2 < dfa_states.length; i2++) {
-          if (dfa_states[i2].accept > -1) {
-            for (j = 0; j < accept_groups.length; j++) {
-              if (accept_groups[j] == dfa_states[i2].accept) {
-                break;
-              }
-            }
-            if (j == accept_groups.length) {
-              accept_groups.push(dfa_states[i2].accept);
-              groups.push([]);
-            }
-            groups[j + 1].push(i2);
-            dfa_states[i2].group = j + 1;
-          } else {
-            groups[0].push(i2);
-            dfa_states[i2].group = 0;
-          }
-        }
-        do {
-          old_cnt = cnt;
-          for (i2 = 0; i2 < groups.length; i2++) {
-            new_group = [];
-            if (groups[i2].length > 0) {
-              for (j = 1; j < groups[i2].length; j++) {
-                for (k = global2.MIN_CHAR; k < global2.MAX_CHAR; k++) {
-                  var groupZeroLineK = dfa_states[groups[i2][0]].line[k];
-                  var groupJLineK = dfa_states[groups[i2][j]].line[k];
-                  if (groupZeroLineK != groupJLineK && (groupZeroLineK == -1 || groupJLineK == -1) || groupZeroLineK > -1 && groupJLineK > -1 && dfa_states[groupZeroLineK].group != dfa_states[groupJLineK].group) {
-                    dfa_states[groups[i2][j]].group = groups.length;
-                    new_group = new_group.concat(groups[i2].splice(j, 1));
-                    j--;
-                    break;
-                  }
-                }
-              }
-            }
-            if (new_group.length > 0) {
-              groups[groups.length] = [];
-              groups[groups.length - 1] = groups[groups.length - 1].concat(new_group);
-              cnt += new_group.length;
-            }
-          }
-        } while (old_cnt != cnt);
-        for (i2 = 0; i2 < dfa_states.length; i2++) {
-          for (j = global2.MIN_CHAR; j < global2.MAX_CHAR; j++) {
-            if (dfa_states[i2].line[j] > -1) {
-              dfa_states[i2].line[j] = dfa_states[dfa_states[i2].line[j]].group;
-            }
-          }
-        }
-        for (i2 = 0; i2 < groups.length; i2++) {
-          min_dfa_states.push(dfa_states[groups[i2][0]]);
-        }
-        return min_dfa_states;
-      }
-    };
-    return new jscc.lexdfa();
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("lib/jscc/main", [
-      "require",
-      "./global",
-      "./io/io",
-      "./first",
-      "./printtab",
-      "./tabgen",
-      "./util",
-      "./integrity",
-      "./lexdbg",
-      "./parse",
-      "./log/log",
-      "./enums/LOG_LEVEL",
-      "./enums/EXEC",
-      "./lexdfa",
-      "./enums/MODE_GEN"
-    ], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jscc = factory(function(mod) {
-      return root["jscc" + mod.split("/").pop()];
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(?mainOptions=)}
-   */
-  function(require3, others) {
-    var io, log3, global2 = (
-      /** @type {jscc.global} */
-      require3("./global")
-    ), first = (
-      /** @type {jscc.first} */
-      require3("./first")
-    ), printtab = (
-      /** @type {jscc.printtab} */
-      require3("./printtab")
-    ), tabgen = (
-      /** @type {jscc.tabgen} */
-      require3("./tabgen")
-    ), util = (
-      /** @type {jscc.util} */
-      require3("./util")
-    ), integrity = (
-      /** @type {jscc.integrity} */
-      require3("./integrity")
-    ), lexdbg = (
-      /** @type {jscc.lexdbg} */
-      require3("./lexdbg")
-    ), parse3 = (
-      /** @type {function(string, string=):number} */
-      require3("./parse")
-    ), LOG_LEVEL = require3("./enums/LOG_LEVEL"), EXEC = require3("./enums/EXEC"), lexdfa = (
-      /** @type {jscc.lexdfa} */
-      require3("./lexdfa")
-    ), MODE_GEN = require3("./enums/MODE_GEN");
-    (function() {
-      if (false) {
-        io = /** @type {jscc.io} */
-        require3("./io/ioNode");
-        log3 = /** @type {jscc.log} */
-        require3("./log/logNode");
-      } else {
-        io = /** @type {jscc.io} */
-        require3("./io/io");
-        log3 = /** @type {jscc.log} */
-        require3("./log/log");
-      }
-    })();
-    var main = /* @__PURE__ */ __name(function(options) {
-      var opt = options || {};
-      var logLevel = (
-        /** jscc.enums.LOG_LEVEL */
-        LOG_LEVEL.WARN
-      );
-      if (typeof opt["logLevel"] === "string") {
-        logLevel = util.log_level_value(opt["logLevel"]);
-      } else if (opt["logLevel"]) {
-        logLevel = /** jscc.enums.LOG_LEVEL */
-        opt["logLevel"];
-      }
-      log3.setLevel(logLevel);
-      log3.trace("jscc main: processing options");
-      var out_file = typeof opt["out_file"] === "string" ? opt["out_file"] : "";
-      var src_file = typeof opt["src_file"] === "string" ? opt["src_file"] : "";
-      var tpl_file = typeof opt["tpl_file"] === "string" ? opt["tpl_file"] : "";
-      var dump_nfa = typeof opt["dump_nfa"] === "boolean" ? opt["dump_nfa"] : false;
-      var dump_dfa = typeof opt["dump_dfa"] === "boolean" ? opt["dump_dfa"] : false;
-      var verbose = typeof opt["verbose"] === "boolean" ? opt["verbose"] : false;
-      var inputString = (
-        /** @type {string} */
-        typeof opt["input"] === "string" ? opt["input"] : ""
-      );
-      var inputFunction = typeof opt["input"] === "function" ? opt["input"] : null;
-      var templateString = typeof opt["template"] === "string" ? opt["template"] : global2.DEFAULT_DRIVER;
-      var templateFunction = typeof opt["template"] === "function" ? opt["template"] : null;
-      var outputCallback = typeof opt["outputCallback"] === "function" ? opt["outputCallback"] : null;
-      var throwIfErrors = typeof opt["throwIfErrors"] === "boolean" ? opt["throwIfErrors"] : false;
-      var exitIfErrors = typeof opt["exitIfErrors"] === "boolean" ? opt["exitIfErrors"] : false;
-      if (inputString !== "") {
-        global2.read_all_input_function = function() {
-          return inputString;
-        };
-      } else if (inputFunction) {
-        global2.read_all_input_function = inputFunction;
-      }
-      if (templateString !== "") {
-        global2.read_template_function = function() {
-          return templateString;
-        };
-      } else if (templateFunction) {
-        global2.read_template_function = templateFunction;
-      }
-      if (outputCallback) {
-        global2.write_output_function = outputCallback;
-      }
-      global2.file = (src_file || "") === "" ? "[input]" : src_file;
-      global2.dump_nfa = dump_nfa;
-      global2.dump_dfa = dump_dfa;
-      log3.trace("jscc main: reading source");
-      var src = inputString;
-      if (src === "") {
-        if (inputFunction) {
-          src = inputFunction();
-        } else if (src_file !== "") {
-          src = /** @type {string} */
-          io.read_all_input(src_file);
-        } else {
-          log3.error("No input.  Specify input or src_file in the options parameter.");
-        }
-      }
-      if (src !== "") {
-        log3.trace("jscc main: parse");
-        parse3(src, global2.file);
-        if (global2.errors == 0) {
-          log3.trace("jscc main: integrity.undef()");
-          integrity.undef();
-          log3.trace("jscc main: integrity.unreachable()");
-          integrity.unreachable();
-          if (global2.errors == 0) {
-            log3.trace("jscc main: first.first()");
-            first.first();
-            log3.trace("jscc main: tabgen.lalr1_parse_table(false)");
-            tabgen.lalr1_parse_table(false);
-            log3.trace("jscc main: integrity.check_empty_states()");
-            integrity.check_empty_states();
-            if (global2.errors == 0) {
-              if (global2.dump_dfa) {
-                lexdbg.print_dfa(global2.dfa_states);
-              }
-              log3.trace("jscc main: lexdfa.create_subset(global.nfa_states.value)");
-              global2.dfa_states = lexdfa.create_subset(global2.nfa_states.value);
-              log3.trace("jscc main: lexdfa.minimize_dfa(global.dfa_states)");
-              global2.dfa_states = lexdfa.minimize_dfa(global2.dfa_states);
-              log3.trace("jscc main: read template");
-              var driver = templateString;
-              if (templateFunction) {
-                driver = templateFunction();
-              } else if (tpl_file !== "") {
-                driver = /** @type {string} */
-                io.read_template(tpl_file);
-              }
-              log3.trace("jscc main: replace template strings");
-              driver = driver.replace(/##HEADER##/gi, global2.code_head);
-              driver = driver.replace(/##TABLES##/gi, printtab.print_parse_tables(MODE_GEN.JS));
-              driver = driver.replace(/##DFA##/gi, printtab.print_dfa_table(global2.dfa_states));
-              driver = driver.replace(/##TERMINAL_ACTIONS##/gi, printtab.print_term_actions());
-              driver = driver.replace(/##LABELS##/gi, printtab.print_symbol_labels());
-              driver = driver.replace(/##ACTIONS##/gi, printtab.print_actions());
-              driver = driver.replace(/##FOOTER##/gi, global2.code_foot);
-              driver = driver.replace(/##ERROR_TOKEN##/gi, printtab.get_error_symbol_id().toString());
-              driver = driver.replace(/##EOF##/gi, printtab.get_eof_symbol_id().toString());
-              driver = /** @type {string} */
-              driver.replace(/##WHITESPACE##/gi, printtab.get_whitespace_symbol_id().toString());
-              log3.trace("jscc main: output");
-              if (global2.errors == 0) {
-                if (outputCallback) {
-                  outputCallback(driver);
-                } else if (out_file != "") {
-                  io.write_output({
-                    text: driver,
-                    destination: out_file
-                  });
-                } else {
-                  io.write_output(driver);
-                }
-              }
-              if (verbose) {
-                log3.info(
-                  '"' + src_file + '" produced ' + global2.states.length + " states (" + global2.shifts + " shifts," + global2.reduces + " reductions, " + global2.gotos + " gotos)"
-                );
-              }
-            }
-          }
-        }
-        if (verbose) {
-          log3.info(
-            global2.warnings + " warning" + (global2.warnings > 1 ? "s" : "") + ", " + global2.errors + " error" + (global2.errors > 1 ? "s" : "")
-          );
-        }
-      }
-      if (exitIfErrors && global2.errors > 0) {
-        io.exit(1);
-      }
-      if (throwIfErrors && global2.errors > 0) {
-        throw new Error("There were one or more compilation errors.  See the log output for more information.");
-      }
-    }, "main");
-    return main;
-  }
-);
-(function(root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define("main", ["require", "./lib/jscc/main"], factory);
-  } else if (typeof module === "object" && module.exports) {
-    module.exports = factory(require2);
-  } else {
-    root.jsccmain = factory(function() {
-      return root.jscc;
-    });
-  }
-})(
-  void 0,
-  /**
-   * @param {reqParameter} require
-   * @param {...*} others
-   * @returns {function(?mainOptions=)}
-   */
-  function(require3, others) {
-    var main = (
-      /** @type {function(?mainOptions=)} */
-      require3("./lib/jscc/main")
-    );
-    return main;
-  }
-);
-jscc["enums"] = jscc.enums;
-jglobal.requireLib = require2;
-jscc.require = require2;
-requirejs.config({
-  baseUrl: ".",
-  paths: {
-    text: "bin/text",
-    requireLib: "node_modules/requirejs/require",
-    has: "volo/has"
-  },
-  map: {
-    "*": {
-      "lib/jscc/io/io": "lib/jscc/io/ioBrowser",
-      "lib/jscc/log/log": "lib/jscc/log/logBrowser",
-      "lib/jscc/bitset": "lib/jscc/bitset/BitSet32"
-    }
-  },
-  nodeRequire: require2,
-  config: {
-    "lib/jscc/global": {
-      version: "0.40.1"
-    }
-  }
-});
-require2(["main"]);
-
 // parser/jscc_util.ts
+var import_jscc = __toESM(require_jscc(), 1);
 var debug2 = 0;
 var ParseStack = class {
   constructor(size = 1024) {

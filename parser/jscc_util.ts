@@ -10,7 +10,7 @@ import * as util from '../util/util.js'
 import {parsetable} from './parsetab.js'
 import {ProgramNode} from '../core/ast.js'
 import LZString from '../util/lzstring.js'
-import '../util/jscc.js'
+import '../util/jscc.cjs'
 declare const jscc: {require(path: string): unknown}
 import type {lexer, token} from '../util/parseutil.js'
 
