@@ -13,7 +13,8 @@ import {CodeGenerator} from '../generators/generator_base.js'
 
 import * as state from './state.js'
 import {libraryCode} from './state.js'
-import { CompiledJS } from '../generators/javascript_types.js';
+import {CompiledJS} from '../generators/javascript_types.js'
+export type {CompiledJS} from '../generators/javascript_types.js'
 
 interface JSZipModule {
   deflate(s: string): Uint8Array | number[]
@@ -55,12 +56,7 @@ export function findSlots(ctx: state.ParseState, ast: ASTNode): void {
         head = (head as {qualifier: unknown}).qualifier
       }
 
-      if (
-        head &&
-        typeof head === 'object' &&
-        'type' in head &&
-        (head as {type: unknown}).type === 'TypeQualifier'
-      ) {
+      if (head && typeof head === 'object' && 'type' in head && (head as {type: unknown}).type === 'TypeQualifier') {
         head = (head as unknown as {value: unknown}).value
       }
 
@@ -243,7 +239,6 @@ export function genJS(ctx: state.ParseState, args: unknown = {}): string {
 }
 
 export {silence, unsilence} from '../util/util.js'
-
 ;(globalThis as unknown as MathlGlobal)._parseGlsl = parse
 
 export function compileJS(code: string, filename?: string): CompiledJS {

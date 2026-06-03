@@ -47,12 +47,6 @@ declare global {
 
   var _compileJS: unknown
 
-  var JSZip:
-    | {
-        deflate(s: string): Iterable<number>
-        inflate(buf: string): Iterable<number>
-      }
-    | undefined
 }
 
 export {}
