@@ -74,7 +74,7 @@ class LocalStorageNode {
     try {
       buf = nodefs!.readFileSync(this.filePath, 'utf8')
     } catch (e) {
-      console.log((e as Error).message)
+      console.log((e as Error).message, 'file will be auto-created')
       buf = '{}'
     }
     const parsed = JSON.parse(buf) as object
