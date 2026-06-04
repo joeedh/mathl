@@ -46,7 +46,6 @@ declare global {
   var _parseGlsl: unknown
 
   var _compileJS: unknown
-
 }
 
 export {}

@@ -7,14 +7,14 @@ const outFile = path.resolve('./.tmp_build_parsetable.mjs')
 
 await esbuild.build({
   entryPoints: [path.resolve('./parser/parser.ts')],
-  outfile: outFile,
-  bundle: true,
-  format: 'esm',
-  platform: 'node',
-  sourcemap: false,
-  logLevel: 'warning',
-  external: ['fs'],
-  keepNames: true,
+  outfile    : outFile,
+  bundle     : true,
+  format     : 'esm',
+  platform   : 'node',
+  sourcemap  : false,
+  logLevel   : 'warning',
+  external   : ['fs'],
+  keepNames  : true,
 })
 
 const mod = await import(pathToFileURL(outFile).href)

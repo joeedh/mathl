@@ -773,4 +773,3 @@ export function getParser<L extends lexer>(
 
   return parser
 }
-

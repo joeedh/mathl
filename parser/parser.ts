@@ -1152,10 +1152,7 @@ let parsedef = [
     grammar: `struct_declaration: type_specifier struct_declarator_list SEMI
                                  | type_qualifier type_specifier struct_declarator_list SEMI`,
     func: (
-      p: P<
-        | [StructMemberListNode, ASTNode, ASTNode, string]
-        | [StructMemberListNode, ASTNode, ASTNode, ASTNode, string]
-      >
+      p: P<[StructMemberListNode, ASTNode, ASTNode, string] | [StructMemberListNode, ASTNode, ASTNode, ASTNode, string]>
     ) => {
       p[0] = new StructMemberListNode()
 
@@ -1208,8 +1205,7 @@ let parsedef = [
  `,
     func: (
       p: P<
-        | [StructDeclNode, string, string, string, ASTNode, string]
-        | [StructDeclNode, string, string, ASTNode, string]
+        [StructDeclNode, string, string, string, ASTNode, string] | [StructDeclNode, string, string, ASTNode, string]
       >
     ) => {
       p[0] = new StructDeclNode()
@@ -1617,12 +1613,7 @@ let parsedef = [
   {
     grammar: `type_qualifier : single_type_qualifier
                               | type_qualifier single_type_qualifier`,
-    func: (
-      p: P<
-        | [ASTNode, ASTNode | string]
-        | [ASTNode, ASTNode, ASTNode | string]
-      >
-    ) => {
+    func: (p: P<[ASTNode, ASTNode | string] | [ASTNode, ASTNode, ASTNode | string]>) => {
       if (p.length === 2) {
         const v = p[1]
         if (typeof v === 'string') {
@@ -1678,9 +1669,7 @@ let parsedef = [
                                 | SUBROUTINE
                                 | SUBROUTINE LPAREN type_name_list RPAREN
     `,
-    func: (
-      p: P<[ASTNode | string, string] | [SubroutineQualifierNode, string, string, ASTNode, string]>
-    ) => {
+    func: (p: P<[ASTNode | string, string] | [SubroutineQualifierNode, string, string, ASTNode, string]>) => {
       if (p.length === 5) {
         const n = new SubroutineQualifierNode()
         n.push(p[3])
@@ -1725,11 +1714,7 @@ let parsedef = [
 
  `,
     func: (
-      p: P<
-        | [ExprListNode, ASTNode]
-        | [ASTNode, string, ASTNode, string]
-        | [ASTNode, string, ASTNode, string, string]
-      >
+      p: P<[ExprListNode, ASTNode] | [ASTNode, string, ASTNode, string] | [ASTNode, string, ASTNode, string, string]>
     ) => {
       if (p.length === 2) {
         const list = new ExprListNode()
