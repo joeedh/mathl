@@ -1,4 +1,4 @@
-import {localStorage} from '../util/localStorage.js'
+import {mathlLocalStorage} from '../util/localStorage.js'
 import * as util from '../util/util.js'
 import {makeNode, ProgramNode, walk} from './ast.js'
 import type {ASTNode} from './ast.js'
@@ -99,11 +99,11 @@ function saveLibraryCode(): void {
     s = btoa(s2)
   }
 
-  localStorage.setItem(lskey, s)
+  mathlLocalStorage.setItem(lskey, s)
 }
 
 function loadLibraryCode(): void {
-  const raw = localStorage.getItem(lskey)
+  const raw = mathlLocalStorage.getItem(lskey)
   if (typeof raw !== 'string') {
     throw new Error('No saved library code')
   }
@@ -145,13 +145,13 @@ function getLibraryCode(): CompiledASTRoot {
 
   const lskeyHash = '_mathl_library_hash'
 
-  const hashRaw = localStorage.getItem(lskeyHash)
+  const hashRaw = mathlLocalStorage.getItem(lskeyHash)
   const hash = parseFloat(typeof hashRaw === 'string' ? hashRaw : '-1')
   const digest = new util.HashDigest()
   digest.addString(libraryCode)
   const codeHash = digest.get()
 
-  if (localStorage.has(lskey) && hash === codeHash) {
+  if (mathlLocalStorage.has(lskey) && hash === codeHash) {
     try {
       loadLibraryCode()
       if (compiledLibraryCode) {
@@ -181,7 +181,7 @@ function getLibraryCode(): CompiledASTRoot {
 
   state.popParseState({keepPolyFuncs: true})
   saveLibraryCode()
-  localStorage.setItem(lskeyHash, '' + codeHash)
+  mathlLocalStorage.setItem(lskeyHash, '' + codeHash)
 
   return compiledLibraryCode
 }

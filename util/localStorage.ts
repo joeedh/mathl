@@ -223,7 +223,9 @@ if (globalThis.haveElectron) {
   localStorage_ = new BrowserLocalStorage()
 }
 
-export const localStorage: LocalStorage = localStorage_
+// avoid bug in esbuild bundler overriding 
+// window.localStorage
+export const mathlLocalStorage: LocalStorage = localStorage_
 
 export async function onLSFlush(): Promise<void> {
   if (haveNodeLS && LS) {
