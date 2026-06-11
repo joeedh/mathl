@@ -42,6 +42,7 @@ class LocalStorageNode {
   set(key: string, value: unknown): Promise<unknown> {
     return new Promise<unknown>((accept, reject) => {
       this.queue.push([Cmds.SETITEM, key, value, accept, reject])
+      this.flushQueueLater()
     })
   }
 
