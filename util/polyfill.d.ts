@@ -41,6 +41,8 @@ declare global {
 
   var haveElectron: boolean | undefined
 
+  var haveNwjs: boolean | undefined
+
   var termColor: (s: unknown, c: string | number) => string
 
   var _parseGlsl: unknown

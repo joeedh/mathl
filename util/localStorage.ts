@@ -212,7 +212,7 @@ if (globalThis.haveElectron) {
   LS.start()
   localStorage_ = new NodeLocalStorage(LS)
   haveNodeLS = true
-} else if (globalThis.INSIDE_JEST || typeof globalThis.process !== 'undefined') {
+} else if (!globalThis.haveNwjs && (globalThis.INSIDE_JEST || typeof globalThis.process !== 'undefined')) {
   import('fs').then((mod) => {
     nodefs = mod
   })
@@ -224,7 +224,7 @@ if (globalThis.haveElectron) {
   localStorage_ = new BrowserLocalStorage()
 }
 
-// avoid bug in esbuild bundler overriding 
+// avoid bug in esbuild bundler overriding
 // window.localStorage
 export const mathlLocalStorage: LocalStorage = localStorage_
 
