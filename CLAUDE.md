@@ -150,15 +150,15 @@ Every AST node extends `ASTNodeBase<VALUE, TYPE>` which itself extends
 `Array<ASTNode>`. Children are array elements; `n.length` is child
 count. Other useful fields:
 
-- `n.type: string`   — `'BinOp'`, `'VarDecl'`, etc.
-- `n.value`          — payload (e.g. identifier name, function name,
-                        operator literal, `VarType` instance)
-- `n.op`             — set on `BinOp`, `Assign`, `UnaryOp`
-- `n.prec`           — operator precedence (BinOp only)
+- `n.type: string` — `'BinOp'`, `'VarDecl'`, etc.
+- `n.value` — payload (e.g. identifier name, function name,
+  operator literal, `VarType` instance)
+- `n.op` — set on `BinOp`, `Assign`, `UnaryOp`
+- `n.prec` — operator precedence (BinOp only)
 - `n.ntype: VarType` — resolved type after the type-resolution pass
-- `n.polyKey`        — set by transform pass; key into the poly-func
-                        registry
-- `n.qualifier`      — `TypeQualifierNode` for storage/layout/precision
+- `n.polyKey` — set by transform pass; key into the poly-func
+  registry
+- `n.qualifier` — `TypeQualifierNode` for storage/layout/precision
 - `n.line`, `n.col`, `n.lexpos` — source location
 
 Mutate via `n.push`, `n.remove`, `n.replace`, `n.insert`, `n.prepend`,
@@ -182,7 +182,7 @@ Walk via:
   pops on completion. Don't keep stale references across a `parse()`
   call.
 - `state.inputs` / `state.outputs` / `state.uniforms` are
-  `Map<string, VarDeclNode>` and only populated *after* `findSlots()`
+  `Map<string, VarDeclNode>` and only populated _after_ `findSlots()`
   runs (during `parse()`).
 - Polymorphic builtins are registered in `ParseState.reset()`, which
   fires from the constructor — so a fresh `new ParseState()` already

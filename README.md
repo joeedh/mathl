@@ -38,10 +38,10 @@ const program = mathl.compileJS(shader, 'my_shader.glsl')
 program.uniforms.scale = 2.0
 
 const pointIdx = program.inputTypes.Point.index
-const timeIdx  = program.inputTypes.Time.index
-program.getInput<number[]>(pointIdx)[0] = 0.5  // Point.x
+const timeIdx = program.inputTypes.Time.index
+program.getInput<number[]>(pointIdx)[0] = 0.5 // Point.x
 program.getInput<number[]>(pointIdx)[1] = 0.25 // Point.y
-program.getInput<number[]>(pointIdx)[2] = 0.0  // Point.z
+program.getInput<number[]>(pointIdx)[2] = 0.0 // Point.z
 program.setInput(timeIdx, 1.234)
 
 // Run.
@@ -49,7 +49,7 @@ program.call()
 
 // Read outputs.
 const colorIdx = program.outputTypes.Color.index
-console.log(program.outputs[colorIdx])  // [1.0, 0.5, ~0.943]
+console.log(program.outputs[colorIdx]) // [1.0, 0.5, ~0.943]
 ```
 
 `mathl.compileJS` is the all-in-one entry point. If you want the
@@ -58,7 +58,7 @@ in a generated file), do it in two steps:
 
 ```ts
 const ctx = mathl.parse(shader, 'my_shader.glsl')
-const js  = mathl.genCode(ctx, 'js')   // a JS source string
+const js = mathl.genCode(ctx, 'js') // a JS source string
 // ...write js to disk, ship it, eval() later...
 ```
 

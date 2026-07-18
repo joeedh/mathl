@@ -49,7 +49,9 @@ import {CodeGenerator} from './generator_base.js'
 import type {ASTNode} from '../core/ast.js'
 
 export class WGSLGenerator extends CodeGenerator {
-  static generatorDefine() { return {typeName: 'wgsl'} }
+  static generatorDefine() {
+    return {typeName: 'wgsl'}
+  }
 
   genCode(ast?: ASTNode): string {
     const root = ast ?? (this.ctx as any).ast
@@ -169,14 +171,14 @@ string prepended to every program. It supplies:
 
 ```ts
 export function compileJS(code, filename) {
-  const ctx   = parse(code, filename)
-  const code2 = genJS(ctx)            // same as genCode(ctx, 'js')
+  const ctx = parse(code, filename)
+  const code2 = genJS(ctx) // same as genCode(ctx, 'js')
   let program
-  eval(code2)                          // assigns to `program`
+  eval(code2) // assigns to `program`
   const ret = program()
   ret.sourceState = ctx
-  ret.sourceCode  = code2
-  return ret                           // a CompiledJS
+  ret.sourceCode = code2
+  return ret // a CompiledJS
 }
 ```
 
@@ -184,16 +186,16 @@ export function compileJS(code, filename) {
 
 ```ts
 interface CompiledJS {
-  inputTypes:  {[k: string]: {index: number; type: GLSLValueType}}
+  inputTypes: {[k: string]: {index: number; type: GLSLValueType}}
   outputTypes: {[k: string]: {index: number; type: GLSLValueType}}
-  inputs:      ValueType[]    // matches inputTypes by index
-  outputs:     ValueType[]    // matches outputTypes by index
-  uniforms:    {[k: string]: ValueType}
+  inputs: ValueType[] // matches inputTypes by index
+  outputs: ValueType[] // matches outputTypes by index
+  uniforms: {[k: string]: ValueType}
   setInput<T>(index: number, value: T): void
   getInput<T>(index: number): T
-  call(): void                          // runs main(), writes outputs
+  call(): void // runs main(), writes outputs
   sourceState: ParseState
-  sourceCode:  string
+  sourceCode: string
 }
 ```
 
@@ -233,7 +235,7 @@ transform pass references some of these names for swizzle rewrites.
 ```ts
 import * as mathl from 'mathl'
 const ctx = mathl.parse(glslSource)
-const js   = mathl.genCode(ctx, 'js')
+const js = mathl.genCode(ctx, 'js')
 const prnt = mathl.genCode(ctx, 'internal')
 // Or, the high-level convenience:
 const compiled = mathl.compileJS(glslSource)

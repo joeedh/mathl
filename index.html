@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
-<head>
-  <title>Test</title>
-  <script type="module">
-"use strict";
+  <head>
+    <title>Test</title>
+    <script type="module">
+      'use strict'
 
-import * as mathl from './core/mathl.js'
+      import * as mathl from './core/mathl.js'
 
-let test = `
+      let test = `
 in vec3 point;
 in vec3 normal;
 
@@ -225,119 +225,120 @@ void main() {
   //value = vec2(f, fract(point[1]*size + 0.5));
   value = cellular(vec3(point[0], point[1], 0.25));
 }
-`;
+`
 
+      window._appstate = {}
 
-window._appstate = {};
+      let DIMEN = 128
+      let time = 0.0
 
-let DIMEN = 128;
-let time = 0.0;
+      let _stop = false
+      window.stop = () => {
+        _stop = true
+      }
+      function draw() {
+        let canvas = _appstate.canvas,
+          g = _appstate.g
 
-let _stop = false;
-window.stop = () => {
-  _stop = true;
-}
-function draw() {
-  let canvas = _appstate.canvas, g = _appstate.g;
+        canvas.width = window.innerWidth - 55
+        canvas.height = window.innerHeight - 55
 
-  canvas.width = window.innerWidth-55;
-  canvas.height = window.innerHeight-55;
+        let dimen = DIMEN
+        let image = new ImageData(dimen, dimen)
+        let idata = image.data
 
-  let dimen = DIMEN;
-  let image = new ImageData(dimen, dimen);
-  let idata = image.data;
+        let out = [0]
+        let p = [0, 0, 0],
+          n = [0, 0, 0]
+        let uColor = [0.2, 0.7, 0.4, 1.0]
+        let f1, f2
 
-  let out = [0];
-  let p = [0, 0, 0], n = [0, 0, 0];
-  let uColor = [0.2, 0.7, 0.4, 1.0];
-  let f1, f2;
+        function sample(x, y) {
+          p[0] = x
+          p[1] = y
 
-  function sample(x, y) {
-    p[0] = x;
-    p[1] = y;
+          func.call(out, p, n)
+          f1 = out[0][0]
+          f2 = out[0][1]
+        }
 
-    func.call(out, p, n);
-    f1 = out[0][0];
-    f2 = out[0][1];
-  }
+        for (let i = 0; i < idata.length; i += 4) {
+          let i2 = i >> 2
+          let ix = i2 % dimen,
+            iy = ~~(i2 / dimen)
+          let x = ix / dimen,
+            y = iy / dimen
 
-  for (let i=0; i<idata.length; i += 4) {
-    let i2 = i>>2;
-    let ix = i2 % dimen, iy = ~~(i2 / dimen);
-    let x = ix / dimen, y = iy / dimen;
+          let T = time * 0.1
 
-    let T = time*0.1;
+          sample(x * 5.0 + T, y * 5.0 + T)
 
-    sample(x*5.0+T, y*5.0+T);
+          let f = f1
 
-    let f = f1;
+          let r1 = f1,
+            g1 = f2
 
-    let r1 = f1, g1 = f2;
+          if (0) {
+            let df = 0.00001
+            sample(x + df, y)
 
-    if (0) {
-      let df = 0.00001;
-      sample(x + df, y);
+            let dx = (f1 - f) / df
 
-      let dx = (f1 - f)/df;
+            sample(x, y + df)
 
-      sample(x, y + df);
+            let dy = (f1 - f) / df
 
-      let dy = (f1 - f)/df;
+            r1 = Math.abs(dx) * 0.005
+            g1 = Math.abs(dy) * 0.005
+          }
 
-      r1 = Math.abs(dx)*0.005;
-      g1 = Math.abs(dy)*0.005;
-    }
+          //r1 = g1 = f;
 
-    //r1 = g1 = f;
+          //f = Math.fract(1.0 - p[0]*p[1] + 0.5);
 
+          idata[i] = g1 * 255
+          idata[i + 1] = g1 * 255
+          idata[i + 2] = 0.0
+          idata[i + 3] = 255
+        }
 
-    //f = Math.fract(1.0 - p[0]*p[1] + 0.5);
+        func.size = (Math.cos(time * 0.01) * 0.5 + 0.5) * 10
 
-    idata[i] = g1*255;
-    idata[i+1] = g1*255;
-    idata[i+2] = 0.0;
-    idata[i+3] = 255;
-  }
+        time++
+        g.putImageData(image, 0, 0)
+        console.log('draw')
 
-  func.size = (Math.cos(time*0.01)*0.5 + 0.5)*10;
+        if (!_stop) {
+          window.redraw_all()
+        }
+      }
 
-  time++;
-  g.putImageData(image, 0, 0);
-  console.log("draw");
+      window.init = function init() {
+        _appstate.canvas = document.createElement('canvas')
+        document.body.appendChild(_appstate.canvas)
+        _appstate.g = _appstate.canvas.getContext('2d')
 
-  if (!_stop) {
-    window.redraw_all();
-  }
-}
+        let animreq
+        let _draw = () => {
+          animreq = undefined
+          draw()
+        }
 
-window.init = function init() {
-  _appstate.canvas = document.createElement("canvas")
-  document.body.appendChild(_appstate.canvas);
-  _appstate.g = _appstate.canvas.getContext("2d");
+        window.redraw_all = () => {
+          if (animreq !== undefined) {
+            return
+          }
+          animreq = requestAnimationFrame(_draw)
+        }
 
-  let animreq;
-  let _draw = () => {
-    animreq = undefined;
-    draw();
-  }
+        console.log('init!')
+        mathl.silence()
+        window.func = mathl.compileJS(test)
+        mathl.unsilence()
 
-  window.redraw_all = () => {
-    if (animreq !== undefined) {
-      return;
-    }
-    animreq = requestAnimationFrame(_draw);
-  }
-
-  console.log("init!");
-  mathl.silence();
-  window.func = mathl.compileJS(test);
-  mathl.unsilence();
-
-  window.redraw_all();
-}
-  </script>
-</head>
-<body onload="init()">
-
-</body>
+        window.redraw_all()
+      }
+    </script>
+  </head>
+  <body onload="init()"></body>
 </html>

@@ -11,16 +11,16 @@ Everything below lives under `parser/` and `core/`.
 
 ## Files
 
-| File                          | Role                                                                       |
-|-------------------------------|----------------------------------------------------------------------------|
-| `parser/preprocessor.ts`      | `#define` / `#ifdef` / `#include`-style macro expansion + comment stripping |
-| `parser/parser.ts`            | Lexer (`GLSLLexer`), grammar productions, action functions                  |
-| `parser/jscc_util.ts`         | PyPLY-style wrapper around JSCC's LALR(1) table generator + parse driver    |
-| `parser/parsetab.ts`          | Pre-built parse table (`parsetable.json` encoded as an LZ-compressed string)|
-| `core/ast.ts`                 | `ASTNode` base class and ~50 concrete node subclasses                       |
-| `core/state.ts`               | `ParseState` — symbol table, type table, scope stack, poly-func registry    |
-| `core/types.ts`               | `VarType`, `ArrayType`, `DynamicArrayType`                                  |
-| `core/mathl.ts`               | High-level `parse(src)` entry point that wires the stages together          |
+| File                     | Role                                                                         |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `parser/preprocessor.ts` | `#define` / `#ifdef` / `#include`-style macro expansion + comment stripping  |
+| `parser/parser.ts`       | Lexer (`GLSLLexer`), grammar productions, action functions                   |
+| `parser/jscc_util.ts`    | PyPLY-style wrapper around JSCC's LALR(1) table generator + parse driver     |
+| `parser/parsetab.ts`     | Pre-built parse table (`parsetable.json` encoded as an LZ-compressed string) |
+| `core/ast.ts`            | `ASTNode` base class and ~50 concrete node subclasses                        |
+| `core/state.ts`          | `ParseState` — symbol table, type table, scope stack, poly-func registry     |
+| `core/types.ts`          | `VarType`, `ArrayType`, `DynamicArrayType`                                   |
+| `core/mathl.ts`          | High-level `parse(src)` entry point that wires the stages together           |
 
 ## Pipeline
 
@@ -29,12 +29,12 @@ Everything below lives under `parser/` and `core/`.
 `preprocess(src)` strips comments (`stripComments`) and then walks the
 input line-by-line through `Preprocessor.process()`, handling:
 
-- `#define NAME value`              — text substitution
-- `#define MACRO(a, b) ...`         — function-like macros with `,`-aware
-                                      arg collection (`collectargs`)
+- `#define NAME value` — text substitution
+- `#define MACRO(a, b) ...` — function-like macros with `,`-aware
+  arg collection (`collectargs`)
 - `#ifdef` / `#ifndef` / `#else` / `#endif` — gated by an `ifstack`
-- `#include`                        — currently a stub (the test corpus
-                                      does not exercise it)
+- `#include` — currently a stub (the test corpus
+  does not exercise it)
 
 Macros are sorted by length (longest first) so longer names match before
 substrings, and `boundary_re` ensures replacement only happens at token
@@ -204,14 +204,14 @@ export function parse(src: string, filename?: string): ParsedState {
 
   pushParseState(src, filename, parser, src2)
   try {
-    const parsed = parser.parse(src2) as ASTNode  // ProgramNode
+    const parsed = parser.parse(src2) as ASTNode // ProgramNode
 
     // Prepend the cached library AST so transforms can see builtins.
     const ast2 = new ProgramNode()
     for (const node of compiledLibraryCode) ast2.push(node.copy())
     for (const node of parsed) ast2.push(node)
 
-    findSlots(state, ast2)        // populate ctx.inputs/outputs/uniforms
+    findSlots(state, ast2) // populate ctx.inputs/outputs/uniforms
     state.ast = ast2
     transformAst(state.ast, state) // resolve types, dispatch poly funcs
   } finally {
