@@ -682,9 +682,9 @@ var define
       //look up paths relative to the moduleName
       var args = aps.call(arguments, 0)
 
-      //If first arg is not require('string'), and there is only
-      //one arg, it is the array form without a callback. Insert
-      //a null so that the following concat is correct.
+      //When the first arg is not a require('string') and there is only
+      //one arg, this call uses the array form without a callback. Insert
+      //a null so the following concat is correct.
       if (typeof args[0] !== 'string' && args.length === 1) {
         args.push(null)
       }
